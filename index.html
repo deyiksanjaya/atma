@@ -11,48 +11,23 @@
     <!-- Font Awesome untuk ikon (opsional, jika ingin ikon share lebih bagus) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-    <!-- Firebase SDK - Pastikan versi ini sesuai dengan yang Anda inginkan -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        // Variabel global yang disediakan oleh Canvas environment
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        // Memaparkan variabel ke window agar dapat diakses oleh script lain
-        window.firebaseApp = app;
-        window.firebaseDb = db;
-        window.firebaseAuth = auth;
-        window.initialAuthToken = initialAuthToken;
-        window.currentAppId = appId; // Menyediakan appId untuk penggunaan Firestore security rules
-    </script>
-
     <style>
         /* Custom Fonts (simulating CNN's look) */
         /* Menggunakan Open Sans sebagai alternatif CNN Sans dan Georgia */
-        /* Import sudah dilakukan di link tag di atas */
 
         /* General Body Styles */
         body {
-            font-family: 'Open Sans', Arial, sans-serif; /* Font utama, mirip CNN Sans */
+            font-family: 'Open Sans', Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f7f7f7; /* Light gray background, similar to CNN mobile */
+            background-color: #f7f7f7;
             color: #333;
             line-height: 1.6;
             box-sizing: border-box;
-            -webkit-user-select: none; /* Safari */
-            -moz-user-select: none; /* Firefox */
-            -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Standard */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         /* Loading Overlay Styles */
@@ -62,7 +37,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: #fff; /* White background for loading */
+            background-color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -71,8 +46,8 @@
         }
 
         .spinner {
-            border: 8px solid #f3f3f3; /* Light grey */
-            border-top: 8px solid #007bff; /* Blue spinner */
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -86,34 +61,33 @@
 
         /* Header Styles */
         header {
-            background-color: #000; /* Header hitam khas CNN */
+            background-color: #000;
             padding: 10px 15px;
             position: sticky;
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            cursor: pointer; /* Menunjukkan bahwa header dapat diklik */
+            cursor: pointer;
         }
 
         .header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 960px; /* Limit width for larger screens */
+            max-width: 960px;
             margin: 0 auto;
         }
 
         .cnn-logo {
-            /* Ukuran logo 50x50 piksel seperti yang diminta */
             height: 50px;
             width: 50px;
             display: block;
-            object-fit: contain; /* Memastikan logo tidak terdistorsi */
+            object-fit: contain;
         }
 
         .menu-icon, .search-icon {
-            font-size: 20px; /* Ukuran ikon */
-            color: #fff; /* Warna ikon putih */
+            font-size: 20px;
+            color: #fff;
             text-decoration: none;
             padding: 5px;
         }
@@ -125,8 +99,8 @@
             padding: 15px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            opacity: 0; /* Awalnya sembunyikan konten utama */
-            visibility: hidden; /* Awalnya sembunyikan konten utama */
+            opacity: 0;
+            visibility: hidden;
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
         }
 
@@ -145,7 +119,7 @@
         }
 
         .category {
-            background-color: #007bff; /* Biru CNN untuk kategori */
+            background-color: #007bff;
             color: #fff;
             padding: 4px 8px;
             border-radius: 3px;
@@ -173,7 +147,7 @@
 
         /* Headline */
         h1 {
-            font-family: 'Georgia', serif; /* Menggunakan Georgia untuk judul utama */
+            font-family: 'Georgia', serif;
             font-size: 1.8em;
             line-height: 1.2;
             margin-top: 0;
@@ -201,12 +175,12 @@
 
         /* Figure (Image and Caption) for Article Content */
         .article-image {
-            margin: 0 -15px 20px -15px; /* Extend image to edges of content area */
+            margin: 0 -15px 20px -15px;
             text-align: center;
-            position: relative; /* Penting untuk posisi absolut anak */
+            position: relative;
             width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio (height / width * 100%) untuk responsive container */
-            overflow: hidden; /* Pastikan gambar tidak keluar */
+            padding-top: 56.25%;
+            overflow: hidden;
         }
 
         .article-image img {
@@ -215,10 +189,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Memastikan gambar mengisi penuh dan tidak ada background terlihat */
-            object-position: top; /* Mengatur posisi crop dari atas */
+            object-fit: cover;
+            object-position: top;
             display: block;
-            /* Transisi dihapus untuk perubahan gambar yang instan */
         }
 
         .article-image figcaption {
@@ -226,17 +199,17 @@
             color: #666;
             padding: 10px 15px;
             text-align: left;
-            position: absolute; /* Posisikan keterangan di bawah gambar */
+            position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.8); /* Latar belakang semi-transparan untuk keterangan */
+            background-color: rgba(255, 255, 255, 0.8);
         }
 
         /* Article Content */
         .article-content p {
             margin-bottom: 1.2em;
-            font-size: 1.05em; /* Slightly larger text for readability */
+            font-size: 1.05em;
             color: #333;
             font-family: 'Open Sans', Arial, sans-serif;
         }
@@ -246,7 +219,7 @@
         }
 
         .article-content h2, .article-content h3 {
-            font-family: 'Georgia', serif; /* Sub-judul juga pakai Georgia */
+            font-family: 'Georgia', serif;
             margin-top: 30px;
             margin-bottom: 15px;
             color: #222;
@@ -269,7 +242,7 @@
         }
 
         .related-articles h2 {
-            font-family: 'Open Sans', Arial, sans-serif; /* Font body untuk judul section */
+            font-family: 'Open Sans', Arial, sans-serif;
             font-size: 1.3em;
             color: #222;
             margin-top: 0;
@@ -340,7 +313,7 @@
             }
 
             .article-image {
-                margin-left: -10px; /* Adjust for smaller padding */
+                margin-left: -10px;
                 margin-right: -10px;
             }
         }
@@ -351,7 +324,6 @@
             }
 
             .cnn-logo {
-                /* Ukuran logo 50x50 piksel seperti yang diminta */
                 height: 50px;
                 width: 50px;
             }
@@ -385,14 +357,14 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8); /* Latar belakang hitam semi-transparan */
+            background-color: rgba(0, 0, 0, 0.8);
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 2000; /* Pastikan di atas semua elemen lain */
+            z-index: 2000;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Transisi untuk muncul/hilang overlay */
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         }
 
         .gallery-overlay.active {
@@ -402,11 +374,11 @@
 
         .gallery-content {
             position: relative;
-            width: 90%; /* Lebar konten galeri */
-            max-width: 800px; /* Lebar maksimum */
-            padding-top: 56.25%; /* Rasio aspek 16:9 */
+            width: 90%;
+            max-width: 800px;
+            padding-top: 56.25%;
             overflow: hidden;
-            background-color: #000; /* Background hitam untuk galeri */
+            background-color: #000;
         }
 
         .gallery-content img {
@@ -415,10 +387,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* Diubah ke 'contain' untuk menampilkan gambar penuh */
-            object-position: center; /* Posisikan gambar di tengah jika ada ruang kosong */
+            object-fit: contain;
+            object-position: center;
             display: block;
-            /* Transisi fade untuk gambar galeri dihapus */
         }
 
         .close-button {
@@ -512,6 +483,7 @@
     </div>
 
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -519,7 +491,7 @@
             const articleImageContainer = document.getElementById('articleImageContainer');
             const image1 = document.getElementById('image1');
             const image2 = document.getElementById('image2');
-            const articleContentDiv = document.getElementById('articleContent'); // Dapatkan elemen div artikel
+            const articleContentDiv = document.getElementById('articleContent');
 
             const galleryOverlay = document.getElementById('galleryOverlay');
             const galleryImage1 = document.getElementById('galleryImage1');
@@ -537,29 +509,54 @@
             const loadingOverlay = document.getElementById('loadingOverlay');
             const mainContent = document.querySelector('main');
 
-            // Inisialisasi Firebase (gunakan variabel global yang sudah dipaparkan)
-            const app = window.firebaseApp;
-            const db = window.firebaseDb;
-            const auth = window.firebaseAuth;
-            const initialAuthToken = window.initialAuthToken;
-            const appId = window.currentAppId;
+            // --- Firebase Initialization and Authentication ---
+            let app, db, auth;
+            let firebaseConfig;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-            // Autentikasi Firebase
             try {
+                // Coba parse __firebase_config. Jika gagal, gunakan fallback yang keras.
+                let envConfig = {};
+                try {
+                    envConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+                } catch (e) {
+                    // console.warn("Failed to parse __firebase_config. Using hardcoded fallback.", e);
+                }
+
+                // Fallback config jika parsing gagal atau properti penting tidak ada
+                firebaseConfig = {
+                    apiKey: envConfig.apiKey || "AIzaSyAchjIuSZlDEHCrEdUw57TwKxqVYMO8IQg",
+                    authDomain: envConfig.authDomain || "atmamagicproject.firebaseapp.com",
+                    projectId: envConfig.projectId || "atmamagicproject",
+                    storageBucket: envConfig.storageBucket || "atmamagicproject.firebasestorage.app",
+                    messagingSenderId: envConfig.messagingSenderId || "770372371225",
+                    appId: envConfig.appId || "1:770372371225:web:somegeneratedappid" // Default jika tidak ada
+                };
+
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
                     await signInAnonymously(auth);
                 }
-                console.log("Firebase authenticated successfully.");
             } catch (error) {
-                console.error("Firebase authentication failed:", error);
+                console.error("Firebase initialization or authentication failed:", error);
+                // Jika Firebase gagal diinisialisasi, mungkin tidak bisa mengambil data
             }
+            // --- End Firebase Initialization ---
 
             // Fungsi untuk mengambil data dari Firestore dan mengisi artikel
             async function fetchArticleData() {
                 try {
-                    // Path dokumen Firestore Anda
+                    // Pastikan db sudah terinisialisasi
+                    if (!db) {
+                        console.error("Firestore DB not initialized. Cannot fetch data.");
+                        return;
+                    }
                     const docRef = doc(db, `artifacts/${appId}/public/data/articles`, "smithFamily");
                     const docSnap = await getDoc(docRef);
 
@@ -567,24 +564,21 @@
                         const data = docSnap.data();
                         let articleHtml = articleContentDiv.innerHTML;
 
-                        // Ganti placeholder dengan data dari Firestore
                         articleHtml = articleHtml.replace(/\$\{namaKorban\}/g, data.namaKorban || 'Jane Eleanor');
                         articleHtml = articleHtml.replace(/\$\{lokasi\}/g, data.lokasi || 'ruang belakang rumah');
                         articleHtml = articleHtml.replace(/\$\{alat\}/g, data.alat || 'pisau dapur');
 
                         articleContentDiv.innerHTML = articleHtml;
-                        console.log("Article data fetched and updated.");
                     } else {
-                        console.log("No such document in Firestore!");
+                        console.warn("No 'smithFamily' document found in Firestore. Using default placeholders.");
                     }
                 } catch (error) {
-                    console.error("Error fetching document:", error);
+                    console.error("Error fetching Firestore document:", error);
                 }
             }
 
             // Panggil fungsi untuk mengambil data
             await fetchArticleData();
-
 
             function resetImageState() {
                 image1.style.opacity = '1';
