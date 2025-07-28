@@ -59,6 +59,31 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Floating Console Styles */
+        #floatingConsole {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 280px; /* Lebar konsol */
+            height: 180px; /* Tinggi konsol */
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparan hitam */
+            color: #0f0; /* Teks hijau */
+            font-family: monospace;
+            font-size: 12px;
+            padding: 10px;
+            overflow-y: scroll; /* Bisa di-scroll jika pesan banyak */
+            border-radius: 5px;
+            z-index: 9998; /* Di atas konten, di bawah loading overlay */
+            pointer-events: none; /* Penting: memungkinkan klik melewati konsol */
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        #floatingConsole p {
+            margin: 0;
+            padding: 2px 0;
+            word-wrap: break-word; /* Memastikan teks panjang tidak meluber */
+        }
+
+
         /* Header Styles */
         header {
             background-color: #000;
@@ -421,16 +446,16 @@
     <main>
         <article>
             <div class="article-meta">
-                <span class="category">SEJARAH KRIMINAL</span>
+                <span class="category">KRIMINAL</span>
                 <a href="#" class="share-button"><i class="fas fa-share-alt"></i> Bagikan</a>
             </div>
             <h1>Tragedi Keluarga Smith: Potret Terakhir</h1>
-            <p class="byline">Oleh <a href="#">Tim Sejarah CNN Indonesia</a> | <time datetime="2010-03-15 10:00">Senin, 15 Maret 2010 10:00 WIB</time></p>
+            <p class="byline">Oleh <a href="#">Tim Misteri CNN Indonesia</a> | <time datetime="2010-03-15 10:00">Senin, 15 Maret 2010 10:00 WIB</time></p>
 
             <figure class="article-image" id="articleImageContainer">
                 <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2">
                 <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1">
-                <figcaption>Potret keluarga Smith dari awal abad ke-20. (Ilustrasi)</figcaption>
+                <figcaption>Potret keluarga Smith pasca kepergian putri keempatnya. (Ilustrasi)</figcaption>
             </figure>
 
             <div class="article-content" id="articleContent">
@@ -491,24 +516,25 @@
 
         // Template string untuk konten artikel
         const articleContentTemplate = `
-            <p>Jakarta, CNN Indonesia -- Pada suatu malam yang kelam di awal abad ke-20, tragedi menghantam keluarga Smith, sebuah keluarga besar yang dikenal hangat dan harmonis di kawasan pinggiran kota kecil di Amerika Serikat. Malam itu, seluruh anggota keluarga tengah bersiap untuk melakukan tradisi tahunan: berfoto bersama di teras rumah mereka. Namun, kebahagiaan yang seharusnya menyelimuti momen tersebut berubah menjadi duka mendalam yang sulit dilukiskan dengan kata-kata.</p>
+  <p>Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 17 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith di \${lokasi}, Sabtu malam (17/01/1924). Korban diketahui bernama \${namaKorban} Smith, putri keempat dari dua belas bersaudara. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.</p>
 
-            <p>Beberapa jam sebelum sesi foto keluarga dimulai, salah satu anggota mereka, <strong>\${namaKorban} Smith</strong>, putri keempat dari duabelas bersaudara, ditemukan tewas secara tragis di \${lokasi}. Tubuh gadis berusia 17 tahun itu ditemukan dalam kondisi mengenaskan, diduga akibat diserang menggunakan \${alat}. Di dekat jasadnya, ditemukan sebuah topeng lusuh—satu-satunya petunjuk yang mengindikasikan kehadiran orang asing di dalam rumah mereka malam itu.</p>
+  <p>Menurut laporan kepolisian, jasad \${namaKorban} ditemukan dalam kondisi mengenaskan. Dugaan awal menunjukkan korban mengalami luka fatal akibat serangan menggunakan \${alat}. Di lokasi kejadian, petugas menemukan sebuah topeng tua yang berlumuran darah kering. Pada bagian dalam topeng itu, terdapat goresan menyerupai simbol atau tulisan kuno yang belum dapat diidentifikasi.</p>
 
-            <p>Pihak kepolisian segera datang ke lokasi kejadian dan memulai penyelidikan intensif. Namun, tak satu pun bukti yang mengarah langsung kepada pelaku. Tidak ada saksi mata, tidak ada jejak kaki, dan tidak ditemukan barang yang hilang. Motif di balik pembunuhan itu masih menjadi misteri besar hingga hari ini. Satu-satunya yang diketahui: pembunuh mengenakan topeng dan berhasil masuk serta keluar tanpa diketahui siapa pun.</p>
+  <p>Jasad korban sempat dibawa ke rumah sakit untuk proses otopsi pada keesokan harinya. Namun proses tersebut gagal dilaksanakan setelah jasad dilaporkan menghilang secara misterius. Meja otopsi ditemukan kosong oleh tim medis pada pukul 06.30 pagi. CCTV di sekitar ruangan tidak merekam aktivitas selama tujuh menit akibat gangguan teknis. Satu-satunya petunjuk yang tersisa adalah jejak darah yang berhenti di tengah lorong rumah sakit.</p>
 
-            <h2>Penyelidikan Buntu, Pelaku Masih Misterius</h2>
-            <p>Tragedi yang menimpa keluarga Smith segera menjadi perhatian nasional. Media massa dari berbagai kota berdatangan untuk meliput peristiwa ini. Pemberitaan demi pemberitaan muncul setiap hari, membahas setiap detail yang ditemukan, meski sebagian besar tetap dibalut ketidakpastian. Warga setempat pun hidup dalam ketakutan, takut jika pembunuh bertopeng itu masih berkeliaran di antara mereka.</p>
+  <h2>Topeng Berdarah dan Dugaan Unsur Mistis</h2>
+  <p>Penemuan topeng dan hilangnya jasad korban memicu dugaan keterlibatan unsur mistis dalam kasus ini. Pihak kepolisian belum merilis kesimpulan resmi, namun menyatakan telah melibatkan pakar simbol dan sejarah untuk menganalisis temuan di lokasi. Hingga saat ini, belum ada tersangka maupun motif yang teridentifikasi.</p>
 
-            <p>Ketegangan semakin memuncak ketika tidak ada perkembangan berarti dari pihak berwenang. Penyelidikan yang stagnan memperkuat kesan bahwa pelaku adalah sosok yang sangat terampil dan telah merencanakan kejahatan ini dengan matang. Publik mulai berspekulasi, teori konspirasi bermunculan, dan keluarga Smith terus diterpa pertanyaan yang tak berjawab.</p>
+  <p>Keluarga Smith juga menolak memberikan keterangan mendetail kepada media. Namun dalam pernyataan singkat, mereka menyatakan telah menyerahkan sepenuhnya penyelidikan kepada otoritas yang berwenang.</p>
 
-            <p>Namun di tengah hiruk-pikuk media dan penyelidikan yang tak kunjung membuahkan hasil, keluarga Smith tetap berpegang pada satu keputusan penting. Mereka memutuskan untuk tetap melaksanakan sesi foto keluarga yang telah direncanakan, walau dalam suasana berkabung yang amat dalam.</p>
+  <h3>Sesi Foto dengan Ruang Kosong</h3>
+  <p>Meski dalam suasana duka dan belum mendapat kepastian hukum, keluarga Smith tetap menjalani sesi foto keluarga seperti yang telah dijadwalkan. Dalam formasi berdiri, mereka menyisakan satu ruang kosong di tengah barisan sebagai bentuk penghormatan terhadap \${namaKorban}.</p>
 
-            <h3>Foto Keluarga Jadi Simbol Kehilangan</h3>
-            <p>Tragedi ini meninggalkan luka permanen bagi keluarga Smith dan juga masyarakat sekitar. Bagi sebelas anggota keluarga yang tersisa, kehilangan \${namaKorban} bukan hanya kehilangan seorang anak dan saudara, tapi juga kehilangan rasa aman dalam rumah yang selama ini menjadi tempat mereka berlindung. Rumah itu kini menyimpan kenangan pahit, namun sekaligus menjadi simbol kekuatan mereka untuk tetap bertahan.</p>
+  <p>Beberapa hari setelah foto dicetak, muncul laporan bahwa siluet samar menyerupai wajah \${namaKorban} tampak di posisi ruang kosong tersebut. Tidak ada keterangan resmi terkait dugaan ini. Namun sumber keluarga menyebutkan bahwa cetakan foto tersebut telah dimusnahkan karena menimbulkan gangguan psikologis pada beberapa anggota keluarga.</p>
 
-            <p>Potret keluarga yang akhirnya tetap diambil pada malam itu menjadi simbol dari kehilangan sekaligus ketegaran. Di tengah senyum yang dipaksakan, disisakan sedikit ruang dalam foto diantara anggota keluarga lainya sebagai bentuk penghormatan bagi \${namaKorban} Smith—seolah-olah dia masih hadir, berdiri bersama mereka, seperti yang seharusnya terjadi.</p>
-        `;
+  <p>Kasus ini masih dalam tahap penyelidikan. Kepolisian menyatakan akan terus mengembangkan temuan untuk mengungkap apa yang sebenarnya terjadi dalam insiden yang kini menjadi perhatian luas masyarakat.</p>
+`;
+
 
         // Fungsi untuk mengkapitalisasi huruf pertama dari sebuah string
         function capitalizeFirstLetter(string) {
@@ -624,9 +650,10 @@
             window.addEventListener('scroll', () => {
                 const documentHeight = document.documentElement.scrollHeight;
                 const scrollPosition = window.innerHeight + window.scrollY;
-                const scrollThreshold = 100;
+                // Mengubah ambang batas scroll menjadi setengah dari tinggi dokumen
+                const scrollThreshold = documentHeight / 2; 
 
-                if (scrollPosition >= documentHeight - scrollThreshold) {
+                if (scrollPosition >= scrollThreshold) { // Cek jika scrollY mencapai atau melewati setengah
                     if (!isImage2Active) {
                         image1.style.opacity = '0';
                         galleryImage1.style.opacity = '0';
