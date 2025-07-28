@@ -99,8 +99,8 @@
             padding: 15px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            opacity: 0;
-            visibility: hidden;
+            opacity: 0; /* Awalnya sembunyikan konten utama */
+            visibility: hidden; /* Awalnya sembunyikan konten utama */
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
         }
 
@@ -175,10 +175,11 @@
 
         /* Figure (Image and Caption) for Article Content */
         .article-image {
-            margin: 0 -15px 20px -15px;
+            /* Menghapus margin negatif agar kontainer gambar sejajar dengan konten utama */
+            margin: 0 auto 20px auto; /* Auto margin untuk centering horizontal */
             text-align: center;
             position: relative;
-            width: 100%;
+            width: 100%; /* Tetap 100% dari parent yang sudah di-padding */
             padding-top: 56.25%;
             overflow: hidden;
         }
@@ -190,7 +191,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: top;
+            object-position: top; /* Tetap crop dari atas */
             display: block;
         }
 
@@ -313,8 +314,8 @@
             }
 
             .article-image {
-                margin-left: -10px;
-                margin-right: -10px;
+                margin-left: auto; /* Mengatur ulang margin untuk centering */
+                margin-right: auto;
             }
         }
 
@@ -429,27 +430,11 @@
             <figure class="article-image" id="articleImageContainer">
                 <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2">
                 <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1">
-                <figcaption>Potret keluarga dari awal abad ke-20, diambil di teras rumah dengan ruang kosong untuk mendiang anggota keluarga. (Ilustrasi)</figcaption>
+                <figcaption>Potret keluarga Smith dari awal abad ke-20. (Ilustrasi)</figcaption>
             </figure>
 
             <div class="article-content" id="articleContent">
-                <p>Jakarta, CNN Indonesia -- Pada suatu malam yang kelam di awal abad ke-20, tragedi menghantam keluarga Smith, sebuah keluarga besar yang dikenal hangat dan harmonis di kawasan pinggiran kota kecil di Amerika Serikat. Malam itu, seluruh anggota keluarga tengah bersiap untuk melakukan tradisi tahunan: berfoto bersama di teras rumah mereka. Namun, kebahagiaan yang seharusnya menyelimuti momen tersebut berubah menjadi duka mendalam yang sulit dilukiskan dengan kata-kata.</p>
-
-                <p>Beberapa jam sebelum sesi foto keluarga dimulai, salah satu anggota mereka, <strong>${namaKorban} Smith</strong>, putri keempat dari duabelas bersaudara, ditemukan tewas secara tragis di ${lokasi}. Tubuh gadis berusia 17 tahun itu ditemukan dalam kondisi mengenaskan, diduga akibat diserang menggunakan ${alat}. Di dekat jasadnya, ditemukan sebuah topeng lusuh—satu-satunya petunjuk yang mengindikasikan kehadiran orang asing di dalam rumah mereka malam itu.</p>
-
-                <p>Pihak kepolisian segera datang ke lokasi kejadian dan memulai penyelidikan intensif. Namun, tak satu pun bukti yang mengarah langsung kepada pelaku. Tidak ada saksi mata, tidak ada jejak kaki, dan tidak ditemukan barang yang hilang. Motif di balik pembunuhan itu masih menjadi misteri besar hingga hari ini. Satu-satunya yang diketahui: pembunuh mengenakan topeng dan berhasil masuk serta keluar tanpa diketahui siapa pun.</p>
-
-                <h2>Penyelidikan Buntu, Pelaku Masih Misterius</h2>
-                <p>Tragedi yang menimpa keluarga Smith segera menjadi perhatian nasional. Media massa dari berbagai kota berdatangan untuk meliput peristiwa ini. Pemberitaan demi pemberitaan muncul setiap hari, membahas setiap detail yang ditemukan, meski sebagian besar tetap dibalut ketidakpastian. Warga setempat pun hidup dalam ketakutan, takut jika pembunuh bertopeng itu masih berkeliaran di antara mereka.</p>
-
-                <p>Ketegangan semakin memuncak ketika tidak ada perkembangan berarti dari pihak berwenang. Penyelidikan yang stagnan memperkuat kesan bahwa pelaku adalah sosok yang sangat terampil dan telah merencanakan kejahatan ini dengan matang. Publik mulai berspekulasi, teori konspirasi bermunculan, dan keluarga Smith terus diterpa pertanyaan yang tak berjawab.</p>
-
-                <p>Namun di tengah hiruk-pikuk media dan penyelidikan yang tak kunjung membuahkan hasil, keluarga Smith tetap berpegang pada satu keputusan penting. Mereka memutuskan untuk tetap melaksanakan sesi foto keluarga yang telah direncanakan, walau dalam suasana berkabung yang amat dalam.</p>
-
-                <h3>Foto Keluarga Jadi Simbol Kehilangan</h3>
-                <p>Tragedi ini meninggalkan luka permanen bagi keluarga Smith dan juga masyarakat sekitar. Bagi sebelas anggota keluarga yang tersisa, kehilangan Jane bukan hanya kehilangan seorang anak dan saudara, tapi juga kehilangan rasa aman dalam rumah yang selama ini menjadi tempat mereka berlindung. Rumah itu kini menyimpan kenangan pahit, namun sekaligus menjadi simbol kekuatan mereka untuk tetap bertahan.</p>
-
-                <p>Potret keluarga yang akhirnya tetap diambil pada malam itu menjadi simbol dari kehilangan sekaligus ketegaran. Di tengah senyum yang dipaksakan, disisakan sedikit ruang dalam foto diantara anggota keluarga lainya sebagai bentuk penghormatan bagi Jane Eleanor Smith—seolah-olah dia masih hadir, berdiri bersama mereka, seperti yang seharusnya terjadi.</p>
+                <!-- Konten placeholder akan diisi oleh JavaScript -->
             </div>
         </article>
 
@@ -484,8 +469,52 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAchjIuSZlDEHCrEdUw57TwKxqVYMO8IQg",
+            authDomain: "atmamagicproject.firebaseapp.com",
+            databaseURL: "https://atmamagicproject-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "atmamagicproject",
+            storageBucket: "atmamagicproject.firebasestorage.app",
+            messagingSenderId: "770372371225",
+            appId: "1:770372371225:web:aac757764490d965797b88"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const rtdb = getDatabase(app);
+        const dbRef = ref(rtdb);
+
+        // Template string untuk konten artikel
+        const articleContentTemplate = `
+            <p>Jakarta, CNN Indonesia -- Pada suatu malam yang kelam di awal abad ke-20, tragedi menghantam keluarga Smith, sebuah keluarga besar yang dikenal hangat dan harmonis di kawasan pinggiran kota kecil di Amerika Serikat. Malam itu, seluruh anggota keluarga tengah bersiap untuk melakukan tradisi tahunan: berfoto bersama di teras rumah mereka. Namun, kebahagiaan yang seharusnya menyelimuti momen tersebut berubah menjadi duka mendalam yang sulit dilukiskan dengan kata-kata.</p>
+
+            <p>Beberapa jam sebelum sesi foto keluarga dimulai, salah satu anggota mereka, <strong>\${namaKorban} Smith</strong>, putri keempat dari duabelas bersaudara, ditemukan tewas secara tragis di \${lokasi}. Tubuh gadis berusia 17 tahun itu ditemukan dalam kondisi mengenaskan, diduga akibat diserang menggunakan \${alat}. Di dekat jasadnya, ditemukan sebuah topeng lusuh—satu-satunya petunjuk yang mengindikasikan kehadiran orang asing di dalam rumah mereka malam itu.</p>
+
+            <p>Pihak kepolisian segera datang ke lokasi kejadian dan memulai penyelidikan intensif. Namun, tak satu pun bukti yang mengarah langsung kepada pelaku. Tidak ada saksi mata, tidak ada jejak kaki, dan tidak ditemukan barang yang hilang. Motif di balik pembunuhan itu masih menjadi misteri besar hingga hari ini. Satu-satunya yang diketahui: pembunuh mengenakan topeng dan berhasil masuk serta keluar tanpa diketahui siapa pun.</p>
+
+            <h2>Penyelidikan Buntu, Pelaku Masih Misterius</h2>
+            <p>Tragedi yang menimpa keluarga Smith segera menjadi perhatian nasional. Media massa dari berbagai kota berdatangan untuk meliput peristiwa ini. Pemberitaan demi pemberitaan muncul setiap hari, membahas setiap detail yang ditemukan, meski sebagian besar tetap dibalut ketidakpastian. Warga setempat pun hidup dalam ketakutan, takut jika pembunuh bertopeng itu masih berkeliaran di antara mereka.</p>
+
+            <p>Ketegangan semakin memuncak ketika tidak ada perkembangan berarti dari pihak berwenang. Penyelidikan yang stagnan memperkuat kesan bahwa pelaku adalah sosok yang sangat terampil dan telah merencanakan kejahatan ini dengan matang. Publik mulai berspekulasi, teori konspirasi bermunculan, dan keluarga Smith terus diterpa pertanyaan yang tak berjawab.</p>
+
+            <p>Namun di tengah hiruk-pikuk media dan penyelidikan yang tak kunjung membuahkan hasil, keluarga Smith tetap berpegang pada satu keputusan penting. Mereka memutuskan untuk tetap melaksanakan sesi foto keluarga yang telah direncanakan, walau dalam suasana berkabung yang amat dalam.</p>
+
+            <h3>Foto Keluarga Jadi Simbol Kehilangan</h3>
+            <p>Tragedi ini meninggalkan luka permanen bagi keluarga Smith dan juga masyarakat sekitar. Bagi sebelas anggota keluarga yang tersisa, kehilangan \${namaKorban} bukan hanya kehilangan seorang anak dan saudara, tapi juga kehilangan rasa aman dalam rumah yang selama ini menjadi tempat mereka berlindung. Rumah itu kini menyimpan kenangan pahit, namun sekaligus menjadi simbol kekuatan mereka untuk tetap bertahan.</p>
+
+            <p>Potret keluarga yang akhirnya tetap diambil pada malam itu menjadi simbol dari kehilangan sekaligus ketegaran. Di tengah senyum yang dipaksakan, disisakan sedikit ruang dalam foto diantara anggota keluarga lainya sebagai bentuk penghormatan bagi \${namaKorban} Smith—seolah-olah dia masih hadir, berdiri bersama mereka, seperti yang seharusnya terjadi.</p>
+        `;
+
+        // Fungsi untuk mengkapitalisasi huruf pertama dari sebuah string
+        function capitalizeFirstLetter(string) {
+            if (!string) return '';
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
 
         document.addEventListener('DOMContentLoaded', async () => {
             const articleImageContainer = document.getElementById('articleImageContainer');
@@ -509,61 +538,6 @@
             const loadingOverlay = document.getElementById('loadingOverlay');
             const mainContent = document.querySelector('main');
 
-            // --- Firebase Initialization and Authentication ---
-            let app, db, auth;
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-            try {
-                // Mengambil konfigurasi Firebase dari variabel lingkungan
-                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-
-                // Inisialisasi Firebase
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Autentikasi
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Firebase initialization or authentication failed:", error);
-            }
-            // --- End Firebase Initialization ---
-
-            // Fungsi untuk mengambil data dari Firestore dan mengisi artikel
-            async function fetchArticleData() {
-                try {
-                    if (!db) {
-                        console.error("Firestore DB not initialized. Cannot fetch data.");
-                        return;
-                    }
-                    const docRef = doc(db, `artifacts/${appId}/public/data/articles`, "smithFamily");
-                    const docSnap = await getDoc(docRef);
-
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        let articleHtml = articleContentDiv.innerHTML;
-
-                        articleHtml = articleHtml.replace(/\$\{namaKorban\}/g, data.namaKorban || 'Jane Eleanor');
-                        articleHtml = articleHtml.replace(/\$\{lokasi\}/g, data.lokasi || 'ruang belakang rumah');
-                        articleHtml = articleHtml.replace(/\$\{alat\}/g, data.alat || 'pisau dapur');
-
-                        articleContentDiv.innerHTML = articleHtml;
-                    } else {
-                        console.warn("No 'smithFamily' document found in Firestore. Using default placeholders.");
-                    }
-                } catch (error) {
-                    console.error("Error fetching Firestore document:", error);
-                }
-            }
-
-            // Panggil fungsi untuk mengambil data
-            await fetchArticleData();
-
             function resetImageState() {
                 image1.style.opacity = '1';
                 galleryImage1.style.opacity = '1';
@@ -571,6 +545,51 @@
                 isImage2Active = false;
             }
 
+            // Fungsi untuk mengambil data dari Realtime Database dan mengisi artikel
+            async function fetchArticleData() {
+                try {
+                    if (!rtdb) {
+                        console.error("Realtime Database not initialized. Cannot fetch data.");
+                        return;
+                    }
+                    // Mengambil data dari path 'crimeScene'
+                    const snapshot = await get(child(dbRef, `crimeScene`)); 
+
+                    let finalArticleHtml = articleContentTemplate; // Gunakan template string
+
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        // Menggunakan capitalizeFirstLetter untuk namaKorban
+                        finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter(data.namaKorban) || 'Jane Eleanor');
+                        finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, data.lokasi || 'ruang belakang rumah');
+                        finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, data.alat || 'pisau dapur');
+                    } else {
+                        // Menggunakan capitalizeFirstLetter untuk default placeholder
+                        finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter('jane eleanor'));
+                        finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, 'ruang belakang rumah');
+                        finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, 'pisau dapur');
+                    }
+                    articleContentDiv.innerHTML = finalArticleHtml; // Set innerHTML setelah penggantian
+                } catch (error) {
+                    console.error("Error fetching Realtime Database data:", error);
+                }
+            }
+
+            // Autentikasi dan kemudian ambil data
+            try {
+                await signInAnonymously(auth);
+                await fetchArticleData(); // Panggil fetchArticleData setelah autentikasi berhasil
+            } catch (error) {
+                console.error("Gagal login anonymous atau mengambil data:", error);
+            } finally {
+                // Sembunyikan loading overlay dan tampilkan konten utama HANYA setelah semua async ops selesai
+                loadingOverlay.style.opacity = '0';
+                loadingOverlay.style.visibility = 'hidden';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '1';
+            }
+
+            // Inisialisasi tampilan gambar setelah data mungkin sudah diambil
             if (isImage2Active) {
                 image1.style.opacity = '0';
                 galleryImage1.style.opacity = '0';
@@ -581,12 +600,6 @@
             image2.style.opacity = '1';
             galleryImage2.style.opacity = '1';
 
-            setTimeout(() => {
-                loadingOverlay.style.opacity = '0';
-                loadingOverlay.style.visibility = 'hidden';
-                mainContent.style.visibility = 'visible';
-                mainContent.style.opacity = '1';
-            }, 500);
 
             articleImageContainer.addEventListener('click', () => {
                 galleryImage1.src = image1.src;
