@@ -454,7 +454,7 @@
         </article>
 
         <section class="related-articles">
-            <h2>Baca Juga</h2>
+            <h2>Baca Baca</h2>
             <ul>
                 <li><a href="#">Kasus Kriminal Paling Misterius di Abad ke-20</a></li>
                 <li><a href="#">Sejarah Psikologi Kriminal Awal Abad 20</a></li>
@@ -511,33 +511,19 @@
 
             // --- Firebase Initialization and Authentication ---
             let app, db, auth;
-            let firebaseConfig;
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
             const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
             try {
-                // Coba parse __firebase_config. Jika gagal, gunakan fallback yang keras.
-                let envConfig = {};
-                try {
-                    envConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-                } catch (e) {
-                    // console.warn("Failed to parse __firebase_config. Using hardcoded fallback.", e);
-                }
+                // Mengambil konfigurasi Firebase dari variabel lingkungan
+                const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
 
-                // Fallback config jika parsing gagal atau properti penting tidak ada
-                firebaseConfig = {
-                    apiKey: envConfig.apiKey || "AIzaSyAchjIuSZlDEHCrEdUw57TwKxqVYMO8IQg",
-                    authDomain: envConfig.authDomain || "atmamagicproject.firebaseapp.com",
-                    projectId: envConfig.projectId || "atmamagicproject",
-                    storageBucket: envConfig.storageBucket || "atmamagicproject.firebasestorage.app",
-                    messagingSenderId: envConfig.messagingSenderId || "770372371225",
-                    appId: envConfig.appId || "1:770372371225:web:somegeneratedappid" // Default jika tidak ada
-                };
-
+                // Inisialisasi Firebase
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
 
+                // Autentikasi
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
@@ -545,14 +531,12 @@
                 }
             } catch (error) {
                 console.error("Firebase initialization or authentication failed:", error);
-                // Jika Firebase gagal diinisialisasi, mungkin tidak bisa mengambil data
             }
             // --- End Firebase Initialization ---
 
             // Fungsi untuk mengambil data dari Firestore dan mengisi artikel
             async function fetchArticleData() {
                 try {
-                    // Pastikan db sudah terinisialisasi
                     if (!db) {
                         console.error("Firestore DB not initialized. Cannot fetch data.");
                         return;
