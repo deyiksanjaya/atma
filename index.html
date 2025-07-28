@@ -93,22 +93,18 @@
             flex-direction: column;
         }
 
-        .article-card-image {
+        /* Removed .article-card-image styles as the container is removed from HTML */
+        /* .article-card-image {
             width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            padding-top: 56.25%;
             position: relative;
             overflow: hidden;
-            background-color: #f0f0f0; /* Placeholder background */
-        }
+            background-color: #f0f0f0;
+        } */
 
-        .article-card-image img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        /* .article-card-image img {
+            display: none;
+        } */
 
         .article-card-content {
             padding: 15px;
@@ -468,9 +464,95 @@
             const searchButton = document.getElementById('searchButton');
             const categoryListContainer = document.getElementById('categoryListContainer');
 
-            const NEWS_API_KEY = 'b026b065e6934186ae6dd807ef0ceb84'; // Kunci NewsAPI Anda
-            const NEWS_API_BASE_URL = `https://newsapi.org/v2/`;
             const SMITH_FAMILY_ARTICLE_BASE_URL = `https://deyiksanjaya.github.io/atma/smith-family`; // Base URL for the Smith family article
+
+            // Dummy / Mock News Articles Data (urlToImage now removed)
+            const mockNewsArticles = [
+                {
+                    title: "Penyelidikan Baru Ungkap Petunjuk Kasus Lama",
+                    description: "Tim investigasi membuka kembali kasus dingin yang telah lama terhenti, menemukan bukti baru yang mengejutkan.",
+                    category: "HUKUM",
+                    url: "https://example.com/hukum-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Fenomena Sosial di Balik Kriminalitas Remaja",
+                    description: "Analisis mendalam tentang faktor-faktor sosial yang berkontribusi pada peningkatan angka kriminalitas di kalangan remaja perkotaan.",
+                    category: "SOSIAL",
+                    url: "https://example.com/sosial-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Teknologi Forensik Terbaru Mengubah Lanskap Investigasi",
+                    description: "Bagaimana inovasi dalam ilmu forensik membantu memecahkan kasus-kasus yang sebelumnya dianggap mustahil.",
+                    category: "TEKNOLOGI",
+                    url: "https://example.com/teknologi-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Dampak Psikologis Kejahatan Terhadap Korban dan Keluarga",
+                    description: "Studi kasus tentang trauma jangka panjang yang dialami oleh korban kejahatan dan upaya pemulihan yang dilakukan.",
+                    category: "PSIKOLOGI",
+                    url: "https://example.com/psikologi-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Sejarah Kasus-Kasus Kriminal Paling Kontroversial",
+                    description: "Melihat kembali beberapa kasus kriminal yang paling banyak diperdebatkan dan dampaknya pada sistem hukum.",
+                    category: "SEJARAH",
+                    url: "https://example.com/sejarah-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Inovasi Terbaru dalam Energi Terbarukan",
+                    description: "Penemuan baru yang menjanjikan masa depan energi bersih dan berkelanjutan.",
+                    category: "SAINS",
+                    url: "https://example.com/sains-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Tren Pasar Saham Global di Tengah Ketidakpastian Ekonomi",
+                    description: "Analisis pergerakan pasar saham dunia dan dampaknya pada investasi.",
+                    category: "BISNIS",
+                    url: "https://example.com/bisnis-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Piala Dunia Sepak Bola: Prediksi dan Sorotan",
+                    description: "Persiapan tim-tim besar dan prediksi siapa yang akan menjadi juara.",
+                    category: "OLAHRAGA",
+                    url: "https://example.com/olahraga-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Review Film Terbaru: Drama yang Menggugah Hati",
+                    description: "Ulasan lengkap film yang sedang tayang, wajib tonton minggu ini.",
+                    category: "HIBURAN",
+                    url: "https://example.com/hiburan-1",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Pencarian Keluarga Hilang di Pegunungan",
+                    description: "Tim SAR terus mencari anggota keluarga yang hilang saat mendaki gunung di tengah cuaca ekstrem.",
+                    category: "BENCANA",
+                    url: "https://example.com/keluarga-hilang",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Kasus Kriminal: Pelaku Berhasil Keluar dari Penjara",
+                    description: "Seorang narapidana kasus besar berhasil keluar dari penjara dengan keamanan maksimum, memicu perburuan nasional.",
+                    category: "KRIMINAL",
+                    url: "https://example.com/pelaku-keluar",
+                    urlToImage: "" // Image removed
+                },
+                {
+                    title: "Dampak Konflik Terhadap Keluarga Korban",
+                    description: "Kisah-kisah pilu keluarga yang terdampak konflik bersenjata, berjuang untuk kembali normal.",
+                    category: "SOSIAL",
+                    url: "https://example.com/keluarga-konflik",
+                    urlToImage: "" // Image removed
+                }
+            ];
 
             // Define categories for exploration with display names and API parameters
             // 'type: category' will use top-headlines endpoint with category param
@@ -546,104 +628,91 @@
                 }
             ];
 
-            // Function to fetch and display articles
+            // Function to fetch and display articles (now from mock data)
             // `prependSmithArticleData` will be an object { url: string, title: string, description: string } if the Smith article needs to be prepended
             async function fetchAndDisplayArticles(searchParams = {}, prependSmithArticleData = null) {
                 loadingOverlay.style.opacity = '1';
                 loadingOverlay.style.visibility = 'visible';
                 articleListContainer.innerHTML = ''; // Clear existing articles
 
-                let url = '';
-                let newsApiQuery = 'keluarga smith'; // Default query for NewsAPI when search button is clicked
+                let articlesToDisplay = [];
 
-                if (searchParams.type === 'query') {
-                    // When search button is clicked, NewsAPI query is always "keluarga smith"
-                    url = `${NEWS_API_BASE_URL}everything?q=${encodeURIComponent(newsApiQuery)}&sortBy=relevancy&pageSize=9&apiKey=${NEWS_API_KEY}`;
-                } else if (searchParams.type === 'category') {
-                    // When a category link is clicked, query NewsAPI for that category
-                    url = `${NEWS_API_BASE_URL}top-headlines?country=us&category=${encodeURIComponent(searchParams.param)}&pageSize=9&apiKey=${NEWS_API_KEY}`;
-                } else {
-                    // Default: top headlines general
-                    url = `${NEWS_API_BASE_URL}top-headlines?country=us&pageSize=9&apiKey=${NEWS_API_KEY}`;
+                // Prepend the special Smith article if data is provided (from search button click)
+                if (prependSmithArticleData) {
+                    const smithArticle = {
+                        title: prependSmithArticleData.title,
+                        description: prependSmithArticleData.description,
+                        category: "KRIMINAL",
+                        url: prependSmithArticleData.url,
+                        urlToImage: '', // Image removed
+                        source: { name: 'CNN Indonesia' } // Mock source for display
+                    };
+                    articlesToDisplay.push(smithArticle);
                 }
 
-                try {
-                    const response = await fetch(url);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 500)); // 0.5 second delay
 
-                    loadingOverlay.style.opacity = '0';
-                    loadingOverlay.style.visibility = 'hidden';
+                loadingOverlay.style.opacity = '0';
+                loadingOverlay.style.visibility = 'hidden';
 
-                    let articlesToDisplay = [];
+                function createArticleCard(article) {
+                    const card = document.createElement('div');
+                    card.classList.add('article-card');
 
-                    // Prepend the special Smith article if data is provided
-                    if (prependSmithArticleData) {
-                        const smithArticle = {
-                            title: prependSmithArticleData.title,
-                            description: prependSmithArticleData.description,
-                            category: "KRIMINAL",
-                            url: prependSmithArticleData.url,
-                            urlToImage: 'image1.jpg', // Path to the image in the root
-                            source: { name: 'CNN Indonesia' } // Mock source for display
-                        };
-                        articlesToDisplay.push(smithArticle);
-                    }
+                    // Image container removed entirely
+                    const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM'; // Use article.category from mock data
 
-                    function createArticleCard(article) {
-                        const card = document.createElement('div');
-                        card.classList.add('article-card');
+                    card.innerHTML = `
+                        <div class="article-card-content">
+                            <span class="category">${articleCategory}</span>
+                            <h3>${article.title || 'Judul Tidak Tersedia'}</h3>
+                            <p>${article.description || 'Deskripsi tidak tersedia.'}</p>
+                            <a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>
+                        </div>
+                    `;
+                    return card;
+                }
 
-                        const imageUrl = article.urlToImage || 'https://placehold.co/600x338/d3d3d3/555555?text=No+Image';
-                        const articleCategory = article.source.name ? article.source.name.toUpperCase() : 'BERITA'; 
+                // Filter and display articles based on searchParams (query or category)
+                let filteredArticles = [];
+                if (searchParams.type === 'query') {
+                    // For query searches, filter mock articles by title/description (case-insensitive)
+                    // The user wants to display articles containing "keluar" or "keluarga"
+                    const keyword1 = 'keluar';
+                    const keyword2 = 'keluarga';
 
-                        card.innerHTML = `
-                            <div class="article-card-image">
-                                <img src="${imageUrl}" alt="Gambar ${article.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x338/d3d3d3/555555?text=No+Image';">
-                            </div>
-                            <div class="article-card-content">
-                                <span class="category">${articleCategory}</span>
-                                <h3>${article.title || 'Judul Tidak Tersedia'}</h3>
-                                <p>${article.description || 'Deskripsi tidak tersedia.'}</p>
-                                <a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>
-                            </div>
-                        `;
-                        return card;
-                    }
+                    filteredArticles = mockNewsArticles.filter(article =>
+                        (article.title && (article.title.toLowerCase().includes(keyword1) || article.title.toLowerCase().includes(keyword2))) ||
+                        (article.description && (article.description.toLowerCase().includes(keyword1) || article.description.toLowerCase().includes(keyword2)))
+                    );
+                } else if (searchParams.type === 'category') {
+                    // For category searches, filter mock articles by category
+                    const categoryLower = searchParams.param.toLowerCase();
+                    filteredArticles = mockNewsArticles.filter(article =>
+                        (article.category && article.category.toLowerCase() === categoryLower)
+                    );
+                } else {
+                    // Default load: display all mock articles
+                    filteredArticles = [...mockNewsArticles];
+                }
 
-                    if (data.articles && data.articles.length > 0) {
-                        data.articles.forEach(article => {
-                            if (article.title && article.description && article.urlToImage) {
-                                articlesToDisplay.push(article);
-                            }
-                        });
-                    }
+                // Add filtered articles to display list
+                filteredArticles.forEach(article => {
+                    // No longer checking for urlToImage as all images are removed
+                    articlesToDisplay.push(article);
+                });
 
-                    if (articlesToDisplay.length > 0) {
-                        articlesToDisplay.forEach(article => {
-                            articleListContainer.appendChild(createArticleCard(article));
-                        });
-                    } else {
-                        const noArticlesMessage = document.createElement('p');
-                        noArticlesMessage.textContent = 'Tidak ada artikel bergambar yang tersedia untuk kategori/pencarian ini.';
-                        noArticlesMessage.style.textAlign = 'center';
-                        noArticlesMessage.style.marginTop = '20px';
-                        articleListContainer.appendChild(noArticlesMessage);
-                    }
-
-                } catch (error) {
-                    console.error("Error fetching news articles:", error);
-                    loadingOverlay.style.opacity = '0';
-                    loadingOverlay.style.visibility = 'hidden';
-
-                    const errorMessage = document.createElement('p');
-                    errorMessage.textContent = 'Gagal memuat berita. Silakan coba lagi nanti.';
-                    errorMessage.style.color = 'red';
-                    errorMessage.style.textAlign = 'center';
-                    errorMessage.style.marginTop = '20px';
-                    articleListContainer.appendChild(errorMessage);
+                if (articlesToDisplay.length > 0) {
+                    articlesToDisplay.forEach(article => {
+                        articleListContainer.appendChild(createArticleCard(article));
+                    });
+                } else {
+                    const noArticlesMessage = document.createElement('p');
+                    noArticlesMessage.textContent = 'Tidak ada artikel yang tersedia untuk kategori/pencarian ini.';
+                    noArticlesMessage.style.textAlign = 'center';
+                    noArticlesMessage.style.marginTop = '20px';
+                    articleListContainer.appendChild(noArticlesMessage);
                 }
             }
 
@@ -693,7 +762,12 @@
             // Function to translate input for secretArticleId
             function translateInputForSecretId(input) {
                 let translated = '';
-                for (let i = 0; i < input.length; i++) {
+                // Only consider the first 3 pairs of [char][char] for a 6-character ID
+                // This assumes the user will type at least 6 characters for a full ID
+                const maxLength = 6; 
+                let processedLength = 0;
+
+                for (let i = 0; i < input.length && processedLength < maxLength; i++) {
                     const char = input[i].toLowerCase();
                     if (char === 'i') {
                         translated += '1';
@@ -701,17 +775,20 @@
                         translated += '2';
                     } else if (char === 'p') {
                         translated += '3';
+                    } else if (/[a-e]/.test(char)) { // Only allow a-e for the letter parts
+                        translated += char;
                     } else {
-                        translated += char; // Keep other characters as is
+                        // Ignore characters that are not i, o, p, or a-e
+                        continue; 
                     }
+                    processedLength++;
                 }
-                // Ensure it's 6 characters for the URL, padding with '0' if needed.
-                // The `article.html` page's logic will handle parsing and default values if the ID is malformed or short.
-                let secretId = translated.substring(0, 6);
-                while (secretId.length < 6) {
-                    secretId += '0'; // Pad with a neutral character if too short
+                
+                // Pad with '0' if the translated ID is shorter than 6 characters
+                while (translated.length < maxLength) {
+                    translated += '0'; 
                 }
-                return secretId;
+                return translated.substring(0, maxLength); // Ensure it's exactly 6 characters
             }
 
             // Initial load of top headlines
@@ -790,7 +867,7 @@
                     url: smithArticleUrl
                 };
 
-                // Always search NewsAPI for "keluarga smith" AND prepend the special article
+                // Always search for "keluarga smith" using the mock data, AND prepend the special article
                 fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query' }, smithArticleData);
                 
                 searchModalOverlay.classList.remove('active'); // Close modal after search
