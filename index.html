@@ -11,10 +11,33 @@
     <!-- Font Awesome untuk ikon (opsional, jika ingin ikon share lebih bagus) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
+    <!-- Firebase SDK - Pastikan versi ini sesuai dengan yang Anda inginkan -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Variabel global yang disediakan oleh Canvas environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Memaparkan variabel ke window agar dapat diakses oleh script lain
+        window.firebaseApp = app;
+        window.firebaseDb = db;
+        window.firebaseAuth = auth;
+        window.initialAuthToken = initialAuthToken;
+        window.currentAppId = appId; // Menyediakan appId untuk penggunaan Firestore security rules
+    </script>
+
     <style>
         /* Custom Fonts (simulating CNN's look) */
         /* Menggunakan Open Sans sebagai alternatif CNN Sans dan Georgia */
-        /* @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Georgia:wght@400;700&display=swap'); */
         /* Import sudah dilakukan di link tag di atas */
 
         /* General Body Styles */
@@ -328,7 +351,7 @@
             }
 
             .cnn-logo {
-                /* Tetap 50x50 piksel di layar sangat kecil */
+                /* Ukuran logo 50x50 piksel seperti yang diminta */
                 height: 50px;
                 width: 50px;
             }
@@ -383,8 +406,7 @@
             max-width: 800px; /* Lebar maksimum */
             padding-top: 56.25%; /* Rasio aspek 16:9 */
             overflow: hidden;
-            /* Tambahkan background agar tidak tembus pandang ke body saat transisi gambar */
-            background-color: #000;
+            background-color: #000; /* Background hitam untuk galeri */
         }
 
         .gallery-content img {
@@ -393,7 +415,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: contain; /* **Diubah ke 'contain'** untuk menampilkan gambar penuh */
+            object-fit: contain; /* Diubah ke 'contain' untuk menampilkan gambar penuh */
             object-position: center; /* Posisikan gambar di tengah jika ada ruang kosong */
             display: block;
             /* Transisi fade untuk gambar galeri dihapus */
@@ -436,29 +458,28 @@
             <figure class="article-image" id="articleImageContainer">
                 <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2">
                 <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1">
-                <figcaption>Potret keluarga Smith dari awal abad ke-20 (Ilustrasi)</figcaption>
+                <figcaption>Potret keluarga dari awal abad ke-20, diambil di teras rumah dengan ruang kosong untuk mendiang anggota keluarga. (Ilustrasi)</figcaption>
             </figure>
 
-           <div class="article-content">
-            <p>Jakarta, CNN Indonesia -- Pada suatu malam yang kelam di awal abad ke-20, tragedi menghantam keluarga Smith, sebuah keluarga besar yang dikenal hangat dan harmonis di kawasan pinggiran kota kecil di Amerika Serikat. Malam itu, seluruh anggota keluarga tengah bersiap untuk melakukan tradisi tahunan: berfoto bersama di teras rumah mereka. Namun, kebahagiaan yang seharusnya menyelimuti momen tersebut berubah menjadi duka mendalam yang sulit dilukiskan dengan kata-kata.</p>
+            <div class="article-content" id="articleContent">
+                <p>Jakarta, CNN Indonesia -- Pada suatu malam yang kelam di awal abad ke-20, tragedi menghantam keluarga Smith, sebuah keluarga besar yang dikenal hangat dan harmonis di kawasan pinggiran kota kecil di Amerika Serikat. Malam itu, seluruh anggota keluarga tengah bersiap untuk melakukan tradisi tahunan: berfoto bersama di teras rumah mereka. Namun, kebahagiaan yang seharusnya menyelimuti momen tersebut berubah menjadi duka mendalam yang sulit dilukiskan dengan kata-kata.</p>
 
-            <p>Beberapa jam sebelum sesi foto keluarga dimulai, salah satu anggota mereka, <strong>Jane Eleanor Smith</strong>, putri keempat dari duabelas bersaudara, ditemukan tewas secara tragis di ruang belakang rumah. Tubuh gadis berusia 17 tahun itu ditemukan dalam kondisi mengenaskan, dengan luka tusuk di beberapa bagian tubuh. Di dekat jasadnya, ditemukan sebuah topeng lusuh—satu-satunya petunjuk yang mengindikasikan kehadiran orang asing di dalam rumah mereka malam itu.</p>
+                <p>Beberapa jam sebelum sesi foto keluarga dimulai, salah satu anggota mereka, <strong>${namaKorban} Smith</strong>, putri keempat dari duabelas bersaudara, ditemukan tewas secara tragis di ${lokasi}. Tubuh gadis berusia 17 tahun itu ditemukan dalam kondisi mengenaskan, diduga akibat diserang menggunakan ${alat}. Di dekat jasadnya, ditemukan sebuah topeng lusuh—satu-satunya petunjuk yang mengindikasikan kehadiran orang asing di dalam rumah mereka malam itu.</p>
 
-            <p>Pihak kepolisian segera datang ke lokasi kejadian dan memulai penyelidikan intensif. Namun, tak satu pun bukti yang mengarah langsung kepada pelaku. Tidak ada saksi mata, tidak ada jejak kaki, dan tidak ditemukan barang yang hilang. Motif di balik pembunuhan itu masih menjadi misteri besar hingga hari ini. Satu-satunya yang diketahui: pembunuh mengenakan topeng dan berhasil masuk serta keluar tanpa diketahui siapa pun.</p>
+                <p>Pihak kepolisian segera datang ke lokasi kejadian dan memulai penyelidikan intensif. Namun, tak satu pun bukti yang mengarah langsung kepada pelaku. Tidak ada saksi mata, tidak ada jejak kaki, dan tidak ditemukan barang yang hilang. Motif di balik pembunuhan itu masih menjadi misteri besar hingga hari ini. Satu-satunya yang diketahui: pembunuh mengenakan topeng dan berhasil masuk serta keluar tanpa diketahui siapa pun.</p>
 
-            <h2>Penyelidikan Buntu, Pelaku Masih Misterius</h2>
-            <p>Tragedi yang menimpa keluarga Smith segera menjadi perhatian nasional. Media massa dari berbagai kota berdatangan untuk meliput peristiwa ini. Pemberitaan demi pemberitaan muncul setiap hari, membahas setiap detail yang ditemukan, meski sebagian besar tetap dibalut ketidakpastian. Warga setempat pun hidup dalam ketakutan, takut jika pembunuh bertopeng itu masih berkeliaran di antara mereka.</p>
+                <h2>Penyelidikan Buntu, Pelaku Masih Misterius</h2>
+                <p>Tragedi yang menimpa keluarga Smith segera menjadi perhatian nasional. Media massa dari berbagai kota berdatangan untuk meliput peristiwa ini. Pemberitaan demi pemberitaan muncul setiap hari, membahas setiap detail yang ditemukan, meski sebagian besar tetap dibalut ketidakpastian. Warga setempat pun hidup dalam ketakutan, takut jika pembunuh bertopeng itu masih berkeliaran di antara mereka.</p>
 
-            <p>Ketegangan semakin memuncak ketika tidak ada perkembangan berarti dari pihak berwenang. Penyelidikan yang stagnan memperkuat kesan bahwa pelaku adalah sosok yang sangat terampil dan telah merencanakan kejahatan ini dengan matang. Publik mulai berspekulasi, teori konspirasi bermunculan, dan keluarga Smith terus diterpa pertanyaan yang tak berjawab.</p>
+                <p>Ketegangan semakin memuncak ketika tidak ada perkembangan berarti dari pihak berwenang. Penyelidikan yang stagnan memperkuat kesan bahwa pelaku adalah sosok yang sangat terampil dan telah merencanakan kejahatan ini dengan matang. Publik mulai berspekulasi, teori konspirasi bermunculan, dan keluarga Smith terus diterpa pertanyaan yang tak berjawab.</p>
 
-            <p>Namun di tengah hiruk-pikuk media dan penyelidikan yang tak kunjung membuahkan hasil, keluarga Smith tetap berpegang pada satu keputusan penting. Mereka memutuskan untuk tetap melaksanakan sesi foto keluarga yang telah direncanakan, walau dalam suasana berkabung yang amat dalam.</p>
+                <p>Namun di tengah hiruk-pikuk media dan penyelidikan yang tak kunjung membuahkan hasil, keluarga Smith tetap berpegang pada satu keputusan penting. Mereka memutuskan untuk tetap melaksanakan sesi foto keluarga yang telah direncanakan, walau dalam suasana berkabung yang amat dalam.</p>
 
-            <h3>Foto Keluarga Jadi Simbol Kehilangan</h3>
-            <p>Tragedi ini meninggalkan luka permanen bagi keluarga Smith dan juga masyarakat sekitar. Bagi sebelas anggota keluarga yang tersisa, kehilangan Jane bukan hanya kehilangan seorang anak dan saudara, tapi juga kehilangan rasa aman dalam rumah yang selama ini menjadi tempat mereka berlindung. Rumah itu kini menyimpan kenangan pahit, namun sekaligus menjadi simbol kekuatan mereka untuk tetap bertahan.</p>
+                <h3>Foto Keluarga Jadi Simbol Kehilangan</h3>
+                <p>Tragedi ini meninggalkan luka permanen bagi keluarga Smith dan juga masyarakat sekitar. Bagi sebelas anggota keluarga yang tersisa, kehilangan Jane bukan hanya kehilangan seorang anak dan saudara, tapi juga kehilangan rasa aman dalam rumah yang selama ini menjadi tempat mereka berlindung. Rumah itu kini menyimpan kenangan pahit, namun sekaligus menjadi simbol kekuatan mereka untuk tetap bertahan.</p>
 
-            <p>Potret keluarga yang akhirnya tetap diambil pada malam itu menjadi simbol dari kehilangan sekaligus ketegaran. Di tengah senyum yang dipaksakan, disisakan sedikit ruang kosong dalam foto diantara anggota keluarga lainya sebagai bentuk penghormatan bagi Jane Eleanor Smith—seolah-olah dia masih hadir, berdiri bersama mereka, seperti yang seharusnya terjadi.</p>
-        </div>
-
+                <p>Potret keluarga yang akhirnya tetap diambil pada malam itu menjadi simbol dari kehilangan sekaligus ketegaran. Di tengah senyum yang dipaksakan, disisakan sedikit ruang dalam foto diantara anggota keluarga lainya sebagai bentuk penghormatan bagi Jane Eleanor Smith—seolah-olah dia masih hadir, berdiri bersama mereka, seperti yang seharusnya terjadi.</p>
+            </div>
         </article>
 
         <section class="related-articles">
@@ -490,11 +511,15 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+    <script type="module">
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', async () => {
             const articleImageContainer = document.getElementById('articleImageContainer');
             const image1 = document.getElementById('image1');
             const image2 = document.getElementById('image2');
+            const articleContentDiv = document.getElementById('articleContent'); // Dapatkan elemen div artikel
 
             const galleryOverlay = document.getElementById('galleryOverlay');
             const galleryImage1 = document.getElementById('galleryImage1');
@@ -511,6 +536,55 @@
 
             const loadingOverlay = document.getElementById('loadingOverlay');
             const mainContent = document.querySelector('main');
+
+            // Inisialisasi Firebase (gunakan variabel global yang sudah dipaparkan)
+            const app = window.firebaseApp;
+            const db = window.firebaseDb;
+            const auth = window.firebaseAuth;
+            const initialAuthToken = window.initialAuthToken;
+            const appId = window.currentAppId;
+
+            // Autentikasi Firebase
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                console.log("Firebase authenticated successfully.");
+            } catch (error) {
+                console.error("Firebase authentication failed:", error);
+            }
+
+            // Fungsi untuk mengambil data dari Firestore dan mengisi artikel
+            async function fetchArticleData() {
+                try {
+                    // Path dokumen Firestore Anda
+                    const docRef = doc(db, `artifacts/${appId}/public/data/articles`, "smithFamily");
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        let articleHtml = articleContentDiv.innerHTML;
+
+                        // Ganti placeholder dengan data dari Firestore
+                        articleHtml = articleHtml.replace(/\$\{namaKorban\}/g, data.namaKorban || 'Jane Eleanor');
+                        articleHtml = articleHtml.replace(/\$\{lokasi\}/g, data.lokasi || 'ruang belakang rumah');
+                        articleHtml = articleHtml.replace(/\$\{alat\}/g, data.alat || 'pisau dapur');
+
+                        articleContentDiv.innerHTML = articleHtml;
+                        console.log("Article data fetched and updated.");
+                    } else {
+                        console.log("No such document in Firestore!");
+                    }
+                } catch (error) {
+                    console.error("Error fetching document:", error);
+                }
+            }
+
+            // Panggil fungsi untuk mengambil data
+            await fetchArticleData();
+
 
             function resetImageState() {
                 image1.style.opacity = '1';
@@ -546,9 +620,7 @@
                 galleryOverlay.classList.add('active');
             });
 
-            // Hanya menutup galeri jika background overlay diklik
             galleryOverlay.addEventListener('click', (event) => {
-                // Jika target klik adalah overlay itu sendiri (bukan gambar atau tombol di dalamnya)
                 if (event.target === galleryOverlay) {
                     galleryOverlay.classList.remove('active');
                 }
