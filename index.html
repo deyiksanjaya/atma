@@ -492,31 +492,10 @@
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAchjIuSZlDEHCrEdUw57TwKxqVYMO8IQg",
-            authDomain: "atmamagicproject.firebaseapp.com",
-            databaseURL: "https://atmamagicproject-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "atmamagicproject",
-            storageBucket: "atmamagicproject.firebasestorage.app",
-            messagingSenderId: "770372371225",
-            appId: "1:770372371225:web:aac757764490d965797b88"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const rtdb = getDatabase(app);
-        const dbRef = ref(rtdb);
-
-        // Template string untuk konten artikel
-        const articleContentTemplate = `
-  <p>Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 17 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith di \${lokasi}, Sabtu malam (17/01/1924). Korban diketahui bernama \${namaKorban} Smith, putri keempat dari dua belas bersaudara. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.</p>
+   <script type="module">
+    // Template string untuk konten artikel
+    const articleContentTemplate = `
+  <p>Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 17 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith, tepatnya di \${lokasi}, Sabtu malam (17/01/1924). Korban diketahui bernama \${namaKorban} Smith, putri keempat dari dua belas bersaudara. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.</p>
 
   <p>Menurut laporan kepolisian, jasad \${namaKorban} ditemukan dalam kondisi mengenaskan. Dugaan awal menunjukkan korban mengalami luka fatal akibat serangan menggunakan \${alat}. Di lokasi kejadian, petugas menemukan sebuah topeng tua yang berlumuran darah kering. Pada bagian dalam topeng itu, terdapat goresan menyerupai simbol atau tulisan kuno yang belum dapat diidentifikasi.</p>
 
@@ -535,154 +514,163 @@
   <p>Kasus ini masih dalam tahap penyelidikan. Kepolisian menyatakan akan terus mengembangkan temuan untuk mengungkap apa yang sebenarnya terjadi dalam insiden yang kini menjadi perhatian luas masyarakat.</p>
 `;
 
+    // Fungsi untuk mengkapitalisasi huruf pertama
+    function capitalizeFirstLetter(string) {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
-        // Fungsi untuk mengkapitalisasi huruf pertama dari sebuah string
-        function capitalizeFirstLetter(string) {
-            if (!string) return '';
-            return string.charAt(0).toUpperCase() + string.slice(1);
+    function getArticleParamsFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('articleId') || '1a2a3a';
+
+        const mappings = {
+            namaKorban: {
+                '1a': 'Eleanor',
+                '1b': 'Abigail',
+                '1c': 'Lillian',
+                '1d': 'Margaret',
+                '1e': 'Beatrice',
+            },
+            lokasi: {
+                '2a': 'kamar lantai dua',
+                '2b': 'loteng',
+                '2c': 'gudang belakang',
+                '2d': 'ruang bawah tanah',
+                '2e': 'lorong dekat dapur',
+            },
+            alat: {
+                '3a': 'pisau',
+                '3b': 'palu',
+                '3c': 'gunting',
+                '3d': 'linggis',
+                '3e': 'batang besi',
+            }
+        };
+
+        return {
+            namaKorban: mappings.namaKorban[code.slice(0, 2)] || 'Jane Eleanor',
+            lokasi: mappings.lokasi[code.slice(2, 4)] || 'ruang belakang rumah',
+            alat: mappings.alat[code.slice(4, 6)] || 'pisau dapur',
+        };
+    }
+
+    async function fetchArticleData() {
+        const { namaKorban, lokasi, alat } = getArticleParamsFromURL();
+
+        let finalArticleHtml = articleContentTemplate;
+        finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter(namaKorban));
+        finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, lokasi);
+        finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, alat);
+
+        const articleContentDiv = document.getElementById('articleContent');
+        articleContentDiv.innerHTML = finalArticleHtml;
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        const articleImageContainer = document.getElementById('articleImageContainer');
+        const image1 = document.getElementById('image1');
+        const image2 = document.getElementById('image2');
+        const galleryOverlay = document.getElementById('galleryOverlay');
+        const galleryImage1 = document.getElementById('galleryImage1');
+        const galleryImage2 = document.getElementById('galleryImage2');
+        const closeButton = document.querySelector('.gallery-overlay .close-button');
+        const mainHeader = document.getElementById('mainHeader');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainContent = document.querySelector('main');
+
+        const IMAGE_STATE_KEY = 'smithFamilyImageState';
+        let isImage2Active = localStorage.getItem(IMAGE_STATE_KEY) === 'true';
+
+        function resetImageState() {
+            image1.style.opacity = '1';
+            galleryImage1.style.opacity = '1';
+            localStorage.setItem(IMAGE_STATE_KEY, 'false');
+            isImage2Active = false;
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const articleImageContainer = document.getElementById('articleImageContainer');
-            const image1 = document.getElementById('image1');
-            const image2 = document.getElementById('image2');
-            const articleContentDiv = document.getElementById('articleContent');
+        await fetchArticleData();
 
-            const galleryOverlay = document.getElementById('galleryOverlay');
-            const galleryImage1 = document.getElementById('galleryImage1');
-            const galleryImage2 = document.getElementById('galleryImage2');
-            const closeButton = document.querySelector('.gallery-overlay .close-button');
-            const mainHeader = document.getElementById('mainHeader');
+        // Sembunyikan overlay & tampilkan konten
+        loadingOverlay.style.opacity = '0';
+        loadingOverlay.style.visibility = 'hidden';
+        mainContent.style.visibility = 'visible';
+        mainContent.style.opacity = '1';
 
-            const IMAGE_STATE_KEY = 'smithFamilyImageState';
-            let isImage2Active = localStorage.getItem(IMAGE_STATE_KEY) === 'true';
+        // Inisialisasi tampilan gambar
+        if (isImage2Active) {
+            image1.style.opacity = '0';
+            galleryImage1.style.opacity = '0';
+        } else {
+            image1.style.opacity = '1';
+            galleryImage1.style.opacity = '1';
+        }
+        image2.style.opacity = '1';
+        galleryImage2.style.opacity = '1';
 
-            let lastTap = 0;
-            let tapCount = 0;
-            const TRIPLE_TAP_THRESHOLD = 500;
-
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const mainContent = document.querySelector('main');
-
-            function resetImageState() {
-                image1.style.opacity = '1';
-                galleryImage1.style.opacity = '1';
-                localStorage.setItem(IMAGE_STATE_KEY, 'false');
-                isImage2Active = false;
-            }
-
-            // Fungsi untuk mengambil data dari Realtime Database dan mengisi artikel
-            async function fetchArticleData() {
-                try {
-                    if (!rtdb) {
-                        console.error("Realtime Database not initialized. Cannot fetch data.");
-                        return;
-                    }
-                    // Mengambil data dari path 'crimeScene'
-                    const snapshot = await get(child(dbRef, `crimeScene`)); 
-
-                    let finalArticleHtml = articleContentTemplate; // Gunakan template string
-
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        // Menggunakan capitalizeFirstLetter untuk namaKorban
-                        finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter(data.namaKorban) || 'Jane Eleanor');
-                        finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, data.lokasi || 'ruang belakang rumah');
-                        finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, data.alat || 'pisau dapur');
-                    } else {
-                        // Menggunakan capitalizeFirstLetter untuk default placeholder
-                        finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter('jane eleanor'));
-                        finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, 'ruang belakang rumah');
-                        finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, 'pisau dapur');
-                    }
-                    articleContentDiv.innerHTML = finalArticleHtml; // Set innerHTML setelah penggantian
-                } catch (error) {
-                    console.error("Error fetching Realtime Database data:", error);
-                }
-            }
-
-            // Autentikasi dan kemudian ambil data
-            try {
-                await signInAnonymously(auth);
-                await fetchArticleData(); // Panggil fetchArticleData setelah autentikasi berhasil
-            } catch (error) {
-                console.error("Gagal login anonymous atau mengambil data:", error);
-            } finally {
-                // Sembunyikan loading overlay dan tampilkan konten utama HANYA setelah semua async ops selesai
-                loadingOverlay.style.opacity = '0';
-                loadingOverlay.style.visibility = 'hidden';
-                mainContent.style.visibility = 'visible';
-                mainContent.style.opacity = '1';
-            }
-
-            // Inisialisasi tampilan gambar setelah data mungkin sudah diambil
-            if (isImage2Active) {
-                image1.style.opacity = '0';
-                galleryImage1.style.opacity = '0';
-            } else {
-                image1.style.opacity = '1';
-                galleryImage1.style.opacity = '1';
-            }
-            image2.style.opacity = '1';
-            galleryImage2.style.opacity = '1';
-
-
-            articleImageContainer.addEventListener('click', () => {
-                galleryImage1.src = image1.src;
-                galleryImage2.src = image2.src;
-
-                galleryImage1.style.opacity = image1.style.opacity;
-                galleryImage2.style.opacity = image2.style.opacity;
-
-                galleryOverlay.classList.add('active');
-            });
-
-            galleryOverlay.addEventListener('click', (event) => {
-                if (event.target === galleryOverlay) {
-                    galleryOverlay.classList.remove('active');
-                }
-            });
-
-            closeButton.addEventListener('click', () => {
-                galleryOverlay.classList.remove('active');
-            });
-
-            window.addEventListener('scroll', () => {
-                const documentHeight = document.documentElement.scrollHeight;
-                const scrollPosition = window.innerHeight + window.scrollY;
-                // Mengubah ambang batas scroll menjadi setengah dari tinggi dokumen
-                const scrollThreshold = documentHeight / 2; 
-
-                if (scrollPosition >= scrollThreshold) { // Cek jika scrollY mencapai atau melewati setengah
-                    if (!isImage2Active) {
-                        image1.style.opacity = '0';
-                        galleryImage1.style.opacity = '0';
-
-                        localStorage.setItem(IMAGE_STATE_KEY, 'true');
-                        isImage2Active = true;
-                    }
-                }
-            });
-
-            mainHeader.addEventListener('click', (event) => {
-                const currentTime = new Date().getTime();
-                const timeDiff = currentTime - lastTap;
-
-                if (timeDiff < TRIPLE_TAP_THRESHOLD) {
-                    tapCount++;
-                } else {
-                    tapCount = 1;
-                }
-
-                lastTap = currentTime;
-
-                if (tapCount === 3) {
-                    localStorage.removeItem(IMAGE_STATE_KEY);
-                    resetImageState();
-                    tapCount = 0;
-                }
-            });
+        articleImageContainer.addEventListener('click', () => {
+            galleryImage1.src = image1.src;
+            galleryImage2.src = image2.src;
+            galleryImage1.style.opacity = image1.style.opacity;
+            galleryImage2.style.opacity = image2.style.opacity;
+            galleryOverlay.classList.add('active');
         });
-    </script>
+
+        galleryOverlay.addEventListener('click', (event) => {
+            if (event.target === galleryOverlay) {
+                galleryOverlay.classList.remove('active');
+            }
+        });
+
+        closeButton.addEventListener('click', () => {
+            galleryOverlay.classList.remove('active');
+        });
+
+        window.addEventListener('scroll', () => {
+    const article = document.getElementById('articleContent');
+    const articleRect = article.getBoundingClientRect();
+    const articleHeight = article.offsetHeight;
+    const windowHeight = window.innerHeight;
+    const scrollY = window.scrollY;
+
+    const articleTop = article.offsetTop;
+    const articleBottom = articleTop + articleHeight;
+
+    const scrollMid = scrollY + windowHeight / 2;
+
+    if (scrollMid >= articleTop + articleHeight / 2 && !isImage2Active) {
+        image1.style.opacity = '0';
+        galleryImage1.style.opacity = '0';
+        localStorage.setItem(IMAGE_STATE_KEY, 'true');
+        isImage2Active = true;
+    }
+});
+
+
+        let lastTap = 0;
+        let tapCount = 0;
+        const TRIPLE_TAP_THRESHOLD = 500;
+
+        mainHeader.addEventListener('click', (event) => {
+            const currentTime = new Date().getTime();
+            const timeDiff = currentTime - lastTap;
+
+            if (timeDiff < TRIPLE_TAP_THRESHOLD) {
+                tapCount++;
+            } else {
+                tapCount = 1;
+            }
+
+            lastTap = currentTime;
+
+            if (tapCount === 3) {
+                localStorage.removeItem(IMAGE_STATE_KEY);
+                resetImageState();
+                tapCount = 0;
+            }
+        });
+    });
+</script>
+
 </body>
 </html>
