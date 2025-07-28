@@ -402,6 +402,16 @@
             font-weight: normal; /* Normal, tidak tebal */
             padding: 2px 0; /* Smaller padding for sub-links */
         }
+
+        /* Styles for the search results page layout */
+        .search-query-display {
+            font-family: 'Open Sans', Arial, sans-serif;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 20px;
+            text-align: left;
+            padding-left: 15px; /* Align with main content padding */
+        }
     </style>
 </head>
 <body>
@@ -419,11 +429,21 @@
             <div class="spinner"></div>
         </div>
 
-        <h1 class="homepage-headline">Berita Utama: Terkini dari Seluruh Dunia</h1>
+        <!-- Default Homepage Content -->
+        <div id="defaultHomepageContent">
+            <h1 class="homepage-headline">Berita Utama: Terkini dari Seluruh Dunia</h1>
+            <section class="article-list" id="defaultArticleListContainer">
+                <!-- Initial articles loaded here -->
+            </section>
+        </div>
 
-        <section class="article-list" id="articleListContainer">
-            <!-- Artikel Dinamis akan dimuat di sini oleh JavaScript -->
-        </section>
+        <!-- Search Results Content -->
+        <div id="searchResultsContent" style="display: none;">
+            <p id="searchQueryDisplay" class="search-query-display"></p>
+            <section class="article-list" id="searchArticleListContainer">
+                <!-- Search results loaded here -->
+            </section>
+        </div>
     </main>
 
     <footer>
@@ -455,7 +475,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            const articleListContainer = document.getElementById('articleListContainer');
+            const defaultHomepageContent = document.getElementById('defaultHomepageContent');
+            const defaultArticleListContainer = document.getElementById('defaultArticleListContainer');
+            const searchResultsContent = document.getElementById('searchResultsContent');
+            const searchArticleListContainer = document.getElementById('searchArticleListContainer');
+            const searchQueryDisplay = document.getElementById('searchQueryDisplay'); // New element for search query text
+
+            // Removed secondary search input/button elements
+            // const secondarySearchInput = document.getElementById('secondarySearchInput');
+            // const secondarySearchButton = document.getElementById('secondarySearchButton');
+
             const loadingOverlay = document.getElementById('loadingOverlay');
             const searchIcon = document.getElementById('searchIcon');
             const searchModalOverlay = document.getElementById('searchModalOverlay');
@@ -633,7 +662,21 @@
             async function fetchAndDisplayArticles(searchParams = {}, prependSmithArticleData = null) {
                 loadingOverlay.style.opacity = '1';
                 loadingOverlay.style.visibility = 'visible';
-                articleListContainer.innerHTML = ''; // Clear existing articles
+                
+                let targetContainer = defaultArticleListContainer; // Default to homepage container
+                if (searchParams.isSearch) { // If it's a search result
+                    defaultHomepageContent.style.display = 'none';
+                    searchResultsContent.style.display = 'block';
+                    targetContainer = searchArticleListContainer;
+                    // Set the search query display text
+                    searchQueryDisplay.textContent = `Hasil Pencarian : "keluar"`;
+                } else { // If it's initial load or category click from modal
+                    defaultHomepageContent.style.display = 'block';
+                    searchResultsContent.style.display = 'none';
+                    targetContainer = defaultArticleListContainer;
+                }
+
+                targetContainer.innerHTML = ''; // Clear existing articles in the target container
 
                 let articlesToDisplay = [];
 
@@ -705,14 +748,14 @@
 
                 if (articlesToDisplay.length > 0) {
                     articlesToDisplay.forEach(article => {
-                        articleListContainer.appendChild(createArticleCard(article));
+                        targetContainer.appendChild(createArticleCard(article));
                     });
                 } else {
                     const noArticlesMessage = document.createElement('p');
                     noArticlesMessage.textContent = 'Tidak ada artikel yang tersedia untuk kategori/pencarian ini.';
                     noArticlesMessage.style.textAlign = 'center';
                     noArticlesMessage.style.marginTop = '20px';
-                    articleListContainer.appendChild(noArticlesMessage);
+                    targetContainer.appendChild(noArticlesMessage);
                 }
             }
 
@@ -730,7 +773,7 @@
                     mainLink.classList.add('main-category-link'); // Apply main category styling
                     mainLink.addEventListener('click', (event) => {
                         event.preventDefault();
-                        fetchAndDisplayArticles({ param: cat.api_param, type: cat.type });
+                        fetchAndDisplayArticles({ param: cat.api_param, type: cat.type, isSearch: true }); // Mark as search for display logic
                         searchModalOverlay.classList.remove('active');
                     });
                     mainLi.appendChild(mainLink);
@@ -747,7 +790,7 @@
                             subLink.classList.add('sub-category-link'); // Apply sub-category styling
                             subLink.addEventListener('click', (event) => {
                                 event.preventDefault();
-                                fetchAndDisplayArticles({ param: subCat.api_param, type: subCat.type });
+                                fetchAndDisplayArticles({ param: subCat.api_param, type: subCat.type, isSearch: true }); // Mark as search
                                 searchModalOverlay.classList.remove('active');
                             });
                             subLi.appendChild(subLink);
@@ -801,7 +844,7 @@
             const prewrittenText = "keluarga smith";
             let actualUserInput = ''; // To store the actual characters typed by the user
 
-            // Search functionality
+            // Search functionality (from header icon)
             searchIcon.addEventListener('click', (event) => {
                 event.preventDefault(); // Prevent default link behavior
                 searchModalOverlay.classList.add('active');
@@ -821,7 +864,7 @@
                 }
             });
 
-            // Implement Peter Answer effect on keydown
+            // Implement Peter Answer effect on keydown for modal search input
             searchInput.addEventListener('keydown', (event) => {
                 // Allow navigation keys (arrows, tab, home, end, etc.)
                 // Check if it's a single character key or a delete/backspace key
@@ -863,23 +906,18 @@
                 // Data for the special Smith article
                 const smithArticleData = {
                     title: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
-                    description: "Sebuah kasus yang menggemparkan masyarakat, di mana seorang anak perempuan ditemukan tewas namun jasadnya raib secara misterius. Klik untuk melihat versi rahasia.",
+                    description: "Sebuah kasus yang menggemparkan masyarakat, di mana seorang anak perempuan ditemukan tewas namun jasadnya raib secara misterius.", // Updated description
                     url: smithArticleUrl
                 };
 
                 // Always search for "keluarga smith" using the mock data, AND prepend the special article
-                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query' }, smithArticleData);
+                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query', isSearch: true }, smithArticleData);
                 
                 searchModalOverlay.classList.remove('active'); // Close modal after search
                 searchInput.value = ''; // Clear search input
                 actualUserInput = ''; // Reset actualUserInput
             });
 
-            searchInput.addEventListener('keypress', (event) => {
-                if (event.key === 'Enter') {
-                    searchButton.click(); // Trigger search button click on Enter key
-                }
-            });
         });
     </script>
 </body>
