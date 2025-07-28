@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - CNN Indonesia</title>
+    <!-- Link Google Fonts untuk Open Sans dan Georgia -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* CSS yang sama persis dari halaman artikel sebelumnya */
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+            line-height: 1.6;
+            box-sizing: border-box;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #000;
+            padding: 10px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        .cnn-logo {
+            height: 50px;
+            width: 50px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .menu-icon, .search-icon {
+            font-size: 20px;
+            color: #fff;
+            text-decoration: none;
+            padding: 5px;
+            cursor: pointer; /* Add cursor pointer for interactive elements */
+        }
+
+        /* Main Content Area untuk Halaman Utama */
+        main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+        .homepage-headline {
+            font-family: 'Georgia', serif;
+            font-size: 2.2em;
+            line-height: 1.2;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            color: #222;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .article-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding-bottom: 20px;
+        }
+
+        .article-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-card-image {
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            position: relative;
+            overflow: hidden;
+            background-color: #f0f0f0; /* Placeholder background */
+        }
+
+        .article-card-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .article-card-content {
+            padding: 15px;
+            flex-grow: 1; /* Memastikan konten mengisi sisa ruang */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .article-card-content h3 {
+            font-family: 'Georgia', serif;
+            font-size: 1.2em;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .article-card-content p {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+            flex-grow: 1; /* Memastikan paragraf mengisi ruang */
+        }
+
+        .article-card-content .category {
+            font-size: 0.75em;
+            padding: 3px 6px;
+            margin-bottom: 10px;
+            align-self: flex-start; /* Agar kategori tidak memenuhi lebar */
+        }
+
+        .article-card-content .read-more {
+            display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: background-color 0.2s ease-in-out;
+            align-self: flex-start; /* Agar tombol tidak memenuhi lebar */
+        }
+
+        .article-card-content .read-more:hover {
+            background-color: #0056b3;
+        }
+
+        /* Loading Overlay Styles (for dynamic content) */
+        #loadingOverlay {
+            position: absolute; /* Changed to absolute to fit within main content */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #007bff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #333;
+            color: #f7f7f7;
+            padding: 20px 15px;
+            text-align: center;
+            font-size: 0.85em;
+            margin-top: 40px;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #f7f7f7;
+            text-decoration: none;
+            margin: 0 10px;
+            display: inline-block;
+            padding: 5px 0;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            main {
+                padding: 10px;
+            }
+
+            .homepage-headline {
+                font-size: 1.8em;
+            }
+
+            .article-list {
+                grid-template-columns: 1fr; /* Satu kolom di layar kecil */
+            }
+
+            .article-card-content h3 {
+                font-size: 1.1em;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar tablet */
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 8px 10px;
+            }
+
+            .cnn-logo {
+                height: 40px;
+                width: 40px;
+            }
+
+            .menu-icon, .search-icon {
+                font-size: 18px;
+            }
+
+            .homepage-headline {
+                font-size: 1.6em;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr; /* 1 kolom di layar ponsel */
+            }
+        }
+
+        /* Modal / Search Overlay Styles */
+        .search-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .search-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .search-modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 380px; /* Reduced max-width for better mobile access */
+            position: relative;
+            max-height: 80vh; /* Added max-height to prevent overflow */
+            overflow-y: auto; /* Added scroll for overflow content */
+        }
+
+        .search-modal-content h2 {
+            font-family: 'Open Sans', Arial, sans-serif;
+            font-size: 1.5em;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #222;
+        }
+
+        .search-modal-content input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .search-modal-content button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.2s ease-in-out;
+            margin-bottom: 20px;
+        }
+
+        .search-modal-content button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2em;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        /* Styles for categories in search modal */
+        .search-categories {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .search-categories h3 {
+            font-family: 'Open Sans', Arial, sans-serif;
+            font-size: 1.1em; /* Ukuran sedikit lebih besar */
+            font-weight: bold; /* Tebal */
+            color: #222; /* Warna lebih gelap untuk heading kategori */
+            margin-bottom: 10px;
+            margin-top: 20px; /* Spasi antar bagian kategori */
+        }
+
+        .category-grid {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 kolom */
+            gap: 10px; /* Jarak antar kolom dan baris */
+            text-align: left;
+        }
+
+        .category-grid li {
+            margin-bottom: 0;
+            display: block; /* Important for grid items */
+        }
+
+        .category-grid a {
+            color: #333; /* Warna hyperlink hitam */
+            text-decoration: none;
+            display: block;
+            padding: 5px 0;
+            transition: color 0.2s ease-in-out;
+        }
+
+        .category-grid a:hover {
+            text-decoration: underline;
+            color: #007bff; /* Warna biru CNN saat hover */
+        }
+
+        /* Specific styles for main and sub-category links */
+        .main-category-link {
+            font-size: 1.1em; /* Ukuran sedikit lebih besar */
+            font-weight: bold; /* Tebal */
+            margin-top: 10px; /* Space above main category */
+            margin-bottom: 5px; /* Space below main category */
+        }
+
+        .sub-category-list {
+            list-style: none;
+            padding-left: 0; /* REMOVED INDENTATION */
+            margin: 0;
+        }
+
+        .sub-category-list li {
+            margin-bottom: 3px; /* Smaller margin for sub-list items */
+        }
+
+        .sub-category-list a {
+            font-size: 0.9em; /* Ukuran lebih kecil */
+            font-weight: normal; /* Normal, tidak tebal */
+            padding: 2px 0; /* Smaller padding for sub-links */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="#" class="menu-icon"><i class="fas fa-bars"></i></a>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="CNN Logo" class="cnn-logo">
+            <a href="#" class="search-icon" id="searchIcon"><i class="fas fa-search"></i></a>
+        </div>
+    </header>
+
+    <main style="position: relative;">
+        <!-- Loading Overlay for dynamic content -->
+        <div id="loadingOverlay">
+            <div class="spinner"></div>
+        </div>
+
+        <h1 class="homepage-headline">Berita Utama: Terkini dari Seluruh Dunia</h1>
+
+        <section class="article-list" id="articleListContainer">
+            <!-- Artikel Dinamis akan dimuat di sini oleh JavaScript -->
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Tentang Kami</a>
+            <a href="#">Redaksi</a>
+            <a href="#">Pedoman Media Siber</a>
+            <a href="#">Kode Etik</a>
+        </div>
+        <p>&copy; 2025 CNN Indonesia. Hak Cipta Dilindungi Undang-Undang.</p>
+    </footer>
+
+    <!-- Search Modal / Overlay -->
+    <div id="searchModalOverlay" class="search-modal-overlay">
+        <div class="search-modal-content">
+            <span class="search-modal-close">&times;</span>
+            <h2>Cari Berita</h2>
+            <input type="text" id="searchInput" placeholder="Cari di CNN...">
+            <button id="searchButton">Cari</button>
+
+            <div class="search-categories">
+                <h3 class="category-heading">Jelajahi Kategori</h3>
+                <ul id="categoryListContainer" class="category-grid">
+                    <!-- Category and sub-category links will be inserted here by JavaScript -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const articleListContainer = document.getElementById('articleListContainer');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const searchIcon = document.getElementById('searchIcon');
+            const searchModalOverlay = document.getElementById('searchModalOverlay');
+            const searchModalClose = document.querySelector('.search-modal-close');
+            const searchInput = document.getElementById('searchInput');
+            const searchButton = document.getElementById('searchButton');
+            const categoryListContainer = document.getElementById('categoryListContainer');
+
+            const NEWS_API_KEY = 'b026b065e6934186ae6dd807ef0ceb84'; // Kunci NewsAPI Anda
+            const NEWS_API_BASE_URL = `https://newsapi.org/v2/`;
+            const SMITH_FAMILY_ARTICLE_BASE_URL = `https://deyiksanjaya.github.io/atma/smith-family`; // Base URL for the Smith family article
+
+            // Define categories for exploration with display names and API parameters
+            // 'type: category' will use top-headlines endpoint with category param
+            // 'type: query' will use everything endpoint with q param
+            const categoriesData = [
+                { name: 'Umum', api_param: 'general', type: 'category',
+                    subcategories: [
+                        { name: 'Berita Terkini', api_param: 'latest news', type: 'query' },
+                        { name: 'Nasional', api_param: 'national news', type: 'query' },
+                        { name: 'Internasional', api_param: 'international news', type: 'query' }
+                    ]
+                },
+                { name: 'Bisnis', api_param: 'business', type: 'category',
+                    subcategories: [
+                        { name: 'Ekonomi Global', api_param: 'global economy', type: 'query' },
+                        { name: 'Pasar Saham', api_param: 'stock market', type: 'query' },
+                        { name: 'Keuangan Pribadi', api_param: 'personal finance', type: 'query' }
+                    ]
+                },
+                { name: 'Hiburan', api_param: 'entertainment', type: 'category',
+                    subcategories: [
+                        { name: 'Film & TV', api_param: 'movies OR television', type: 'query' },
+                        { name: 'Musik', api_param: 'music', type: 'query' },
+                        { name: 'Selebriti', api_param: 'celebrity', type: 'query' }
+                    ]
+                },
+                { name: 'Kesehatan', api_param: 'health', type: 'category',
+                    subcategories: [
+                        { name: 'Gaya Hidup Sehat', api_param: 'healthy lifestyle', type: 'query' },
+                        { name: 'Penelitian Medis', api_param: 'medical research', type: 'query' },
+                        { name: 'Nutrisi', api_param: 'nutrition', type: 'query' }
+                    ]
+                },
+                { name: 'Sains', api_param: 'science', type: 'category',
+                    subcategories: [
+                        { name: 'Antariksa', api_param: 'space', type: 'query' },
+                        { name: 'Lingkungan', api_param: 'environment', type: 'query' },
+                        { name: 'Penemuan Baru', api_param: 'new discoveries', type: 'query' }
+                    ]
+                },
+                { name: 'Olahraga', api_param: 'sports', type: 'category',
+                    subcategories: [
+                        { name: 'Sepak Bola', api_param: 'football', type: 'query' },
+                        { name: 'Basket', api_param: 'basketball', type: 'query' },
+                        { name: 'Olimpiade', api_param: 'olympics', type: 'query' }
+                    ]
+                },
+                { name: 'Teknologi', api_param: 'technology', type: 'category',
+                    subcategories: [
+                        { name: 'Gadget', api_param: 'gadgets', type: 'query' },
+                        { name: 'Kecerdasan Buatan', api_param: 'artificial intelligence', type: 'query' },
+                        { name: 'Startup', api_param: 'startup', type: 'query' }
+                    ]
+                },
+                // Categories that don't directly map to NewsAPI's fixed categories will be treated as queries
+                { name: 'Politik', api_param: 'politics', type: 'query',
+                    subcategories: [
+                        { name: 'Kebijakan Publik', api_param: 'public policy', type: 'query' },
+                        { name: 'Pemilu', api_param: 'election', type: 'query' }
+                    ]
+                },
+                { name: 'Gaya Hidup', api_param: 'lifestyle', type: 'query',
+                    subcategories: [
+                        { name: 'Fashion', api_param: 'fashion', type: 'query' },
+                        { name: 'Kuliner', api_param: 'culinary', type: 'query' }
+                    ]
+                },
+                { name: 'Travel', api_param: 'travel', type: 'query',
+                    subcategories: [
+                        { name: 'Destinasi Populer', api_param: 'popular destinations', type: 'query' },
+                        { name: 'Tips Perjalanan', api_param: 'travel tips', type: 'query' }
+                    ]
+                }
+            ];
+
+            // Function to fetch and display articles
+            // `prependSmithArticleData` will be an object { url: string, title: string, description: string } if the Smith article needs to be prepended
+            async function fetchAndDisplayArticles(searchParams = {}, prependSmithArticleData = null) {
+                loadingOverlay.style.opacity = '1';
+                loadingOverlay.style.visibility = 'visible';
+                articleListContainer.innerHTML = ''; // Clear existing articles
+
+                let url = '';
+                let newsApiQuery = 'keluarga smith'; // Default query for NewsAPI when search button is clicked
+
+                if (searchParams.type === 'query') {
+                    // When search button is clicked, NewsAPI query is always "keluarga smith"
+                    url = `${NEWS_API_BASE_URL}everything?q=${encodeURIComponent(newsApiQuery)}&sortBy=relevancy&pageSize=9&apiKey=${NEWS_API_KEY}`;
+                } else if (searchParams.type === 'category') {
+                    // When a category link is clicked, query NewsAPI for that category
+                    url = `${NEWS_API_BASE_URL}top-headlines?country=us&category=${encodeURIComponent(searchParams.param)}&pageSize=9&apiKey=${NEWS_API_KEY}`;
+                } else {
+                    // Default: top headlines general
+                    url = `${NEWS_API_BASE_URL}top-headlines?country=us&pageSize=9&apiKey=${NEWS_API_KEY}`;
+                }
+
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+
+                    loadingOverlay.style.opacity = '0';
+                    loadingOverlay.style.visibility = 'hidden';
+
+                    let articlesToDisplay = [];
+
+                    // Prepend the special Smith article if data is provided
+                    if (prependSmithArticleData) {
+                        const smithArticle = {
+                            title: prependSmithArticleData.title,
+                            description: prependSmithArticleData.description,
+                            category: "KRIMINAL",
+                            url: prependSmithArticleData.url,
+                            urlToImage: 'image1.jpg', // Path to the image in the root
+                            source: { name: 'CNN Indonesia' } // Mock source for display
+                        };
+                        articlesToDisplay.push(smithArticle);
+                    }
+
+                    function createArticleCard(article) {
+                        const card = document.createElement('div');
+                        card.classList.add('article-card');
+
+                        const imageUrl = article.urlToImage || 'https://placehold.co/600x338/d3d3d3/555555?text=No+Image';
+                        const articleCategory = article.source.name ? article.source.name.toUpperCase() : 'BERITA'; 
+
+                        card.innerHTML = `
+                            <div class="article-card-image">
+                                <img src="${imageUrl}" alt="Gambar ${article.title}" onerror="this.onerror=null;this.src='https://placehold.co/600x338/d3d3d3/555555?text=No+Image';">
+                            </div>
+                            <div class="article-card-content">
+                                <span class="category">${articleCategory}</span>
+                                <h3>${article.title || 'Judul Tidak Tersedia'}</h3>
+                                <p>${article.description || 'Deskripsi tidak tersedia.'}</p>
+                                <a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>
+                            </div>
+                        `;
+                        return card;
+                    }
+
+                    if (data.articles && data.articles.length > 0) {
+                        data.articles.forEach(article => {
+                            if (article.title && article.description && article.urlToImage) {
+                                articlesToDisplay.push(article);
+                            }
+                        });
+                    }
+
+                    if (articlesToDisplay.length > 0) {
+                        articlesToDisplay.forEach(article => {
+                            articleListContainer.appendChild(createArticleCard(article));
+                        });
+                    } else {
+                        const noArticlesMessage = document.createElement('p');
+                        noArticlesMessage.textContent = 'Tidak ada artikel bergambar yang tersedia untuk kategori/pencarian ini.';
+                        noArticlesMessage.style.textAlign = 'center';
+                        noArticlesMessage.style.marginTop = '20px';
+                        articleListContainer.appendChild(noArticlesMessage);
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching news articles:", error);
+                    loadingOverlay.style.opacity = '0';
+                    loadingOverlay.style.visibility = 'hidden';
+
+                    const errorMessage = document.createElement('p');
+                    errorMessage.textContent = 'Gagal memuat berita. Silakan coba lagi nanti.';
+                    errorMessage.style.color = 'red';
+                    errorMessage.style.textAlign = 'center';
+                    errorMessage.style.marginTop = '20px';
+                    articleListContainer.appendChild(errorMessage);
+                }
+            }
+
+            // Populate category links in the search modal
+            function populateCategories() {
+                categoryListContainer.innerHTML = ''; // Clear existing content
+
+                categoriesData.forEach(cat => {
+                    const mainLi = document.createElement('li');
+                    
+                    // Main category link
+                    const mainLink = document.createElement('a');
+                    mainLink.href = "#";
+                    mainLink.textContent = cat.name;
+                    mainLink.classList.add('main-category-link'); // Apply main category styling
+                    mainLink.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        fetchAndDisplayArticles({ param: cat.api_param, type: cat.type });
+                        searchModalOverlay.classList.remove('active');
+                    });
+                    mainLi.appendChild(mainLink);
+                    
+                    // Add subcategories as a nested ul if they exist
+                    if (cat.subcategories && cat.subcategories.length > 0) {
+                        const subUl = document.createElement('ul');
+                        subUl.classList.add('sub-category-list'); // Apply sub-category list styling
+                        cat.subcategories.forEach(subCat => {
+                            const subLi = document.createElement('li');
+                            const subLink = document.createElement('a');
+                            subLink.href = "#";
+                            subLink.textContent = subCat.name;
+                            subLink.classList.add('sub-category-link'); // Apply sub-category styling
+                            subLink.addEventListener('click', (event) => {
+                                event.preventDefault();
+                                fetchAndDisplayArticles({ param: subCat.api_param, type: subCat.type });
+                                searchModalOverlay.classList.remove('active');
+                            });
+                            subLi.appendChild(subLink);
+                            subUl.appendChild(subLi);
+                        });
+                        mainLi.appendChild(subUl); // Append the sub-list to the main category's list item
+                    }
+                    categoryListContainer.appendChild(mainLi);
+                });
+            }
+
+            // Function to translate input for secretArticleId
+            function translateInputForSecretId(input) {
+                let translated = '';
+                for (let i = 0; i < input.length; i++) {
+                    const char = input[i].toLowerCase();
+                    if (char === 'i') {
+                        translated += '1';
+                    } else if (char === 'o') {
+                        translated += '2';
+                    } else if (char === 'p') {
+                        translated += '3';
+                    } else {
+                        translated += char; // Keep other characters as is
+                    }
+                }
+                // Ensure it's 6 characters for the URL, padding with '0' if needed.
+                // The `article.html` page's logic will handle parsing and default values if the ID is malformed or short.
+                let secretId = translated.substring(0, 6);
+                while (secretId.length < 6) {
+                    secretId += '0'; // Pad with a neutral character if too short
+                }
+                return secretId;
+            }
+
+            // Initial load of top headlines
+            fetchAndDisplayArticles(); // No query or category, loads general top headlines
+
+            // Populate categories when the page loads
+            populateCategories();
+
+            // Peter Answer effect variables
+            const prewrittenText = "keluarga smith";
+            let actualUserInput = ''; // To store the actual characters typed by the user
+
+            // Search functionality
+            searchIcon.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                searchModalOverlay.classList.add('active');
+                searchInput.focus(); // Focus on the input field when modal opens
+                // Reset Peter Answer effect when modal opens
+                actualUserInput = '';
+                searchInput.value = '';
+            });
+
+            searchModalClose.addEventListener('click', () => {
+                searchModalOverlay.classList.remove('active');
+            });
+
+            searchModalOverlay.addEventListener('click', (event) => {
+                if (event.target === searchModalOverlay) {
+                    searchModalOverlay.classList.remove('active');
+                }
+            });
+
+            // Implement Peter Answer effect on keydown
+            searchInput.addEventListener('keydown', (event) => {
+                // Allow navigation keys (arrows, tab, home, end, etc.)
+                // Check if it's a single character key or a delete/backspace key
+                if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) { // Regular character
+                    actualUserInput += event.key;
+                    event.preventDefault(); // Prevent default browser input
+                } else if (event.key === 'Backspace' || event.key === 'Delete') {
+                    actualUserInput = actualUserInput.slice(0, -1);
+                    event.preventDefault(); // Prevent default browser input
+                }
+                
+                // Update the displayed value based on actualUserInput length
+                // Only show up to the length of the prewritten text
+                searchInput.value = prewrittenText.substring(0, actualUserInput.length);
+            });
+
+            // Ensure the input always reflects the prewritten text, especially after paste/autofill
+            // This listener acts as a fallback. If a paste event occurs, we want to ensure the displayed text
+            // is still the prewritten text, and the actualUserInput length is adjusted.
+            searchInput.addEventListener('input', () => {
+                // If the user pastes text, actualUserInput should reflect its length
+                // and the displayed text should adjust.
+                if (searchInput.value.length > actualUserInput.length) {
+                    // If text was pasted or somehow added beyond Peter Answer's control
+                    actualUserInput = searchInput.value; // Temporarily update actualUserInput
+                    searchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
+                } else if (searchInput.value.length < actualUserInput.length) {
+                    // If text was deleted by other means (e.g., cut, or some browser behavior)
+                    actualUserInput = searchInput.value; // Temporarily update actualUserInput
+                    searchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
+                }
+            });
+
+
+            searchButton.addEventListener('click', () => {
+                const translatedSecretId = translateInputForSecretId(actualUserInput); // Translate actual input
+                const smithArticleUrl = `${SMITH_FAMILY_ARTICLE_BASE_URL}?articleId=${translatedSecretId}`;
+
+                // Data for the special Smith article
+                const smithArticleData = {
+                    title: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
+                    description: "Sebuah kasus yang menggemparkan masyarakat, di mana seorang anak perempuan ditemukan tewas namun jasadnya raib secara misterius. Klik untuk melihat versi rahasia.",
+                    url: smithArticleUrl
+                };
+
+                // Always search NewsAPI for "keluarga smith" AND prepend the special article
+                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query' }, smithArticleData);
+                
+                searchModalOverlay.classList.remove('active'); // Close modal after search
+                searchInput.value = ''; // Clear search input
+                actualUserInput = ''; // Reset actualUserInput
+            });
+
+            searchInput.addEventListener('keypress', (event) => {
+                if (event.key === 'Enter') {
+                    searchButton.click(); // Trigger search button click on Enter key
+                }
+            });
+        });
+    </script>
+</body>
+</html>
