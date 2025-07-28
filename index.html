@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tragedi Keluarga Smith: Potret Terakhir - CNN Indonesia</title>
+    <!-- Link Google Fonts untuk Open Sans dan Georgia -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk ikon (opsional, jika ingin ikon share lebih bagus) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        /* Custom Fonts (simulating CNN's look) */
+        /* Menggunakan Open Sans sebagai alternatif CNN Sans dan Georgia */
+        /* @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Georgia:wght@400;700&display=swap'); */
+        /* Import sudah dilakukan di link tag di atas */
+
+        /* General Body Styles */
+        body {
+            font-family: 'Open Sans', Arial, sans-serif; /* Font utama, mirip CNN Sans */
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7; /* Light gray background, similar to CNN mobile */
+            color: #333;
+            line-height: 1.6;
+            box-sizing: border-box;
+            -webkit-user-select: none; /* Safari */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Standard */
+        }
+
+        /* Loading Overlay Styles */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #fff; /* White background for loading */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+
+        .spinner {
+            border: 8px solid #f3f3f3; /* Light grey */
+            border-top: 8px solid #007bff; /* Blue spinner */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #000; /* Header hitam khas CNN */
+            padding: 10px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer; /* Menunjukkan bahwa header dapat diklik */
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 960px; /* Limit width for larger screens */
+            margin: 0 auto;
+        }
+
+        .cnn-logo {
+            /* Ukuran logo 50x50 piksel seperti yang diminta */
+            height: 50px;
+            width: 50px;
+            display: block;
+            object-fit: contain; /* Memastikan logo tidak terdistorsi */
+        }
+
+        .menu-icon, .search-icon {
+            font-size: 20px; /* Ukuran ikon */
+            color: #fff; /* Warna ikon putih */
+            text-decoration: none;
+            padding: 5px;
+        }
+
+        /* Main Content Area */
+        main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 15px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            opacity: 0; /* Awalnya sembunyikan konten utama */
+            visibility: hidden; /* Awalnya sembunyikan konten utama */
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        }
+
+        article {
+            padding-bottom: 20px;
+        }
+
+        /* Article Meta (Category, Share) */
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .category {
+            background-color: #007bff; /* Biru CNN untuk kategori */
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .share-button {
+            font-size: 0.9em;
+            color: #007bff;
+            text-decoration: none;
+            padding: 5px 10px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .share-button:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        /* Headline */
+        h1 {
+            font-family: 'Georgia', serif; /* Menggunakan Georgia untuk judul utama */
+            font-size: 1.8em;
+            line-height: 1.2;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #222;
+            font-weight: 700;
+        }
+
+        /* Byline and Dateline */
+        .byline {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .byline a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .byline a:hover {
+                text-decoration: underline;
+        }
+
+        /* Figure (Image and Caption) for Article Content */
+        .article-image {
+            margin: 0 -15px 20px -15px; /* Extend image to edges of content area */
+            text-align: center;
+            position: relative; /* Penting untuk posisi absolut anak */
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio (height / width * 100%) untuk responsive container */
+            overflow: hidden; /* Pastikan gambar tidak keluar */
+        }
+
+        .article-image img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Memastikan gambar mengisi penuh dan tidak ada background terlihat */
+            object-position: top; /* Mengatur posisi crop dari atas */
+            display: block;
+            /* Transisi dihapus untuk perubahan gambar yang instan */
+        }
+
+        .article-image figcaption {
+            font-size: 0.85em;
+            color: #666;
+            padding: 10px 15px;
+            text-align: left;
+            position: absolute; /* Posisikan keterangan di bawah gambar */
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.8); /* Latar belakang semi-transparan untuk keterangan */
+        }
+
+        /* Article Content */
+        .article-content p {
+            margin-bottom: 1.2em;
+            font-size: 1.05em; /* Slightly larger text for readability */
+            color: #333;
+            font-family: 'Open Sans', Arial, sans-serif;
+        }
+
+        .article-content strong {
+            font-weight: 700;
+        }
+
+        .article-content h2, .article-content h3 {
+            font-family: 'Georgia', serif; /* Sub-judul juga pakai Georgia */
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #222;
+            font-weight: 700;
+        }
+
+        .article-content h2 {
+            font-size: 1.5em;
+        }
+
+        .article-content h3 {
+            font-size: 1.2em;
+        }
+
+        /* Related Articles Section */
+        .related-articles {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            margin-top: 30px;
+        }
+
+        .related-articles h2 {
+            font-family: 'Open Sans', Arial, sans-serif; /* Font body untuk judul section */
+            font-size: 1.3em;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .related-articles ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .related-articles li {
+            margin-bottom: 10px;
+        }
+
+        .related-articles a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        .related-articles a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #333;
+            color: #f7f7f7;
+            padding: 20px 15px;
+            text-align: center;
+            font-size: 0.85em;
+        }
+
+        .footer-links {
+            margin-bottom: 15px;
+        }
+
+        .footer-links a {
+            color: #f7f7f7;
+            text-decoration: none;
+            margin: 0 10px;
+            display: inline-block;
+            padding: 5px 0;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            main {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.6em;
+            }
+
+            .article-content p {
+                font-size: 1em;
+            }
+
+            .article-image {
+                margin-left: -10px; /* Adjust for smaller padding */
+                margin-right: -10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 8px 10px;
+            }
+
+            .cnn-logo {
+                /* Tetap 50x50 piksel di layar sangat kecil */
+                height: 50px;
+                width: 50px;
+            }
+
+            .menu-icon, .search-icon {
+                font-size: 18px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .article-content p {
+                font-size: 0.95em;
+            }
+
+            .category {
+                font-size: 0.8em;
+                padding: 3px 6px;
+            }
+
+            .article-image figcaption {
+                padding: 8px 10px;
+            }
+        }
+
+        /* Gaya untuk Gallery Overlay */
+        .gallery-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Latar belakang hitam semi-transparan */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Pastikan di atas semua elemen lain */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out; /* Transisi untuk muncul/hilang overlay */
+        }
+
+        .gallery-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .gallery-content {
+            position: relative;
+            width: 90%; /* Lebar konten galeri */
+            max-width: 800px; /* Lebar maksimum */
+            padding-top: 56.25%; /* Rasio aspek 16:9 */
+            overflow: hidden;
+            /* Tambahkan background agar tidak tembus pandang ke body saat transisi gambar */
+            background-color: #000;
+        }
+
+        .gallery-content img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* **Diubah ke 'contain'** untuk menampilkan gambar penuh */
+            object-position: center; /* Posisikan gambar di tengah jika ada ruang kosong */
+            display: block;
+            /* Transisi fade untuk gambar galeri dihapus */
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 2001;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <header id="mainHeader">
+        <div class="header-container">
+            <a href="#" class="menu-icon"><i class="fas fa-bars"></i></a>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="CNN Logo" class="cnn-logo">
+            <a href="#" class="search-icon"><i class="fas fa-search"></i></a>
+        </div>
+    </header>
+
+    <main>
+        <article>
+            <div class="article-meta">
+                <span class="category">SEJARAH KRIMINAL</span>
+                <a href="#" class="share-button"><i class="fas fa-share-alt"></i> Bagikan</a>
+            </div>
+            <h1>Tragedi Keluarga Smith: Potret Terakhir</h1>
+            <p class="byline">Oleh <a href="#">Tim Sejarah CNN Indonesia</a> | <time datetime="2010-03-15 10:00">Senin, 15 Maret 2010 10:00 WIB</time></p>
+
+            <figure class="article-image" id="articleImageContainer">
+                <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2">
+                <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1">
+                <figcaption>Potret keluarga Smith dari awal abad ke-20 (Ilustrasi)</figcaption>
+            </figure>
+
+           <div class="article-content">
+            <p>Jakarta, CNN Indonesia -- Pada suatu malam yang kelam di awal abad ke-20, tragedi menghantam keluarga Smith, sebuah keluarga besar yang dikenal hangat dan harmonis di kawasan pinggiran kota kecil di Amerika Serikat. Malam itu, seluruh anggota keluarga tengah bersiap untuk melakukan tradisi tahunan: berfoto bersama di teras rumah mereka. Namun, kebahagiaan yang seharusnya menyelimuti momen tersebut berubah menjadi duka mendalam yang sulit dilukiskan dengan kata-kata.</p>
+
+            <p>Beberapa jam sebelum sesi foto keluarga dimulai, salah satu anggota mereka, <strong>Jane Eleanor Smith</strong>, putri keempat dari duabelas bersaudara, ditemukan tewas secara tragis di ruang belakang rumah. Tubuh gadis berusia 17 tahun itu ditemukan dalam kondisi mengenaskan, dengan luka tusuk di beberapa bagian tubuh. Di dekat jasadnya, ditemukan sebuah topeng lusuh—satu-satunya petunjuk yang mengindikasikan kehadiran orang asing di dalam rumah mereka malam itu.</p>
+
+            <p>Pihak kepolisian segera datang ke lokasi kejadian dan memulai penyelidikan intensif. Namun, tak satu pun bukti yang mengarah langsung kepada pelaku. Tidak ada saksi mata, tidak ada jejak kaki, dan tidak ditemukan barang yang hilang. Motif di balik pembunuhan itu masih menjadi misteri besar hingga hari ini. Satu-satunya yang diketahui: pembunuh mengenakan topeng dan berhasil masuk serta keluar tanpa diketahui siapa pun.</p>
+
+            <h2>Penyelidikan Buntu, Pelaku Masih Misterius</h2>
+            <p>Tragedi yang menimpa keluarga Smith segera menjadi perhatian nasional. Media massa dari berbagai kota berdatangan untuk meliput peristiwa ini. Pemberitaan demi pemberitaan muncul setiap hari, membahas setiap detail yang ditemukan, meski sebagian besar tetap dibalut ketidakpastian. Warga setempat pun hidup dalam ketakutan, takut jika pembunuh bertopeng itu masih berkeliaran di antara mereka.</p>
+
+            <p>Ketegangan semakin memuncak ketika tidak ada perkembangan berarti dari pihak berwenang. Penyelidikan yang stagnan memperkuat kesan bahwa pelaku adalah sosok yang sangat terampil dan telah merencanakan kejahatan ini dengan matang. Publik mulai berspekulasi, teori konspirasi bermunculan, dan keluarga Smith terus diterpa pertanyaan yang tak berjawab.</p>
+
+            <p>Namun di tengah hiruk-pikuk media dan penyelidikan yang tak kunjung membuahkan hasil, keluarga Smith tetap berpegang pada satu keputusan penting. Mereka memutuskan untuk tetap melaksanakan sesi foto keluarga yang telah direncanakan, walau dalam suasana berkabung yang amat dalam.</p>
+
+            <h3>Foto Keluarga Jadi Simbol Kehilangan</h3>
+            <p>Tragedi ini meninggalkan luka permanen bagi keluarga Smith dan juga masyarakat sekitar. Bagi sebelas anggota keluarga yang tersisa, kehilangan Jane bukan hanya kehilangan seorang anak dan saudara, tapi juga kehilangan rasa aman dalam rumah yang selama ini menjadi tempat mereka berlindung. Rumah itu kini menyimpan kenangan pahit, namun sekaligus menjadi simbol kekuatan mereka untuk tetap bertahan.</p>
+
+            <p>Potret keluarga yang akhirnya tetap diambil pada malam itu menjadi simbol dari kehilangan sekaligus ketegaran. Di tengah senyum yang dipaksakan, disisakan sedikit ruang kosong dalam foto diantara anggota keluarga lainya sebagai bentuk penghormatan bagi Jane Eleanor Smith—seolah-olah dia masih hadir, berdiri bersama mereka, seperti yang seharusnya terjadi.</p>
+        </div>
+
+        </article>
+
+        <section class="related-articles">
+            <h2>Baca Juga</h2>
+            <ul>
+                <li><a href="#">Kasus Kriminal Paling Misterius di Abad ke-20</a></li>
+                <li><a href="#">Sejarah Psikologi Kriminal Awal Abad 20</a></li>
+                <li><a href="#">Dampak Tragedi Keluarga pada Komunitas</a></li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">Tentang Kami</a>
+            <a href="#">Redaksi</a>
+            <a href="#">Pedoman Media Siber</a>
+            <a href="#">Kode Etik</a>
+        </div>
+        <p>&copy; 2025 CNN Indonesia. Hak Cipta Dilindungi Undang-Undang.</p>
+    </footer>
+
+    <!-- Gallery Overlay (Tampilan Galeri) -->
+    <div id="galleryOverlay" class="gallery-overlay">
+        <span class="close-button">&times;</span>
+        <div class="gallery-content">
+            <img id="galleryImage2" src="image2.jpg" alt="Full size image 2">
+            <img id="galleryImage1" src="image1.jpg" alt="Full size image 1">
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const articleImageContainer = document.getElementById('articleImageContainer');
+            const image1 = document.getElementById('image1');
+            const image2 = document.getElementById('image2');
+
+            const galleryOverlay = document.getElementById('galleryOverlay');
+            const galleryImage1 = document.getElementById('galleryImage1');
+            const galleryImage2 = document.getElementById('galleryImage2');
+            const closeButton = document.querySelector('.gallery-overlay .close-button');
+            const mainHeader = document.getElementById('mainHeader');
+
+            const IMAGE_STATE_KEY = 'smithFamilyImageState';
+            let isImage2Active = localStorage.getItem(IMAGE_STATE_KEY) === 'true';
+
+            let lastTap = 0;
+            let tapCount = 0;
+            const TRIPLE_TAP_THRESHOLD = 500;
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const mainContent = document.querySelector('main');
+
+            function resetImageState() {
+                image1.style.opacity = '1';
+                galleryImage1.style.opacity = '1';
+                localStorage.setItem(IMAGE_STATE_KEY, 'false');
+                isImage2Active = false;
+            }
+
+            if (isImage2Active) {
+                image1.style.opacity = '0';
+                galleryImage1.style.opacity = '0';
+            } else {
+                image1.style.opacity = '1';
+                galleryImage1.style.opacity = '1';
+            }
+            image2.style.opacity = '1';
+            galleryImage2.style.opacity = '1';
+
+            setTimeout(() => {
+                loadingOverlay.style.opacity = '0';
+                loadingOverlay.style.visibility = 'hidden';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '1';
+            }, 500);
+
+            articleImageContainer.addEventListener('click', () => {
+                galleryImage1.src = image1.src;
+                galleryImage2.src = image2.src;
+
+                galleryImage1.style.opacity = image1.style.opacity;
+                galleryImage2.style.opacity = image2.style.opacity;
+
+                galleryOverlay.classList.add('active');
+            });
+
+            // Hanya menutup galeri jika background overlay diklik
+            galleryOverlay.addEventListener('click', (event) => {
+                // Jika target klik adalah overlay itu sendiri (bukan gambar atau tombol di dalamnya)
+                if (event.target === galleryOverlay) {
+                    galleryOverlay.classList.remove('active');
+                }
+            });
+
+            closeButton.addEventListener('click', () => {
+                galleryOverlay.classList.remove('active');
+            });
+
+            window.addEventListener('scroll', () => {
+                const documentHeight = document.documentElement.scrollHeight;
+                const scrollPosition = window.innerHeight + window.scrollY;
+                const scrollThreshold = 100;
+
+                if (scrollPosition >= documentHeight - scrollThreshold) {
+                    if (!isImage2Active) {
+                        image1.style.opacity = '0';
+                        galleryImage1.style.opacity = '0';
+
+                        localStorage.setItem(IMAGE_STATE_KEY, 'true');
+                        isImage2Active = true;
+                    }
+                }
+            });
+
+            mainHeader.addEventListener('click', (event) => {
+                const currentTime = new Date().getTime();
+                const timeDiff = currentTime - lastTap;
+
+                if (timeDiff < TRIPLE_TAP_THRESHOLD) {
+                    tapCount++;
+                } else {
+                    tapCount = 1;
+                }
+
+                lastTap = currentTime;
+
+                if (tapCount === 3) {
+                    localStorage.removeItem(IMAGE_STATE_KEY);
+                    resetImageState();
+                    tapCount = 0;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
