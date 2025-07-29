@@ -4,157 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Beranda - CNN Indonesia</title>
-    <!-- Link Google Fonts untuk Open Sans dan Georgia -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&family=Georgia:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome untuk ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        /* CSS yang sama persis dari halaman artikel sebelumnya */
+        /* Custom Fonts (simulating CNN's look) */
+        @font-face {
+            font-family: 'CNN Sans Display';
+            src: url('fonts/cnn_sans_display-v1.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'CNN Sans Display';
+            src: url('fonts/cnn_sans_display-medium-v1.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'CNN Sans Display';
+            src: url('fonts/cnn_sans_display-bold-v1.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Noto Serif';
+            src: url('fonts/noto_serif-bold-v1.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Noto Serif';
+            src: url('fonts/noto_serif-bold_italic-v1.woff2') format('woff2');
+            font-weight: 700;
+            font-style: italic;
+        }
+        @font-face {
+            font-family: 'Noto Serif Extra Condensed Black';
+            src: url('fonts/noto_serif_extra_condensed_black-v1.woff2') format('woff2');
+            font-weight: 900; /* Assuming black is 900 */
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Noto Sans Arabic';
+            src: url('fonts/noto_sans_arabic-v1.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Noto Sans Arabic';
+            src: url('fonts/noto_sans_arabic-v1.ttf') format('truetype'); /* Fallback for TTF */
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Noto Serif Semi Condensed';
+            src: url('fonts/noto_serif_semi_condensed-v1.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Helvetica Neue';
+            src: url('fonts/helveticaneue-v1.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        /* Apply fonts to specific elements */
         body {
-            font-family: 'Open Sans', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f7f7f7;
+            font-family: 'CNN Sans Display', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            user-select: none; /* Add this to prevent text selection */
+            background-color: #f7f7f7; /* Background color for the page */
             color: #333;
             line-height: 1.6;
             box-sizing: border-box;
         }
 
-        /* Header Styles */
-        header {
-            background-color: #000;
-            padding: 10px 15px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        h1, h2, h3 {
+            font-family: 'Noto Serif Extra Condensed Black', serif; /* Or a bold CNN Sans if preferred */
         }
 
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 960px;
-            margin: 0 auto;
-        }
-
-        .cnn-logo {
-            height: 50px;
-            width: 50px;
-            display: block;
-            object-fit: contain;
-        }
-
-        .menu-icon, .search-icon {
-            font-size: 20px;
-            color: #fff;
-            text-decoration: none;
-            padding: 5px;
-            cursor: pointer; /* Add cursor pointer for interactive elements */
-        }
-
-        /* Main Content Area untuk Halaman Utama */
+        /* Ensure main content is centered and has padding consistent with the article page */
         main {
-            max-width: 960px;
+            max-width: 960px; /* Reduced for better general article list look */
             margin: 0 auto;
             padding: 15px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
         }
 
-        .homepage-headline {
-            font-family: 'Georgia', serif;
-            font-size: 2.2em;
-            line-height: 1.2;
-            margin-top: 20px;
-            margin-bottom: 30px;
-            color: #222;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .article-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding-bottom: 20px;
-        }
-
-        .article-card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Removed .article-card-image styles as the container is removed from HTML */
-        /* .article-card-image {
-            width: 100%;
-            padding-top: 56.25%;
-            position: relative;
-            overflow: hidden;
-            background-color: #f0f0f0;
-        } */
-
-        /* .article-card-image img {
-            display: none;
-        } */
-
-        .article-card-content {
-            padding: 15px;
-            flex-grow: 1; /* Memastikan konten mengisi sisa ruang */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .article-card-content h3 {
-            font-family: 'Georgia', serif;
-            font-size: 1.2em;
-            color: #222;
-            margin-top: 0;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .article-card-content p {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 15px;
-            flex-grow: 1; /* Memastikan paragraf mengisi ruang */
-        }
-
-        .article-card-content .category {
-            font-size: 0.75em;
-            padding: 3px 6px;
-            margin-bottom: 10px;
-            align-self: flex-start; /* Agar kategori tidak memenuhi lebar */
-        }
-
-        .article-card-content .read-more {
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.85em;
-            transition: background-color 0.2s ease-in-out;
-            align-self: flex-start; /* Agar tombol tidak memenuhi lebar */
-        }
-
-        .article-card-content .read-more:hover {
-            background-color: #0056b3;
-        }
-
-        /* Loading Overlay Styles (for dynamic content) */
+        /* Existing custom styles from previous script */
         #loadingOverlay {
             position: absolute; /* Changed to absolute to fit within main content */
             top: 0;
@@ -183,37 +126,174 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Footer Styles */
-        footer {
-            background-color: #333;
-            color: #f7f7f7;
-            padding: 20px 15px;
+        /* Styles for homepage content */
+        .homepage-headline {
+            font-family: 'Noto Serif Extra Condensed Black', serif;
+            font-size: 2.2em;
+            line-height: 1.2;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            color: #222;
+            font-weight: 700;
             text-align: center;
-            font-size: 0.85em;
-            margin-top: 40px;
         }
 
-        .footer-links {
+        .article-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding-bottom: 20px;
+        }
+
+        .article-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-card-content {
+            padding: 15px;
+            flex-grow: 1; /* Memastikan konten mengisi sisa ruang */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .article-card-content h3 {
+            font-family: 'Noto Serif', serif; /* Use Noto Serif for headlines */
+            font-size: 1.2em;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+
+        .article-card-content p {
+            font-family: 'CNN Sans Display', sans-serif; /* Use CNN Sans Display for body text */
+            font-size: 0.9em;
+            color: #666;
             margin-bottom: 15px;
+            flex-grow: 1; /* Memastikan paragraf mengisi ruang */
         }
 
-        .footer-links a {
-            color: #f7f7f7;
-            text-decoration: none;
-            margin: 0 10px;
+        .article-card-content .category {
+            font-size: 0.75em;
+            padding: 3px 6px;
+            margin-bottom: 10px;
+            align-self: flex-start; /* Agar kategori tidak memenuhi lebar */
+            /* MODIFIED: Changed highlight color and removed border-radius */
+            background-color: rgba(204, 0, 0, 0.7); /* More faded CNN Red (70% opacity) */
+            color: white;
+            border-radius: 0; /* Removed rounded corners */
+            font-weight: bold;
+        }
+
+        .article-card-content .read-more {
             display: inline-block;
+            background-color: #007bff;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.85em;
+            transition: background-color 0.2s ease-in-out;
+            align-self: flex-start; /* Agar tombol tidak memenuhi lebar */
+        }
+
+        .article-card-content .read-more:hover {
+            background-color: #0056b3;
+        }
+
+        /* Search Modal / Overlay Styles (Adjusted for Tailwind-like appearance) */
+        /* Removed .search-modal-overlay, .search-modal-content, .search-modal-close styles */
+
+        .search-categories {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .search-categories h3 {
+            font-family: 'CNN Sans Display', sans-serif;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #222;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee; /* Subtle separator */
+            padding-bottom: 5px;
+        }
+
+        .category-grid {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid for categories */
+            gap: 10px;
+            text-align: left;
+        }
+
+        .category-grid li {
+            margin-bottom: 0;
+            display: block;
+        }
+
+        .category-grid a {
+            font-family: 'CNN Sans Display', sans-serif;
+            color: #333;
+            text-decoration: none;
+            display: block;
             padding: 5px 0;
+            transition: color 0.2s ease-in-out;
         }
 
-        .footer-links a:hover {
+        .category-grid a:hover {
             text-decoration: underline;
+            color: #CC0000; /* CNN Red on hover */
         }
 
-        footer p {
+        /* MODIFIED: Removed highlight for main category links */
+        .main-category-link {
+            font-size: 1.1em;
+            font-weight: normal; /* Changed from bold to normal */
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: #333; /* Changed from red to a standard dark gray */
+        }
+
+        .sub-category-list {
+            list-style: none;
+            padding-left: 0;
             margin: 0;
         }
 
-        /* Responsive Adjustments */
+        .sub-category-list li {
+            margin-bottom: 3px;
+        }
+
+        .sub-category-list a {
+            font-size: 0.9em;
+            font-weight: normal;
+            padding: 2px 0;
+            color: #555; /* Sub-categories in a slightly lighter shade */
+        }
+
+        .search-query-display {
+            font-family: 'CNN Sans Display', sans-serif;
+            font-size: 1.1em;
+            font-weight: 500; /* Medium weight */
+            color: #555;
+            margin-bottom: 20px;
+            text-align: left;
+            padding-left: 0; /* Remove padding-left to align with main content */
+        }
+
+
+        /* Responsive Adjustments (keeping original as base, but adjusted for new fonts) */
         @media (max-width: 768px) {
             main {
                 padding: 10px;
@@ -237,19 +317,6 @@
         }
 
         @media (max-width: 480px) {
-            header {
-                padding: 8px 10px;
-            }
-
-            .cnn-logo {
-                height: 40px;
-                width: 40px;
-            }
-
-            .menu-icon, .search-icon {
-                font-size: 18px;
-            }
-
             .homepage-headline {
                 font-size: 1.6em;
             }
@@ -257,171 +324,35 @@
             .category-grid {
                 grid-template-columns: 1fr; /* 1 kolom di layar ponsel */
             }
+            /* Removed search modal specific responsive styles */
         }
 
-        /* Modal / Search Overlay Styles */
-        .search-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-        }
-
-        .search-modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .search-modal-content {
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-            text-align: center;
-            width: 90%;
-            max-width: 380px; /* Reduced max-width for better mobile access */
-            position: relative;
-            max-height: 80vh; /* Added max-height to prevent overflow */
-            overflow-y: auto; /* Added scroll for overflow content */
-        }
-
-        .search-modal-content h2 {
-            font-family: 'Open Sans', Arial, sans-serif;
-            font-size: 1.5em;
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: #222;
-        }
-
-        .search-modal-content input[type="text"] {
-            width: calc(100% - 20px);
-            padding: 12px 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        .search-modal-content button {
-            background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out;
-            margin-bottom: 20px;
-        }
-
-        .search-modal-content button:hover {
-            background-color: #0056b3;
-        }
-
-        .search-modal-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2em;
-            color: #aaa;
-            cursor: pointer;
-        }
-
-        /* Styles for categories in search modal */
-        .search-categories {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .search-categories h3 {
-            font-family: 'Open Sans', Arial, sans-serif;
-            font-size: 1.1em; /* Ukuran sedikit lebih besar */
-            font-weight: bold; /* Tebal */
-            color: #222; /* Warna lebih gelap untuk heading kategori */
-            margin-bottom: 10px;
-            margin-top: 20px; /* Spasi antar bagian kategori */
-        }
-
-        .category-grid {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr); /* 3 kolom */
-            gap: 10px; /* Jarak antar kolom dan baris */
-            text-align: left;
-        }
-
-        .category-grid li {
-            margin-bottom: 0;
-            display: block; /* Important for grid items */
-        }
-
-        .category-grid a {
-            color: #333; /* Warna hyperlink hitam */
-            text-decoration: none;
-            display: block;
-            padding: 5px 0;
-            transition: color 0.2s ease-in-out;
-        }
-
-        .category-grid a:hover {
-            text-decoration: underline;
-            color: #007bff; /* Warna biru CNN saat hover */
-        }
-
-        /* Specific styles for main and sub-category links */
-        .main-category-link {
-            font-size: 1.1em; /* Ukuran sedikit lebih besar */
-            font-weight: bold; /* Tebal */
-            margin-top: 10px; /* Space above main category */
-            margin-bottom: 5px; /* Space below main category */
-        }
-
-        .sub-category-list {
-            list-style: none;
-            padding-left: 0; /* REMOVED INDENTATION */
-            margin: 0;
-        }
-
-        .sub-category-list li {
-            margin-bottom: 3px; /* Smaller margin for sub-list items */
-        }
-
-        .sub-category-list a {
-            font-size: 0.9em; /* Ukuran lebih kecil */
-            font-weight: normal; /* Normal, tidak tebal */
-            padding: 2px 0; /* Smaller padding for sub-links */
-        }
-
-        /* Styles for the search results page layout */
-        .search-query-display {
-            font-family: 'Open Sans', Arial, sans-serif;
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 20px;
-            text-align: left;
-            padding-left: 15px; /* Align with main content padding */
+        /* CNN-specific elements from article page */
+        .cnn-red-bar {
+            width: 6px;
+            background-color: #CC0000;
+            flex-shrink: 0;
+            margin-right: 16px;
         }
     </style>
 </head>
-<body>
-    <header>
-        <div class="header-container">
-            <a href="#" class="menu-icon"><i class="fas fa-bars"></i></a>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="CNN Logo" class="cnn-logo">
-            <a href="#" class="search-icon" id="searchIcon"><i class="fas fa-search"></i></a>
+<body class="bg-white text-gray-900">
+    <!-- Header -->
+    <header id="mainHeader" class="flex items-center justify-between py-0 bg-white sticky top-0 z-10 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center space-x-4 max-w-4xl mx-auto w-full">
+            <button class="text-gray-600 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="Logo CNN" class="h-5">
+            <span class="font-semibold text-lg">World</span>
+            <!-- Removed Search Icon from header -->
         </div>
     </header>
+
+    <!-- Garis di bawah header -->
+    <div class="max-w-4xl mx-auto border-b border-gray-200"></div>
 
     <main style="position: relative;">
         <!-- Loading Overlay for dynamic content -->
@@ -446,146 +377,177 @@
         </div>
     </main>
 
-    <footer>
-        <div class="footer-links">
-            <a href="#">Tentang Kami</a>
-            <a href="#">Redaksi</a>
-            <a href="#">Pedoman Media Siber</a>
-            <a href="#">Kode Etik</a>
-        </div>
-        <p>&copy; 2025 CNN Indonesia. Hak Cipta Dilindungi Undang-Undang.</p>
-    </footer>
+    <!-- New section above footer (from article page) -->
+    <section class="bg-black text-white py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="relative mb-8">
+                <input type="text" placeholder="Search CNN..." class="w-full bg-gray-800 text-white border border-gray-700 rounded-md py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500" id="secondarySearchInput">
+                <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white" id="secondarySearchButton">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </button>
+            </div>
 
-    <!-- Search Modal / Overlay -->
-    <div id="searchModalOverlay" class="search-modal-overlay">
-        <div class="search-modal-content">
-            <span class="search-modal-close">&times;</span>
-            <h2>Cari Berita</h2>
-            <input type="text" id="searchInput" placeholder="Cari di CNN...">
-            <button id="searchButton">Cari</button>
+            <div class="border-b border-gray-700 mb-8 pb-8">
+                <a href="#" class="block text-center text-white text-lg font-semibold hover:underline">Sign in</a>
+            </div>
 
-            <div class="search-categories">
-                <h3 class="category-heading">Jelajahi Kategori</h3>
-                <ul id="categoryListContainer" class="category-grid">
-                    <!-- Category and sub-category links will be inserted here by JavaScript -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
+                <ul class="list-none p-0">
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Live TV</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Listen</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Watch</a></li>
+                </ul>
+                <ul class="list-none p-0">
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">World</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">US Politics</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Business</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Markets</a></li>
+                </ul>
+                <ul class="list-none p-0">
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Health</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Entertainment</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Tech</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Style</a></li>
+                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Travel</a></li>
                 </ul>
             </div>
         </div>
-    </div>
+    </section>
 
+    <footer class="bg-gray-900 text-gray-300 py-8 text-center">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-center mb-6">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="CNN Logo" class="h-6 mr-2 filter grayscale">
+                <span class="font-bold text-xl text-white">World</span>
+            </div>
+
+            <p class="text-sm font-semibold mb-6">FOLLOW CNN</p>
+
+            <div class="flex justify-center space-x-6 mb-8">
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-twitter"></i></a> <!-- Using Twitter for X icon -->
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-tiktok"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+
+            <div class="border-t border-gray-700 pt-8 mb-8">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-2 text-sm">
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Use</a>
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">Cookie Settings</a>
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">Ad Choices</a>
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">Accessibility & CC</a>
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">About</a>
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">Newsletters</a>
+                    <a href="#" class="text-gray-400 hover:text-white mx-2">Transcripts</a>
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-500 leading-relaxed">
+                &copy; 2025 Cable News Network. A Warner Bros. Discovery Company. All Rights Reserved.<br>
+                CNN Sans &trade; &copy; 2016 Cable News Network.
+            </p>
+        </div>
+    </footer>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const defaultHomepageContent = document.getElementById('defaultHomepageContent');
             const defaultArticleListContainer = document.getElementById('defaultArticleListContainer');
             const searchResultsContent = document.getElementById('searchResultsContent');
             const searchArticleListContainer = document.getElementById('searchArticleListContainer');
-            const searchQueryDisplay = document.getElementById('searchQueryDisplay'); // New element for search query text
-
-            // Removed secondary search input/button elements
-            // const secondarySearchInput = document.getElementById('secondarySearchInput');
-            // const secondarySearchButton = document.getElementById('secondarySearchButton');
+            const searchQueryDisplay = document.getElementById('searchQueryDisplay');
 
             const loadingOverlay = document.getElementById('loadingOverlay');
-            const searchIcon = document.getElementById('searchIcon');
-            const searchModalOverlay = document.getElementById('searchModalOverlay');
-            const searchModalClose = document.querySelector('.search-modal-close');
-            const searchInput = document.getElementById('searchInput');
-            const searchButton = document.getElementById('searchButton');
-            const categoryListContainer = document.getElementById('categoryListContainer');
+            // Removed searchIcon as it's no longer in the header
+            const secondarySearchInput = document.getElementById('secondarySearchInput'); // Search input in the black section
+            const secondarySearchButton = document.getElementById('secondarySearchButton'); // Search button in the black section
+            // Removed searchModalOverlay, searchModalClose, searchInput, searchButton as they are no longer used
+            // Removed categoryListContainer as it's no longer used
+            // const categoryListContainer = document.getElementById('categoryListContainer'); // This line is now commented out/removed
 
             const SMITH_FAMILY_ARTICLE_BASE_URL = `https://deyiksanjaya.github.io/atma/smith-family`; // Base URL for the Smith family article
 
-            // Dummy / Mock News Articles Data (urlToImage now removed)
+            // Dummy / Mock News Articles Data
             const mockNewsArticles = [
                 {
                     title: "Penyelidikan Baru Ungkap Petunjuk Kasus Lama",
                     description: "Tim investigasi membuka kembali kasus dingin yang telah lama terhenti, menemukan bukti baru yang mengejutkan.",
                     category: "HUKUM",
-                    url: "https://example.com/hukum-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/hukum-1"
                 },
                 {
                     title: "Fenomena Sosial di Balik Kriminalitas Remaja",
                     description: "Analisis mendalam tentang faktor-faktor sosial yang berkontribusi pada peningkatan angka kriminalitas di kalangan remaja perkotaan.",
                     category: "SOSIAL",
-                    url: "https://example.com/sosial-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/sosial-1"
                 },
                 {
                     title: "Teknologi Forensik Terbaru Mengubah Lanskap Investigasi",
                     description: "Bagaimana inovasi dalam ilmu forensik membantu memecahkan kasus-kasus yang sebelumnya dianggap mustahil.",
                     category: "TEKNOLOGI",
-                    url: "https://example.com/teknologi-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/teknologi-1"
                 },
                 {
                     title: "Dampak Psikologis Kejahatan Terhadap Korban dan Keluarga",
                     description: "Studi kasus tentang trauma jangka panjang yang dialami oleh korban kejahatan dan upaya pemulihan yang dilakukan.",
                     category: "PSIKOLOGI",
-                    url: "https://example.com/psikologi-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/psikologi-1"
                 },
                 {
                     title: "Sejarah Kasus-Kasus Kriminal Paling Kontroversial",
                     description: "Melihat kembali beberapa kasus kriminal yang paling banyak diperdebatkan dan dampaknya pada sistem hukum.",
                     category: "SEJARAH",
-                    url: "https://example.com/sejarah-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/sejarah-1"
                 },
                 {
                     title: "Inovasi Terbaru dalam Energi Terbarukan",
                     description: "Penemuan baru yang menjanjikan masa depan energi bersih dan berkelanjutan.",
                     category: "SAINS",
-                    url: "https://example.com/sains-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/sains-1"
                 },
                 {
                     title: "Tren Pasar Saham Global di Tengah Ketidakpastian Ekonomi",
                     description: "Analisis pergerakan pasar saham dunia dan dampaknya pada investasi.",
                     category: "BISNIS",
-                    url: "https://example.com/bisnis-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/bisnis-1"
                 },
                 {
                     title: "Piala Dunia Sepak Bola: Prediksi dan Sorotan",
                     description: "Persiapan tim-tim besar dan prediksi siapa yang akan menjadi juara.",
                     category: "OLAHRAGA",
-                    url: "https://example.com/olahraga-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/olahraga-1"
                 },
                 {
                     title: "Review Film Terbaru: Drama yang Menggugah Hati",
                     description: "Ulasan lengkap film yang sedang tayang, wajib tonton minggu ini.",
                     category: "HIBURAN",
-                    url: "https://example.com/hiburan-1",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/hiburan-1"
                 },
                 {
                     title: "Pencarian Keluarga Hilang di Pegunungan",
                     description: "Tim SAR terus mencari anggota keluarga yang hilang saat mendaki gunung di tengah cuaca ekstrem.",
                     category: "BENCANA",
-                    url: "https://example.com/keluarga-hilang",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/keluarga-hilang"
                 },
                 {
                     title: "Kasus Kriminal: Pelaku Berhasil Keluar dari Penjara",
                     description: "Seorang narapidana kasus besar berhasil keluar dari penjara dengan keamanan maksimum, memicu perburuan nasional.",
                     category: "KRIMINAL",
-                    url: "https://example.com/pelaku-keluar",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/pelaku-keluar"
                 },
                 {
                     title: "Dampak Konflik Terhadap Keluarga Korban",
                     description: "Kisah-kisah pilu keluarga yang terdampak konflik bersenjata, berjuang untuk kembali normal.",
                     category: "SOSIAL",
-                    url: "https://example.com/keluarga-konflik",
-                    urlToImage: "" // Image removed
+                    url: "https://example.com/keluarga-konflik"
                 }
             ];
 
             // Define categories for exploration with display names and API parameters
-            // 'type: category' will use top-headlines endpoint with category param
-            // 'type: query' will use everything endpoint with q param
+            // These are now only for mock data filtering, not for populating a visible list
             const categoriesData = [
                 { name: 'Umum', api_param: 'general', type: 'category',
                     subcategories: [
@@ -658,7 +620,6 @@
             ];
 
             // Function to fetch and display articles (now from mock data)
-            // `prependSmithArticleData` will be an object { url: string, title: string, description: string } if the Smith article needs to be prepended
             async function fetchAndDisplayArticles(searchParams = {}, prependSmithArticleData = null) {
                 loadingOverlay.style.opacity = '1';
                 loadingOverlay.style.visibility = 'visible';
@@ -669,7 +630,7 @@
                     searchResultsContent.style.display = 'block';
                     targetContainer = searchArticleListContainer;
                     // Set the search query display text
-                    searchQueryDisplay.textContent = `Hasil Pencarian : "keluar"`;
+                    searchQueryDisplay.textContent = `Hasil Pencarian : "${searchParams.displayQuery || ''}"`; 
                 } else { // If it's initial load or category click from modal
                     defaultHomepageContent.style.display = 'block';
                     searchResultsContent.style.display = 'none';
@@ -703,7 +664,6 @@
                     const card = document.createElement('div');
                     card.classList.add('article-card');
 
-                    // Image container removed entirely
                     const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM'; // Use article.category from mock data
 
                     card.innerHTML = `
@@ -720,17 +680,13 @@
                 // Filter and display articles based on searchParams (query or category)
                 let filteredArticles = [];
                 if (searchParams.type === 'query') {
-                    // For query searches, filter mock articles by title/description (case-insensitive)
-                    // The user wants to display articles containing "keluar" or "keluarga"
-                    const keyword1 = 'keluar';
-                    const keyword2 = 'keluarga';
-
+                    const queryLower = searchParams.param.toLowerCase();
                     filteredArticles = mockNewsArticles.filter(article =>
-                        (article.title && (article.title.toLowerCase().includes(keyword1) || article.title.toLowerCase().includes(keyword2))) ||
-                        (article.description && (article.description.toLowerCase().includes(keyword1) || article.description.toLowerCase().includes(keyword2)))
+                        (article.title && article.title.toLowerCase().includes(queryLower)) ||
+                        (article.description && article.description.toLowerCase().includes(queryLower)) ||
+                        (article.category && article.category.toLowerCase().includes(queryLower))
                     );
                 } else if (searchParams.type === 'category') {
-                    // For category searches, filter mock articles by category
                     const categoryLower = searchParams.param.toLowerCase();
                     filteredArticles = mockNewsArticles.filter(article =>
                         (article.category && article.category.toLowerCase() === categoryLower)
@@ -742,7 +698,6 @@
 
                 // Add filtered articles to display list
                 filteredArticles.forEach(article => {
-                    // No longer checking for urlToImage as all images are removed
                     articlesToDisplay.push(article);
                 });
 
@@ -759,54 +714,53 @@
                 }
             }
 
-            // Populate category links in the search modal
-            function populateCategories() {
-                categoryListContainer.innerHTML = ''; // Clear existing content
+            // Removed populateCategories function as it's no longer needed
+            // function populateCategories() {
+            //     categoryListContainer.innerHTML = ''; // Clear existing content
 
-                categoriesData.forEach(cat => {
-                    const mainLi = document.createElement('li');
+            //     categoriesData.forEach(cat => {
+            //         const mainLi = document.createElement('li');
                     
-                    // Main category link
-                    const mainLink = document.createElement('a');
-                    mainLink.href = "#";
-                    mainLink.textContent = cat.name;
-                    mainLink.classList.add('main-category-link'); // Apply main category styling
-                    mainLink.addEventListener('click', (event) => {
-                        event.preventDefault();
-                        fetchAndDisplayArticles({ param: cat.api_param, type: cat.type, isSearch: true }); // Mark as search for display logic
-                        searchModalOverlay.classList.remove('active');
-                    });
-                    mainLi.appendChild(mainLink);
+            //         // Main category link
+            //         const mainLink = document.createElement('a');
+            //         mainLink.href = "#";
+            //         mainLink.textContent = cat.name;
+            //         mainLink.classList.add('main-category-link'); // Apply main category styling
+            //         mainLink.addEventListener('click', (event) => {
+            //             event.preventDefault();
+            //             fetchAndDisplayArticles({ param: cat.api_param, type: cat.type, isSearch: true, displayQuery: cat.name }); // Mark as search for display logic
+            //             // No modal to close here
+            //         });
+            //         mainLi.appendChild(mainLink);
                     
-                    // Add subcategories as a nested ul if they exist
-                    if (cat.subcategories && cat.subcategories.length > 0) {
-                        const subUl = document.createElement('ul');
-                        subUl.classList.add('sub-category-list'); // Apply sub-category list styling
-                        cat.subcategories.forEach(subCat => {
-                            const subLi = document.createElement('li');
-                            const subLink = document.createElement('a');
-                            subLink.href = "#";
-                            subLink.textContent = subCat.name;
-                            subLink.classList.add('sub-category-link'); // Apply sub-category styling
-                            subLink.addEventListener('click', (event) => {
-                                event.preventDefault();
-                                fetchAndDisplayArticles({ param: subCat.api_param, type: subCat.type, isSearch: true }); // Mark as search
-                                searchModalOverlay.classList.remove('active');
-                            });
-                            subLi.appendChild(subLink);
-                            subUl.appendChild(subLi);
-                        });
-                        mainLi.appendChild(subUl); // Append the sub-list to the main category's list item
-                    }
-                    categoryListContainer.appendChild(mainLi);
-                });
-            }
+            //         // Add subcategories as a nested ul if they exist
+            //         if (cat.subcategories && cat.subcategories.length > 0) {
+            //             const subUl = document.createElement('ul');
+            //             subUl.classList.add('sub-category-list'); // Apply sub-category list styling
+            //             subUl.style.paddingLeft = '15px'; // Add some indentation for subcategories
+            //             cat.subcategories.forEach(subCat => {
+            //                 const subLi = document.createElement('li');
+            //                 const subLink = document.createElement('a');
+            //                 subLink.href = "#";
+            //                 subLink.textContent = subCat.name;
+            //                 subLink.classList.add('sub-category-link'); // Apply sub-category styling
+            //                 subLink.addEventListener('click', (event) => {
+            //                     event.preventDefault();
+            //                     fetchAndDisplayArticles({ param: subCat.api_param, type: subCat.type, isSearch: true, displayQuery: subCat.name }); // Mark as search
+            //                     // No modal to close here
+            //                 });
+            //                 subLi.appendChild(subLink);
+            //                 subUl.appendChild(subLi);
+            //             });
+            //             mainLi.appendChild(subUl); // Append the sub-list to the main category's list item
+            //         }
+            //         categoryListContainer.appendChild(mainLi);
+            //     });
+            // }
 
             // Function to translate input for secretArticleId
             function translateInputForSecretId(input) {
                 let translated = '';
-                // Only consider the first 3 pairs of [char][char] for a 6-character ID
-                // This assumes the user will type at least 6 characters for a full ID
                 const maxLength = 6; 
                 let processedLength = 0;
 
@@ -837,35 +791,19 @@
             // Initial load of top headlines
             fetchAndDisplayArticles(); // No query or category, loads general top headlines
 
-            // Populate categories when the page loads
-            populateCategories();
+            // Removed populateCategories() call as it's no longer needed
+            // populateCategories();
 
             // Peter Answer effect variables
             const prewrittenText = "keluarga smith";
             let actualUserInput = ''; // To store the actual characters typed by the user
 
-            // Search functionality (from header icon)
-            searchIcon.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default link behavior
-                searchModalOverlay.classList.add('active');
-                searchInput.focus(); // Focus on the input field when modal opens
-                // Reset Peter Answer effect when modal opens
-                actualUserInput = '';
-                searchInput.value = '';
-            });
+            // Removed searchIcon click listener
 
-            searchModalClose.addEventListener('click', () => {
-                searchModalOverlay.classList.remove('active');
-            });
+            // Removed searchModalOverlay, searchModalClose click listeners
 
-            searchModalOverlay.addEventListener('click', (event) => {
-                if (event.target === searchModalOverlay) {
-                    searchModalOverlay.classList.remove('active');
-                }
-            });
-
-            // Implement Peter Answer effect on keydown for modal search input
-            searchInput.addEventListener('keydown', (event) => {
+            // Implement Peter Answer effect on keydown for secondary search input
+            secondarySearchInput.addEventListener('keydown', (event) => {
                 // Allow navigation keys (arrows, tab, home, end, etc.)
                 // Check if it's a single character key or a delete/backspace key
                 if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) { // Regular character
@@ -878,28 +816,22 @@
                 
                 // Update the displayed value based on actualUserInput length
                 // Only show up to the length of the prewritten text
-                searchInput.value = prewrittenText.substring(0, actualUserInput.length);
+                secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
             });
 
             // Ensure the input always reflects the prewritten text, especially after paste/autofill
-            // This listener acts as a fallback. If a paste event occurs, we want to ensure the displayed text
-            // is still the prewritten text, and the actualUserInput length is adjusted.
-            searchInput.addEventListener('input', () => {
-                // If the user pastes text, actualUserInput should reflect its length
-                // and the displayed text should adjust.
-                if (searchInput.value.length > actualUserInput.length) {
-                    // If text was pasted or somehow added beyond Peter Answer's control
-                    actualUserInput = searchInput.value; // Temporarily update actualUserInput
-                    searchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
-                } else if (searchInput.value.length < actualUserInput.length) {
-                    // If text was deleted by other means (e.g., cut, or some browser behavior)
-                    actualUserInput = searchInput.value; // Temporarily update actualUserInput
-                    searchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
+            secondarySearchInput.addEventListener('input', () => {
+                if (secondarySearchInput.value.length > actualUserInput.length) {
+                    actualUserInput = secondarySearchInput.value; // Temporarily update actualUserInput
+                    secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
+                } else if (secondarySearchInput.value.length < actualUserInput.length) {
+                    actualUserInput = secondarySearchInput.value; // Temporarily update actualUserInput
+                    secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
                 }
             });
 
-
-            searchButton.addEventListener('click', () => {
+            secondarySearchButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default button behavior
                 const translatedSecretId = translateInputForSecretId(actualUserInput); // Translate actual input
                 const smithArticleUrl = `${SMITH_FAMILY_ARTICLE_BASE_URL}?articleId=${translatedSecretId}`;
 
@@ -911,10 +843,10 @@
                 };
 
                 // Always search for "keluarga smith" using the mock data, AND prepend the special article
-                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query', isSearch: true }, smithArticleData);
+                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query', isSearch: true, displayQuery: prewrittenText }, smithArticleData);
                 
-                searchModalOverlay.classList.remove('active'); // Close modal after search
-                searchInput.value = ''; // Clear search input
+                // No modal to close here
+                secondarySearchInput.value = ''; // Clear search input
                 actualUserInput = ''; // Reset actualUserInput
             });
 
