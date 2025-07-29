@@ -334,6 +334,25 @@
             flex-shrink: 0;
             margin-right: 16px;
         }
+
+        /* Floating Console Styles */
+        #floatingConsole {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: limegreen;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.8em;
+            z-index: 9999;
+            width: 250px;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
     </style>
 </head>
 <body class="bg-white text-gray-900">
@@ -452,6 +471,14 @@
             </p>
         </div>
     </footer>
+
+    <!-- Floating Console for Debugging -->
+    <div id="floatingConsole" style="display: none;">
+        <strong>Debug Console:</strong><br>
+        Actual Input: <span id="debugActualInput"></span><br>
+        Display Input: <span id="debugDisplayInput"></span>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const defaultHomepageContent = document.getElementById('defaultHomepageContent');
@@ -461,16 +488,19 @@
             const searchQueryDisplay = document.getElementById('searchQueryDisplay');
 
             const loadingOverlay = document.getElementById('loadingOverlay');
-            // Removed searchIcon as it's no longer in the header
-            const secondarySearchInput = document.getElementById('secondarySearchInput'); // Search input in the black section
-            const secondarySearchButton = document.getElementById('secondarySearchButton'); // Search button in the black section
-            // Removed searchModalOverlay, searchModalClose, searchInput, searchButton as they are no longer used
-            // Removed categoryListContainer as it's no longer used
-            // const categoryListContainer = document.getElementById('categoryListContainer'); // This line is now commented out/removed
+            const secondarySearchInput = document.getElementById('secondarySearchInput');
+            const secondarySearchButton = document.getElementById('secondarySearchButton');
 
-            const SMITH_FAMILY_ARTICLE_BASE_URL = `https://deyiksanjaya.github.io/atma/smith-family`; // Base URL for the Smith family article
+            // Debug console elements
+            const floatingConsole = document.getElementById('floatingConsole');
+            const debugActualInput = document.getElementById('debugActualInput');
+            const debugDisplayInput = document.getElementById('debugDisplayInput');
 
-            // Dummy / Mock News Articles Data
+            // Show console for debugging
+            floatingConsole.style.display = 'block';
+
+            const SMITH_FAMILY_ARTICLE_BASE_URL = `https://deyiksanjaya.github.io/atma/smith-family`;
+
             const mockNewsArticles = [
                 {
                     title: "Penyelidikan Baru Ungkap Petunjuk Kasus Lama",
@@ -546,8 +576,6 @@
                 }
             ];
 
-            // Define categories for exploration with display names and API parameters
-            // These are now only for mock data filtering, not for populating a visible list
             const categoriesData = [
                 { name: 'Umum', api_param: 'general', type: 'category',
                     subcategories: [
@@ -598,7 +626,6 @@
                         { name: 'Startup', api_param: 'startup', type: 'query' }
                     ]
                 },
-                // Categories that don't directly map to NewsAPI's fixed categories will be treated as queries
                 { name: 'Politik', api_param: 'politics', type: 'query',
                     subcategories: [
                         { name: 'Kebijakan Publik', api_param: 'public policy', type: 'query' },
@@ -619,43 +646,40 @@
                 }
             ];
 
-            // Function to fetch and display articles (now from mock data)
             async function fetchAndDisplayArticles(searchParams = {}, prependSmithArticleData = null) {
                 loadingOverlay.style.opacity = '1';
                 loadingOverlay.style.visibility = 'visible';
                 
-                let targetContainer = defaultArticleListContainer; // Default to homepage container
-                if (searchParams.isSearch) { // If it's a search result
+                let targetContainer = defaultArticleListContainer;
+                if (searchParams.isSearch) {
                     defaultHomepageContent.style.display = 'none';
                     searchResultsContent.style.display = 'block';
                     targetContainer = searchArticleListContainer;
                     // Set the search query display text
                     searchQueryDisplay.textContent = `Hasil Pencarian : "${searchParams.displayQuery || ''}"`; 
-                } else { // If it's initial load or category click from modal
+                } else {
                     defaultHomepageContent.style.display = 'block';
                     searchResultsContent.style.display = 'none';
                     targetContainer = defaultArticleListContainer;
                 }
 
-                targetContainer.innerHTML = ''; // Clear existing articles in the target container
+                targetContainer.innerHTML = '';
 
                 let articlesToDisplay = [];
 
-                // Prepend the special Smith article if data is provided (from search button click)
                 if (prependSmithArticleData) {
                     const smithArticle = {
                         title: prependSmithArticleData.title,
                         description: prependSmithArticleData.description,
                         category: "KRIMINAL",
                         url: prependSmithArticleData.url,
-                        urlToImage: '', // Image removed
-                        source: { name: 'CNN Indonesia' } // Mock source for display
+                        urlToImage: '',
+                        source: { name: 'CNN Indonesia' }
                     };
                     articlesToDisplay.push(smithArticle);
                 }
 
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 500)); // 0.5 second delay
+                await new Promise(resolve => setTimeout(resolve, 500));
 
                 loadingOverlay.style.opacity = '0';
                 loadingOverlay.style.visibility = 'hidden';
@@ -664,7 +688,7 @@
                     const card = document.createElement('div');
                     card.classList.add('article-card');
 
-                    const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM'; // Use article.category from mock data
+                    const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM';
 
                     card.innerHTML = `
                         <div class="article-card-content">
@@ -677,7 +701,6 @@
                     return card;
                 }
 
-                // Filter and display articles based on searchParams (query or category)
                 let filteredArticles = [];
                 if (searchParams.type === 'query') {
                     const queryLower = searchParams.param.toLowerCase();
@@ -692,11 +715,9 @@
                         (article.category && article.category.toLowerCase() === categoryLower)
                     );
                 } else {
-                    // Default load: display all mock articles
                     filteredArticles = [...mockNewsArticles];
                 }
 
-                // Add filtered articles to display list
                 filteredArticles.forEach(article => {
                     articlesToDisplay.push(article);
                 });
@@ -714,51 +735,6 @@
                 }
             }
 
-            // Removed populateCategories function as it's no longer needed
-            // function populateCategories() {
-            //     categoryListContainer.innerHTML = ''; // Clear existing content
-
-            //     categoriesData.forEach(cat => {
-            //         const mainLi = document.createElement('li');
-                    
-            //         // Main category link
-            //         const mainLink = document.createElement('a');
-            //         mainLink.href = "#";
-            //         mainLink.textContent = cat.name;
-            //         mainLink.classList.add('main-category-link'); // Apply main category styling
-            //         mainLink.addEventListener('click', (event) => {
-            //             event.preventDefault();
-            //             fetchAndDisplayArticles({ param: cat.api_param, type: cat.type, isSearch: true, displayQuery: cat.name }); // Mark as search for display logic
-            //             // No modal to close here
-            //         });
-            //         mainLi.appendChild(mainLink);
-                    
-            //         // Add subcategories as a nested ul if they exist
-            //         if (cat.subcategories && cat.subcategories.length > 0) {
-            //             const subUl = document.createElement('ul');
-            //             subUl.classList.add('sub-category-list'); // Apply sub-category list styling
-            //             subUl.style.paddingLeft = '15px'; // Add some indentation for subcategories
-            //             cat.subcategories.forEach(subCat => {
-            //                 const subLi = document.createElement('li');
-            //                 const subLink = document.createElement('a');
-            //                 subLink.href = "#";
-            //                 subLink.textContent = subCat.name;
-            //                 subLink.classList.add('sub-category-link'); // Apply sub-category styling
-            //                 subLink.addEventListener('click', (event) => {
-            //                     event.preventDefault();
-            //                     fetchAndDisplayArticles({ param: subCat.api_param, type: subCat.type, isSearch: true, displayQuery: subCat.name }); // Mark as search
-            //                     // No modal to close here
-            //                 });
-            //                 subLi.appendChild(subLink);
-            //                 subUl.appendChild(subLi);
-            //             });
-            //             mainLi.appendChild(subUl); // Append the sub-list to the main category's list item
-            //         }
-            //         categoryListContainer.appendChild(mainLi);
-            //     });
-            // }
-
-            // Function to translate input for secretArticleId
             function translateInputForSecretId(input) {
                 let translated = '';
                 const maxLength = 6; 
@@ -772,84 +748,74 @@
                         translated += '2';
                     } else if (char === 'p') {
                         translated += '3';
-                    } else if (/[a-e]/.test(char)) { // Only allow a-e for the letter parts
+                    } else if (/[a-e]/.test(char)) {
                         translated += char;
                     } else {
-                        // Ignore characters that are not i, o, p, or a-e
                         continue; 
                     }
                     processedLength++;
                 }
                 
-                // Pad with '0' if the translated ID is shorter than 6 characters
                 while (translated.length < maxLength) {
                     translated += '0'; 
                 }
-                return translated.substring(0, maxLength); // Ensure it's exactly 6 characters
+                return translated.substring(0, maxLength);
             }
 
-            // Initial load of top headlines
-            fetchAndDisplayArticles(); // No query or category, loads general top headlines
+            fetchAndDisplayArticles();
 
-            // Removed populateCategories() call as it's no longer needed
-            // populateCategories();
-
-            // Peter Answer effect variables
             const prewrittenText = "keluarga smith";
-            let actualUserInput = ''; // To store the actual characters typed by the user
+            let actualUserInput = '';
 
-            // Removed searchIcon click listener
+            // Function to update the floating console
+            function updateFloatingConsole() {
+                debugActualInput.textContent = actualUserInput;
+                debugDisplayInput.textContent = secondarySearchInput.value;
+            }
 
-            // Removed searchModalOverlay, searchModalClose click listeners
-
-            // Implement Peter Answer effect on keydown for secondary search input
             secondarySearchInput.addEventListener('keydown', (event) => {
-                // Allow navigation keys (arrows, tab, home, end, etc.)
-                // Check if it's a single character key or a delete/backspace key
-                if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) { // Regular character
+                if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
                     actualUserInput += event.key;
-                    event.preventDefault(); // Prevent default browser input
+                    event.preventDefault();
                 } else if (event.key === 'Backspace' || event.key === 'Delete') {
                     actualUserInput = actualUserInput.slice(0, -1);
-                    event.preventDefault(); // Prevent default browser input
+                    event.preventDefault();
                 }
                 
-                // Update the displayed value based on actualUserInput length
-                // Only show up to the length of the prewritten text
                 secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
+                updateFloatingConsole(); // Update console on keydown
             });
 
-            // Ensure the input always reflects the prewritten text, especially after paste/autofill
             secondarySearchInput.addEventListener('input', () => {
-                if (secondarySearchInput.value.length > actualUserInput.length) {
-                    actualUserInput = secondarySearchInput.value; // Temporarily update actualUserInput
-                    secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
-                } else if (secondarySearchInput.value.length < actualUserInput.length) {
-                    actualUserInput = secondarySearchInput.value; // Temporarily update actualUserInput
-                    secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length); // Force Peter Answer display
+                const expectedDisplay = prewrittenText.substring(0, actualUserInput.length);
+                if (secondarySearchInput.value !== expectedDisplay) {
+                    let newActualUserInputLength = Math.min(secondarySearchInput.value.length, prewrittenText.length);
+                    actualUserInput = prewrittenText.substring(0, newActualUserInputLength);
+                    secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
                 }
+                updateFloatingConsole(); // Update console on input
             });
 
             secondarySearchButton.addEventListener('click', (event) => {
-                event.preventDefault(); // Prevent default button behavior
-                const translatedSecretId = translateInputForSecretId(actualUserInput); // Translate actual input
+                event.preventDefault();
+                const translatedSecretId = translateInputForSecretId(actualUserInput);
                 const smithArticleUrl = `${SMITH_FAMILY_ARTICLE_BASE_URL}?articleId=${translatedSecretId}`;
 
-                // Data for the special Smith article
                 const smithArticleData = {
                     title: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
-                    description: "Sebuah kasus yang menggemparkan masyarakat, di mana seorang anak perempuan ditemukan tewas namun jasadnya raib secara misterius.", // Updated description
+                    description: "Sebuah kasus yang menggemparkan masyarakat, di mana seorang anak perempuan ditemukan tewas namun jasadnya raib secara misterius.",
                     url: smithArticleUrl
                 };
 
-                // Always search for "keluarga smith" using the mock data, AND prepend the special article
-                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query', isSearch: true, displayQuery: prewrittenText }, smithArticleData);
+                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query', isSearch: true, displayQuery: secondarySearchInput.value }, smithArticleData);
                 
-                // No modal to close here
-                secondarySearchInput.value = ''; // Clear search input
-                actualUserInput = ''; // Reset actualUserInput
+                secondarySearchInput.value = '';
+                actualUserInput = '';
+                updateFloatingConsole(); // Clear console after search
             });
 
+            // Initial update of the console
+            updateFloatingConsole();
         });
     </script>
 </body>
