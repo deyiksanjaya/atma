@@ -352,6 +352,10 @@
             overflow-y: auto;
             border: 1px solid #333;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            /* MODIFIED: Changed initial display to block and opacity to 0 */
+            display: block;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
         }
     </style>
 </head>
@@ -473,7 +477,7 @@
     </footer>
 
     <!-- Floating Console for Debugging -->
-    <div id="floatingConsole" style="display: none;">
+    <div id="floatingConsole" style="opacity: 0; transition: opacity 0.3s ease-in-out;">
         <strong>Debug Console:</strong><br>
         Actual Input: <span id="debugActualInput"></span><br>
         Display Input: <span id="debugDisplayInput"></span>
@@ -496,8 +500,8 @@
             const debugActualInput = document.getElementById('debugActualInput');
             const debugDisplayInput = document.getElementById('debugDisplayInput');
 
-            // Show console for debugging
-            floatingConsole.style.display = 'block';
+            // Show console for debugging after DOM is ready
+            floatingConsole.style.opacity = '1';
 
             const SMITH_FAMILY_ARTICLE_BASE_URL = `https://deyiksanjaya.github.io/atma/smith-family`;
 
@@ -773,52 +777,54 @@
                 debugDisplayInput.textContent = secondarySearchInput.value;
             }
 
-            secondarySearchInput.addEventListener('keydown', (event) => {
-                // Only process printable characters and backspace/delete
-                // Ignore navigation keys, function keys, etc.
-                if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
-                    actualUserInput += event.key;
-                    event.preventDefault(); // Prevent default browser input
-                } else if (event.key === 'Backspace' || event.key === 'Delete') {
-                    actualUserInput = actualUserInput.slice(0, -1);
-                    event.preventDefault(); // Prevent default browser input
-                }
-                
-                // Always update the displayed value based on actualUserInput's length
-                secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
-                updateFloatingConsole(); // Update console on keydown
-            });
+            // Using 'beforeinput' for more control over input composition
+            secondarySearchInput.addEventListener('beforeinput', (event) => {
+                // Prevent default behavior for all input types we want to control
+                // This is crucial for Peter Answer effect.
+                event.preventDefault();
 
-            secondarySearchInput.addEventListener('input', () => {
-                const currentInputValue = secondarySearchInput.value;
-                const expectedPeterAnswerText = prewrittenText.substring(0, actualUserInput.length);
-
-                // If the current input value doesn't match the expected Peter Answer text,
-                // it means the mobile keyboard has interfered (e.g., auto-correction, swipe typing).
-                if (currentInputValue !== expectedPeterAnswerText) {
-                    // Reconstruct actualUserInput based on what *could* have been typed from prewrittenText
-                    let newActualUserInputLength = 0;
-                    for (let i = 0; i < currentInputValue.length && i < prewrittenText.length; i++) {
-                        if (currentInputValue[i] === prewrittenText[i]) {
-                            newActualUserInputLength++;
-                        } else {
-                            // If a character doesn't match the prewritten text, stop.
-                            // This handles cases where auto-correct inserts a wrong character or word.
-                            break;
-                        }
+                if (event.inputType === 'insertText') {
+                    const char = event.data;
+                    if (char && actualUserInput.length < prewrittenText.length) {
+                        actualUserInput += char;
                     }
-                    actualUserInput = prewrittenText.substring(0, newActualUserInputLength);
+                } else if (event.inputType === 'deleteContentBackward' || event.inputType === 'deleteContentForward') {
+                    actualUserInput = actualUserInput.slice(0, -1);
                 }
+                // Handle other input types if necessary, e.g., 'insertFromPaste'
 
-                // Always force the displayed value to match the Peter Answer logic
+                // Update the displayed value immediately
                 secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
-
-                // Attempt to maintain cursor position at the end of the displayed text
+                
+                // Maintain cursor position
                 const cursorPosition = secondarySearchInput.value.length;
                 secondarySearchInput.setSelectionRange(cursorPosition, cursorPosition);
 
-                updateFloatingConsole(); // Update console on input
+                updateFloatingConsole();
             });
+
+            // The 'input' event listener can now be simpler, mostly for fallback or ensuring consistency
+            secondarySearchInput.addEventListener('input', () => {
+                // This event might still fire due to composition or other browser behaviors.
+                // Ensure the display is consistent with our Peter Answer logic.
+                const peterAnswerDisplay = prewrittenText.substring(0, actualUserInput.length);
+                if (secondarySearchInput.value !== peterAnswerDisplay) {
+                    secondarySearchInput.value = peterAnswerDisplay;
+                    const cursorPosition = secondarySearchInput.value.length;
+                    secondarySearchInput.setSelectionRange(cursorPosition, cursorPosition);
+                }
+                updateFloatingConsole();
+            });
+
+            // Keydown is primarily for non-character keys like Enter to trigger search
+            secondarySearchInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent default form submission if any
+                    secondarySearchButton.click(); // Trigger search button click
+                }
+                // For character inputs and backspace/delete, 'beforeinput' handles it.
+            });
+
 
             secondarySearchButton.addEventListener('click', (event) => {
                 event.preventDefault();
