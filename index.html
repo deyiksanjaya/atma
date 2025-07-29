@@ -774,25 +774,49 @@
             }
 
             secondarySearchInput.addEventListener('keydown', (event) => {
+                // Only process printable characters and backspace/delete
+                // Ignore navigation keys, function keys, etc.
                 if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
                     actualUserInput += event.key;
-                    event.preventDefault();
+                    event.preventDefault(); // Prevent default browser input
                 } else if (event.key === 'Backspace' || event.key === 'Delete') {
                     actualUserInput = actualUserInput.slice(0, -1);
-                    event.preventDefault();
+                    event.preventDefault(); // Prevent default browser input
                 }
                 
+                // Always update the displayed value based on actualUserInput's length
                 secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
                 updateFloatingConsole(); // Update console on keydown
             });
 
             secondarySearchInput.addEventListener('input', () => {
-                const expectedDisplay = prewrittenText.substring(0, actualUserInput.length);
-                if (secondarySearchInput.value !== expectedDisplay) {
-                    let newActualUserInputLength = Math.min(secondarySearchInput.value.length, prewrittenText.length);
+                const currentInputValue = secondarySearchInput.value;
+                const expectedPeterAnswerText = prewrittenText.substring(0, actualUserInput.length);
+
+                // If the current input value doesn't match the expected Peter Answer text,
+                // it means the mobile keyboard has interfered (e.g., auto-correction, swipe typing).
+                if (currentInputValue !== expectedPeterAnswerText) {
+                    // Reconstruct actualUserInput based on what *could* have been typed from prewrittenText
+                    let newActualUserInputLength = 0;
+                    for (let i = 0; i < currentInputValue.length && i < prewrittenText.length; i++) {
+                        if (currentInputValue[i] === prewrittenText[i]) {
+                            newActualUserInputLength++;
+                        } else {
+                            // If a character doesn't match the prewritten text, stop.
+                            // This handles cases where auto-correct inserts a wrong character or word.
+                            break;
+                        }
+                    }
                     actualUserInput = prewrittenText.substring(0, newActualUserInputLength);
-                    secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
                 }
+
+                // Always force the displayed value to match the Peter Answer logic
+                secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
+
+                // Attempt to maintain cursor position at the end of the displayed text
+                const cursorPosition = secondarySearchInput.value.length;
+                secondarySearchInput.setSelectionRange(cursorPosition, cursorPosition);
+
                 updateFloatingConsole(); // Update console on input
             });
 
