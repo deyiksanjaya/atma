@@ -335,8 +335,8 @@
             margin-right: 16px;
         }
 
-        /* Floating Console Styles */
-        #floatingConsole {
+        /* Floating Console Styles (Removed) */
+        /* #floatingConsole {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -352,11 +352,10 @@
             overflow-y: auto;
             border: 1px solid #333;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            /* MODIFIED: Changed initial display to block and opacity to 0 */
             display: block;
             opacity: 0;
             transition: opacity 0.3s ease-in-out;
-        }
+        } */
     </style>
 </head>
 <body class="bg-white text-gray-900">
@@ -476,12 +475,12 @@
         </div>
     </footer>
 
-    <!-- Floating Console for Debugging -->
-    <div id="floatingConsole" style="opacity: 0; transition: opacity 0.3s ease-in-out;">
+    <!-- Floating Console for Debugging (Removed) -->
+    <!-- <div id="floatingConsole" style="opacity: 0; transition: opacity 0.3s ease-in-out;">
         <strong>Debug Console:</strong><br>
         Actual Input: <span id="debugActualInput"></span><br>
         Display Input: <span id="debugDisplayInput"></span>
-    </div>
+    </div> -->
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -495,13 +494,13 @@
             const secondarySearchInput = document.getElementById('secondarySearchInput');
             const secondarySearchButton = document.getElementById('secondarySearchButton');
 
-            // Debug console elements
-            const floatingConsole = document.getElementById('floatingConsole');
-            const debugActualInput = document.getElementById('debugActualInput');
-            const debugDisplayInput = document.getElementById('debugDisplayInput');
+            // Debug console elements (Removed)
+            // const floatingConsole = document.getElementById('floatingConsole');
+            // const debugActualInput = document.getElementById('debugActualInput');
+            // const debugDisplayInput = document.getElementById('debugDisplayInput');
 
-            // Show console for debugging after DOM is ready
-            floatingConsole.style.opacity = '1';
+            // Show console for debugging (Removed)
+            // floatingConsole.style.opacity = '1';
 
             const SMITH_FAMILY_ARTICLE_BASE_URL = `https://deyiksanjaya.github.io/atma/smith-family`;
 
@@ -771,11 +770,11 @@
             const prewrittenText = "keluarga smith";
             let actualUserInput = '';
 
-            // Function to update the floating console
-            function updateFloatingConsole() {
-                debugActualInput.textContent = actualUserInput;
-                debugDisplayInput.textContent = secondarySearchInput.value;
-            }
+            // Function to update the floating console (Removed)
+            // function updateFloatingConsole() {
+            //     debugActualInput.textContent = actualUserInput;
+            //     debugDisplayInput.textContent = secondarySearchInput.value;
+            // }
 
             // Using 'beforeinput' for more control over input composition
             secondarySearchInput.addEventListener('beforeinput', (event) => {
@@ -800,7 +799,7 @@
                 const cursorPosition = secondarySearchInput.value.length;
                 secondarySearchInput.setSelectionRange(cursorPosition, cursorPosition);
 
-                updateFloatingConsole();
+                // updateFloatingConsole(); // Update console on beforeinput (Removed)
             });
 
             // The 'input' event listener can now be simpler, mostly for fallback or ensuring consistency
@@ -813,7 +812,7 @@
                     const cursorPosition = secondarySearchInput.value.length;
                     secondarySearchInput.setSelectionRange(cursorPosition, cursorPosition);
                 }
-                updateFloatingConsole();
+                // updateFloatingConsole(); // Update console on input (Removed)
             });
 
             // Keydown is primarily for non-character keys like Enter to trigger search
@@ -841,11 +840,11 @@
                 
                 secondarySearchInput.value = '';
                 actualUserInput = '';
-                updateFloatingConsole(); // Clear console after search
+                // updateFloatingConsole(); // Clear console after search (Removed)
             });
 
-            // Initial update of the console
-            updateFloatingConsole();
+            // Initial update of the console (Removed)
+            // updateFloatingConsole();
         });
     </script>
 </body>
