@@ -465,7 +465,7 @@
             const secondarySearchInput = document.getElementById('secondarySearchInput');
             const secondarySearchButton = document.getElementById('secondarySearchButton');
 
-            // MODIFIED: Changed base URL to a relative path
+            // Changed base URL to a relative path
             const SMITH_FAMILY_ARTICLE_BASE_URL = `smith-family.html`;
 
             const mockNewsArticles = [
@@ -658,11 +658,12 @@
                     const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM';
 
                     let linkHtml;
-                    // Special handling for the Smith Family article to redirect back to cnn.com
                     if (article.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
-                        linkHtml = `<a href="${article.url}" class="read-more" onclick="handleSmithFamilyClick(event, '${article.url}')">Baca Selengkapnya</a>`;
+                        // Menggunakan window.location.replace() untuk mengganti halaman saat ini di riwayat
+                        // Ini berarti halaman index.html tidak akan ada di riwayat saat navigasi ke smith-family.html
+                        linkHtml = `<a href="${article.url}" class="read-more" onclick="event.preventDefault(); window.location.replace('${article.url}');">Baca Selengkapnya</a>`;
                     } else {
-                        // Standard handling for other articles, opening in a new tab
+                        // Penanganan standar untuk artikel lain, membuka di tab baru
                         linkHtml = `<a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>`;
                     }
 
@@ -710,15 +711,6 @@
                     targetContainer.appendChild(noArticlesMessage);
                 }
             }
-
-            // Global function to be called by onclick for the Smith Family article
-            window.handleSmithFamilyClick = function(event, targetUrl) {
-                event.preventDefault(); // Prevent default link navigation
-                // Replace current history state (this page) with cnn.com
-                history.replaceState(null, '', 'https://www.cnn.com');
-                // Navigate to the smith-family.html page
-                window.location.href = targetUrl;
-            };
 
             function translateInputForSecretId(input) {
                 let translated = '';
