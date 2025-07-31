@@ -352,7 +352,7 @@
         <div class="flex items-center space-x-2 max-w-4xl mx-auto w-full">
             <button class="text-gray-600 focus:outline-none">
                 <!-- Ikon menu diganti dengan gambar menu.png -->
-                <img src="menu.png" alt="Menu Icon" class="w-6 h-6" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
+                <img src="menu.png" alt="Menu Icon" oncontextmenu="return false;" ondragstart="return false;" draggable="false" class="w-6 h-6">
             </button>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="Logo CNN" class="h-5">
             <span class="font-semibold text-lg">World</span>
@@ -646,26 +646,32 @@
 
             function translateInputForSecretId(input) {
                 let translated = '';
-                const maxLength = 3; // Changed to 3 for 'abc' format
-                let processedLength = 0;
+                const maxLength = 3; // Number of original characters (namaKorban, lokasi, alat)
+                
+                // Define a mapping for characters 'a' through 'e' to 2-character encoded strings
+                const encodingMap = {
+                    'a': 'Fl',
+                    'b': 'uC',
+                    'c': 'Xy',
+                    'd': 'zW',
+                    'e': 'Qr'
+                };
 
-                for (let i = 0; i < input.length && processedLength < maxLength; i++) {
+                for (let i = 0; i < input.length && i < maxLength; i++) {
                     const char = input[i].toLowerCase();
-                    // Only allow 'a' through 'e' characters, or map other characters if needed
-                    if (/[a-e]/.test(char)) {
-                        translated += char;
-                        processedLength++;
+                    if (encodingMap[char]) { // Check if character exists in our map
+                        translated += encodingMap[char];
                     } else {
-                        // If character is not 'a' through 'e', skip it
-                        continue;
+                        // If character is not in 'a' through 'e', default to 'Fl'
+                        translated += encodingMap['a']; 
                     }
                 }
                 
-                // Pad with 'a' if the input is shorter than 3 characters
-                while (translated.length < maxLength) {
-                    translated += 'a';
+                // Pad with default encoded character ('Fl' for 'a') if the input is shorter than 3 original characters
+                while (translated.length < maxLength * 2) { // Total length will be maxLength * 2
+                    translated += encodingMap['a']; // Default to 'Fl'
                 }
-                return translated.substring(0, maxLength);
+                return translated;
             }
 
             fetchAndDisplayArticles(); // Initial load of dummy articles
