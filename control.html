@@ -247,6 +247,7 @@
             // Variables for swipe detection
             let touchStartX = 0;
             let touchStartY = 0;
+            let isDragging = false; // New flag to distinguish drag from tap
             // Reduced SWIPE_THRESHOLD_X for faster detection
             const SWIPE_THRESHOLD_X = 20; // Minimum horizontal pixels for a swipe
             // Increased MAX_VERTICAL_DEVIATION for more lenient swipe detection
@@ -296,21 +297,25 @@
             mainContainer.addEventListener('touchstart', (e) => {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
+                isDragging = false; // Reset drag flag
                 imageSlider.style.transition = 'none'; // Disable transition during drag
             });
 
             mainContainer.addEventListener('touchmove', (e) => {
-                // Prevent scrolling while dragging horizontally
-                e.preventDefault(); 
-
                 const touchCurrentX = e.touches[0].clientX;
                 const touchCurrentY = e.touches[0].clientY;
 
                 const deltaX = touchCurrentX - touchStartX;
                 const deltaY = Math.abs(touchCurrentY - touchStartY);
 
+                // If horizontal movement is significant and vertical movement is small, it's a drag
+                if (Math.abs(deltaX) > 5 || deltaY > 5) { // Small threshold to detect any movement
+                    isDragging = true;
+                }
+
                 // Only allow horizontal drag if vertical deviation is small
                 if (deltaY < MAX_VERTICAL_DEVIATION) {
+                    e.preventDefault(); // Prevent scrolling while dragging horizontally
                     // Calculate the new translateX based on drag
                     const currentOffsetPx = currentImageIndex * window.innerWidth;
                     const newOffsetPx = currentOffsetPx - deltaX;
@@ -354,11 +359,17 @@
                     // Not a significant swipe, snap back to the original image
                     slideImage(currentImageIndex);
                 }
+                isDragging = false; // Reset drag flag
             });
 
             // Add click event listeners to individual boxes (only for input, not image sliding)
             boxes.forEach(box => {
-                box.addEventListener('click', () => {
+                box.addEventListener('click', (e) => {
+                    // Prevent click if it was part of a drag motion
+                    if (isDragging) {
+                        e.preventDefault();
+                        return;
+                    }
                     const boxLabel = box.textContent.trim().toLowerCase(); // Get 'a', 'b', 'c', 'd', 'e'
                     handleInput(boxLabel);
                     // Clicks on boxes do NOT trigger image slides unless it's the 3rd input generating QR
