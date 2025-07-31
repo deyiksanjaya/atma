@@ -90,9 +90,8 @@
 
         /* Ensure main content is centered and has padding consistent with the article page */
         main {
-            max-width: 960px; /* Reduced for better general article list look */
+            /* Removed fixed width and padding from here, now handled by Tailwind classes */
             margin: 0 auto;
-            padding: 15px;
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
         }
@@ -131,11 +130,11 @@
             font-family: 'Noto Serif Extra Condensed Black', serif;
             font-size: 2.2em;
             line-height: 1.2;
-            margin-top: 20px;
-            margin-bottom: 30px;
+            margin-top: 20px; /* Adjusted with Tailwind mt-4 */
+            margin-bottom: 30px; /* Adjusted with Tailwind mb-6 */
             color: #222;
             font-weight: 700;
-            text-align: center;
+            text-align: left; /* Changed to left-aligned */
         }
 
         .article-list {
@@ -208,6 +207,19 @@
         .article-card-content .read-more:hover {
             background-color: #0056b3;
         }
+
+        /* Styles for article card image */
+        .article-card-image {
+            width: 100%;
+            height: 200px; /* Fixed height for consistency */
+            object-fit: cover; /* Cover the area, cropping if necessary */
+            object-position: center; /* Center the image within the frame */
+            display: block;
+            pointer-events: none; /* Prevent direct interaction like right-click or long-press */
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+
 
         /* Search Modal / Overlay Styles (Adjusted for Tailwind-like appearance) */
         /* Removed .search-modal-overlay, .search-modal-content, .search-modal-close styles */
@@ -295,9 +307,7 @@
 
         /* Responsive Adjustments (keeping original as base, but adjusted for new fonts) */
         @media (max-width: 768px) {
-            main {
-                padding: 10px;
-            }
+            /* main padding handled by Tailwind classes */
 
             .homepage-headline {
                 font-size: 1.8em;
@@ -350,9 +360,10 @@
         </div>
     </header>
 
+    <!-- Garis hitam di bawah header (menempel dan mengikuti lebar header) -->
+    <div class="max-w-4xl mx-auto border-t-2 border-black"></div>
+
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-8">
-        <!-- Garis hitam di bawah header (menempel dan mengikuti lebar konten) -->
-        <div class="border-t-2 border-black"></div>
         <!-- Loading Overlay for dynamic content -->
         <div id="loadingOverlay">
             <div class="spinner"></div>
@@ -360,7 +371,7 @@
 
         <!-- Default Homepage Content -->
         <div id="defaultHomepageContent">
-            <h1 class="homepage-headline">Berita Utama: Terkini dari Seluruh Dunia</h1>
+            <h1 class="homepage-headline text-left mt-4 mb-6">Berita Utama: Terkini dari Seluruh Dunia</h1>
             <section class="article-list" id="defaultArticleListContainer">
                 <!-- Initial articles loaded here -->
             </section>
@@ -466,148 +477,50 @@
             // Changed base URL to a relative path
             const SMITH_FAMILY_ARTICLE_BASE_URL = `smith-family.html`;
 
-            const mockNewsArticles = [
-                {
-                    title: "Penyelidikan Baru Ungkap Petunjuk Kasus Lama",
-                    description: "Tim investigasi membuka kembali kasus dingin yang telah lama terhenti, menemukan bukti baru yang mengejutkan.",
-                    category: "HUKUM",
-                    url: "https://example.com/hukum-1"
-                },
-                {
-                    title: "Fenomena Sosial di Balik Kriminalitas Remaja",
-                    description: "Analisis mendalam tentang faktor-faktor sosial yang berkontribusi pada peningkatan angka kriminalitas di kalangan remaja perkotaan.",
-                    category: "SOSIAL",
-                    url: "https://example.com/sosial-1"
-                },
-                {
-                    title: "Teknologi Forensik Terbaru Mengubah Lanskap Investigasi",
-                    description: "Bagaimana inovasi dalam ilmu forensik membantu memecahkan kasus-kasus yang sebelumnya dianggap mustahil.",
-                    category: "TEKNOLOGI",
-                    url: "https://example.com/teknologi-1"
-                },
-                {
-                    title: "Dampak Psikologis Kejahatan Terhadap Korban dan Keluarga",
-                    description: "Studi kasus tentang trauma jangka panjang yang dialami oleh korban kejahatan dan upaya pemulihan yang dilakukan.",
-                    category: "PSIKOLOGI",
-                    url: "https://example.com/psikologi-1"
-                },
-                {
-                    title: "Sejarah Kasus-Kasus Kriminal Paling Kontroversial",
-                    description: "Melihat kembali beberapa kasus kriminal yang paling banyak diperdebatkan dan dampaknya pada sistem hukum.",
-                    category: "SEJARAH",
-                    url: "https://example.com/sejarah-1"
-                },
-                {
-                    title: "Inovasi Terbaru dalam Energi Terbarukan",
-                    description: "Penemuan baru yang menjanjikan masa depan energi bersih dan berkelanjutan.",
-                    category: "SAINS",
-                    url: "https://example.com/sains-1"
-                },
-                {
-                    title: "Tren Pasar Saham Global di Tengah Ketidakpastian Ekonomi",
-                    description: "Analisis pergerakan pasar saham dunia dan dampaknya pada investasi.",
-                    category: "BISNIS",
-                    url: "https://example.com/bisnis-1"
-                },
-                {
-                    title: "Piala Dunia Sepak Bola: Prediksi dan Sorotan",
-                    description: "Persiapan tim-tim besar dan prediksi siapa yang akan menjadi juara.",
-                    category: "OLAHRAGA",
-                    url: "https://example.com/olahraga-1"
-                },
-                {
-                    title: "Review Film Terbaru: Drama yang Menggugah Hati",
-                    description: "Ulasan lengkap film yang sedang tayang, wajib tonton minggu ini.",
-                    category: "HIBURAN",
-                    url: "https://example.com/hiburan-1"
-                },
-                {
-                    title: "Pencarian Keluarga Hilang di Pegunungan",
-                    description: "Tim SAR terus mencari anggota keluarga yang hilang saat mendaki gunung di tengah cuaca ekstrem.",
-                    category: "BENCANA",
-                    url: "https://example.com/keluarga-hilang"
-                },
-                {
-                    title: "Kasus Kriminal: Pelaku Berhasil Keluar dari Penjara",
-                    description: "Seorang narapidana kasus besar berhasil keluar dari penjara dengan keamanan maksimum, memicu perburuan nasional.",
-                    category: "KRIMINAL",
-                    url: "https://example.com/pelaku-keluar"
-                },
-                {
-                    title: "Dampak Konflik Terhadap Keluarga Korban",
-                    description: "Kisah-kisah pilu keluarga yang terdampak konflik bersenjata, berjuang untuk kembali normal.",
-                    category: "SOSIAL",
-                    url: "https://example.com/keluarga-konflik"
-                }
-            ];
+            // GNews API Key
+            const GNEWS_API_KEY = '83faa4e40404e939d150ffa83a1d5ef0';
 
-            const categoriesData = [
-                { name: 'Umum', api_param: 'general', type: 'category',
-                    subcategories: [
-                        { name: 'Berita Terkini', api_param: 'latest news', type: 'query' },
-                        { name: 'Nasional', api_param: 'national news', type: 'query' },
-                        { name: 'Internasional', api_param: 'international news', type: 'query' }
-                    ]
+            // Dummy articles for fallback
+            const dummyArticles = [
+                {
+                    title: "Inovasi Terbaru dalam Teknologi AI Mengubah Industri",
+                    description: "Penemuan terobosan dalam kecerdasan buatan menjanjikan revolusi di berbagai sektor, dari kesehatan hingga manufaktur.",
+                    category: "TEKNOLOGI",
+                    url: "#",
+                    urlToImage: 'https://placehold.co/300x200/4CAF50/FFFFFF?text=AI+Inovasi',
+                    source: { name: 'Dummy News' }
                 },
-                { name: 'Bisnis', api_param: 'business', type: 'category',
-                    subcategories: [
-                        { name: 'Ekonomi Global', api_param: 'global economy', type: 'query' },
-                        { name: 'Pasar Saham', api_param: 'stock market', type: 'query' },
-                        { name: 'Keuangan Pribadi', api_param: 'personal finance', type: 'query' }
-                    ]
+                {
+                    title: "Tren Kuliner Sehat: Makanan Berbasis Tumbuhan Semakin Populer",
+                    description: "Gaya hidup sehat mendorong peningkatan konsumsi makanan nabati, dengan banyak restoran baru menawarkan menu inovatif.",
+                    category: "GAYA HIDUP",
+                    url: "#",
+                    urlToImage: 'https://placehold.co/300x200/FFC107/333333?text=Kuliner+Sehat',
+                    source: { name: 'Dummy News' }
                 },
-                { name: 'Hiburan', api_param: 'entertainment', type: 'category',
-                    subcategories: [
-                        { name: 'Film & TV', api_param: 'movies OR television', type: 'query' },
-                        { name: 'Musik', api_param: 'music', type: 'query' },
-                        { name: 'Selebriti', api_param: 'celebrity', type: 'query' }
-                    ]
+                {
+                    title: "Dampak Perubahan Iklim Terhadap Keanekaragaman Hayati",
+                    description: "Penelitian terbaru menunjukkan dampak signifikan pemanasan global terhadap ekosistem dan spesies di seluruh dunia.",
+                    category: "LINGKUNGAN",
+                    url: "#",
+                    urlToImage: 'https://placehold.co/300x200/2196F3/FFFFFF?text=Perubahan+Iklim',
+                    source: { name: 'Dummy News' }
                 },
-                { name: 'Kesehatan', api_param: 'health', type: 'category',
-                    subcategories: [
-                        { name: 'Gaya Hidup Sehat', api_param: 'healthy lifestyle', type: 'query' },
-                        { name: 'Penelitian Medis', api_param: 'medical research', type: 'query' },
-                        { name: 'Nutrisi', api_param: 'nutrition', type: 'query' }
-                    ]
+                {
+                    title: "Ekonomi Global Menghadapi Tantangan Baru di Tengah Ketidakpastian",
+                    description: "Analisis pasar menunjukkan volatilitas dan ketidakpastian ekonomi yang memerlukan strategi adaptif dari para pemimpin bisnis.",
+                    category: "EKONOMI",
+                    url: "#",
+                    urlToImage: 'https://placehold.co/300x200/9C27B0/FFFFFF?text=Ekonomi+Global',
+                    source: { name: 'Dummy News' }
                 },
-                { name: 'Sains', api_param: 'science', type: 'category',
-                    subcategories: [
-                        { name: 'Antariksa', api_param: 'space', type: 'query' },
-                        { name: 'Lingkungan', api_param: 'environment', type: 'query' },
-                        { name: 'Penemuan Baru', api_param: 'new discoveries', type: 'query' }
-                    ]
-                },
-                { name: 'Olahraga', api_param: 'sports', type: 'category',
-                    subcategories: [
-                        { name: 'Sepak Bola', api_param: 'football', type: 'query' },
-                        { name: 'Basket', api_param: 'basketball', type: 'query' },
-                        { name: 'Olimpiade', api_param: 'olympics', type: 'query' }
-                    ]
-                },
-                { name: 'Teknologi', api_param: 'technology', type: 'category',
-                    subcategories: [
-                        { name: 'Gadget', api_param: 'gadgets', type: 'query' },
-                        { name: 'Kecerdasan Buatan', api_param: 'artificial intelligence', type: 'query' },
-                        { name: 'Startup', api_param: 'startup', type: 'query' }
-                    ]
-                },
-                { name: 'Politik', api_param: 'politics', type: 'query',
-                    subcategories: [
-                        { name: 'Kebijakan Publik', api_param: 'public policy', type: 'query' },
-                        { name: 'Pemilu', api_param: 'election', type: 'query' }
-                    ]
-                },
-                { name: 'Gaya Hidup', api_param: 'lifestyle', type: 'query',
-                    subcategories: [
-                        { name: 'Fashion', api_param: 'fashion', type: 'query' },
-                        { name: 'Kuliner', api_param: 'culinary', type: 'query' }
-                    ]
-                },
-                { name: 'Travel', api_param: 'travel', type: 'query',
-                    subcategories: [
-                        { name: 'Destinasi Populer', api_param: 'popular destinations', type: 'query' },
-                        { name: 'Tips Perjalanan', api_param: 'travel tips', type: 'query' }
-                    ]
+                {
+                    title: "Seni dan Budaya Lokal Bangkit Kembali Pasca Pandemi",
+                    description: "Berbagai inisiatif seni dan budaya di komunitas lokal kembali hidup, menarik perhatian publik dan wisatawan.",
+                    category: "BUDAYA",
+                    url: "#",
+                    urlToImage: 'https://placehold.co/300x200/E91E63/FFFFFF?text=Seni+Lokal',
+                    source: { name: 'Dummy News' }
                 }
             ];
 
@@ -638,13 +551,51 @@
                         description: prependSmithArticleData.description,
                         category: "KRIMINAL",
                         url: prependSmithArticleData.url,
-                        urlToImage: '',
+                        urlToImage: 'image1.jpg', // Menggunakan image1.jpg untuk artikel ini
                         source: { name: 'CNN Indonesia' }
                     };
                     articlesToDisplay.push(smithArticle);
                 }
 
-                await new Promise(resolve => setTimeout(resolve, 500));
+                // --- Fetching from GNews API ---
+                let apiUrl;
+                if (searchParams.type === 'query' && searchParams.param) {
+                    apiUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchParams.param)}&lang=id&token=${GNEWS_API_KEY}`;
+                } else {
+                    apiUrl = `https://gnews.io/api/v4/top-headlines?lang=id&token=${GNEWS_API_KEY}`;
+                }
+
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+
+                    if (data.articles && data.articles.length > 0) {
+                        data.articles.forEach(apiArticle => {
+                            // Cek apakah artikel ini adalah artikel Smith Family, jika ya, jangan tambahkan lagi
+                            if (apiArticle.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
+                                return;
+                            }
+                            articlesToDisplay.push({
+                                title: apiArticle.title,
+                                description: apiArticle.description,
+                                category: apiArticle.source.name || 'Umum', // GNews doesn't have explicit categories, using source name
+                                url: apiArticle.url,
+                                urlToImage: apiArticle.image || 'https://placehold.co/300x200/cccccc/333333?text=No+Image', // Placeholder if no image
+                                source: { name: apiArticle.source.name }
+                            });
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error fetching news:", error);
+                    // Fallback to dummy articles if API fails
+                    articlesToDisplay = articlesToDisplay.concat(dummyArticles);
+                }
+                // --- End Fetching from GNews API ---
+
+                await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading time
 
                 loadingOverlay.style.opacity = '0';
                 loadingOverlay.style.visibility = 'hidden';
@@ -653,7 +604,8 @@
                     const card = document.createElement('div');
                     card.classList.add('article-card');
 
-                    const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM';
+                    // Kategori tidak ditampilkan lagi
+                    // const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM';
 
                     let linkHtml;
                     if (article.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
@@ -665,9 +617,18 @@
                         linkHtml = `<a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>`;
                     }
 
+                    // Tambahkan gambar ke kartu artikel
+                    // Menambahkan atribut onerror untuk menyembunyikan kartu jika gambar gagal dimuat, kecuali untuk artikel Smith Family
                     card.innerHTML = `
+                        <img src="${article.urlToImage}" alt="${article.title || 'Gambar Artikel'}" class="article-card-image" onerror="
+                            if ('${article.title}' !== 'Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang') {
+                                this.closest('.article-card').style.display = 'none';
+                            } else {
+                                this.src = 'https://placehold.co/300x200/cccccc/333333?text=No+Image'; // Fallback for Smith Family if its specific image fails
+                            }
+                        ">
                         <div class="article-card-content">
-                            <span class="category">${articleCategory}</span>
+                            <!-- Kategori tidak ditampilkan -->
                             <h3>${article.title || 'Judul Tidak Tersedia'}</h3>
                             <p>${article.description || 'Deskripsi tidak tersedia.'}</p>
                             ${linkHtml}
@@ -675,27 +636,6 @@
                     `;
                     return card;
                 }
-
-                let filteredArticles = [];
-                if (searchParams.type === 'query') {
-                    const queryLower = searchParams.param.toLowerCase();
-                    filteredArticles = mockNewsArticles.filter(article =>
-                        (article.title && article.title.toLowerCase().includes(queryLower)) ||
-                        (article.description && article.description.toLowerCase().includes(queryLower)) ||
-                        (article.category && article.category.toLowerCase().includes(queryLower))
-                    );
-                } else if (searchParams.type === 'category') {
-                    const categoryLower = searchParams.param.toLowerCase();
-                    filteredArticles = mockNewsArticles.filter(article =>
-                        (article.category && article.category.toLowerCase() === categoryLower)
-                    );
-                } else {
-                    filteredArticles = [...mockNewsArticles];
-                }
-
-                filteredArticles.forEach(article => {
-                    articlesToDisplay.push(article);
-                });
 
                 if (articlesToDisplay.length > 0) {
                     articlesToDisplay.forEach(article => {
