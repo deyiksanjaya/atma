@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Meta tags untuk PWA -->
+        <!-- Meta tags for PWA -->
     <meta name="theme-color" content="#E1F5FE">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -26,34 +26,57 @@
             /* Make the touch area cover the full screen */
             width: 100vw;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         /* Style for the QR code container */
         #qrcode-container {
-            width: 100vw; /* Fills the entire width of the screen */
-            height: 100vw; /* Creates a square that matches the width */
-            max-width: 100vh; /* Ensures it doesn't get too large on wide screens */
-            max-height: 100vh; /* Ensures it doesn't get too large on wide screens */
+            position: relative;
+            width: 100vw;
+            height: 100vw;
+            max-width: 100vh;
+            max-height: 100vh;
             background-color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px; /* Add some padding inside the white area */
-            box-sizing: border-box; /* Include padding in element's total width and height */
+            padding: 20px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
         }
         #qrcode-container img {
             max-width: 100%;
             height: auto;
         }
+        /* Style for the history overlay */
+        #history-overlay {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: #fff;
+            font-size: 1rem;
+            text-align: left;
+            display: none;
+            z-index: 20;
+        }
+        #history-overlay.show {
+            display: block;
+        }
     </style>
 </head>
-<body id="touchArea" class="touch-area flex items-center justify-center">
+<body id="touchArea" class="touch-area">
     <!-- Container for the QR Code -->
     <div id="qrcode-container"></div>
+    <!-- History overlay -->
+    <div id="history-overlay"></div>
 
     <script>
         // Get references to DOM elements
         const qrcodeContainer = document.getElementById('qrcode-container');
         const touchArea = document.getElementById('touchArea');
+        const historyOverlayElement = document.getElementById('history-overlay');
 
         // Variables to store touch coordinates and state
         let startX = 0;
@@ -63,7 +86,17 @@
 
         let gestureCount = 0;
         const gestureSequence = [];
+        let gestureTextHistory = [];
         let isSessionActive = true;
+
+        // Variables for triple-tap detection
+        let tapCount = 0;
+        let lastTapTime = 0;
+        const DOUBLE_TAP_TIMEOUT = 300; // Time in ms to detect a consecutive tap
+
+        // Variables for tap-and-hold detection
+        let tapHoldTimeout = null;
+        const TAP_HOLD_DURATION = 500; // Duration in ms for a hold gesture
 
         // Thresholds for gesture detection
         const SWIPE_THRESHOLD = 50; // Minimum pixels moved to be considered a swipe
@@ -78,12 +111,36 @@
             'Tap': 'Qr'
         };
 
+        // Gesture to text mappings for each step
+        const gestureTexts = [
+            { // First gesture
+                'Up': 'Eleanor',
+                'Right': 'Abigail',
+                'Down': 'Lillian',
+                'Left': 'Margaret',
+                'Tap': 'Beatrice',
+            },
+            { // Second gesture
+                'Up': 'kamar lantai dua',
+                'Right': 'loteng',
+                'Down': 'gudang belakang',
+                'Left': 'ruang bawah tanah',
+                'Tap': 'lorong dekat dapur',
+            },
+            { // Third gesture
+                'Up': 'pisau',
+                'Right': 'palu',
+                'Down': 'gunting',
+                'Left': 'linggis',
+                'Tap': 'batang besi',
+            }
+        ];
+
         /**
          * Generates a QR code and displays it in the container.
          * @param {string} url - The URL to encode in the QR code.
          */
         function generateQRCode(url) {
-            // Clear any existing QR code
             qrcodeContainer.innerHTML = '';
 
             const qrCodeSize = Math.min(qrcodeContainer.offsetWidth, qrcodeContainer.offsetHeight) - 40;
@@ -98,6 +155,48 @@
                 correctLevel: QRCode.CorrectLevel.H
             });
         }
+        
+        /**
+         * Displays the history of gestures in an overlay as a simple list.
+         */
+        function showHistoryOverlay() {
+            if (gestureTextHistory.length === 0) {
+                historyOverlayElement.innerHTML = `<ul><li>Tidak ada riwayat gerakan.</li></ul>`;
+                historyOverlayElement.classList.add('show');
+                return;
+            }
+
+            const historyHtml = `
+                <ul>
+                    ${gestureTextHistory.map(item => `<li class="mb-1">${item}</li>`).join('')}
+                </ul>
+            `;
+            historyOverlayElement.innerHTML = historyHtml;
+            historyOverlayElement.classList.add('show');
+        }
+
+        /**
+         * Hides the history overlay.
+         */
+        function hideHistoryOverlay() {
+            historyOverlayElement.classList.remove('show');
+        }
+        
+        /**
+         * Resets the application to its initial state.
+         */
+        function resetApp() {
+            // Reset all state variables
+            gestureCount = 0;
+            gestureSequence.length = 0; // Clear the array
+            gestureTextHistory.length = 0; // Clear history
+            isSessionActive = true;
+            tapCount = 0;
+            lastTapTime = 0;
+            
+            // Re-initialize the app to show the default QR code
+            initializeApp();
+        }
 
         /**
          * Handles the touchstart event.
@@ -105,13 +204,17 @@
          * @param {TouchEvent} e - The touch event object.
          */
         touchArea.addEventListener('touchstart', (e) => {
-            if (!isSessionActive) return; // Ignore gestures if the session is over
-            // Prevent default touch behavior (like scrolling) to ensure gesture detection
             e.preventDefault();
-            // Store the initial X and Y coordinates of the first touch
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
-        }, { passive: false }); // Use passive: false to allow preventDefault()
+
+            // Start the timer for tap-and-hold only if the touch is on the QR code container
+            if (e.target.closest('#qrcode-container')) {
+                tapHoldTimeout = setTimeout(() => {
+                    showHistoryOverlay();
+                }, TAP_HOLD_DURATION);
+            }
+        }, { passive: false });
 
         /**
          * Handles the touchend event.
@@ -119,59 +222,79 @@
          * @param {TouchEvent} e - The touch event object.
          */
         touchArea.addEventListener('touchend', (e) => {
-            if (!isSessionActive) return; // Ignore gestures if the session is over
+            // Immediately clear the tap-and-hold timer and hide the overlay if a touch ends.
+            if (tapHoldTimeout) {
+                clearTimeout(tapHoldTimeout);
+                tapHoldTimeout = null;
+            }
+            hideHistoryOverlay();
 
-            // Store the final X and Y coordinates of the first changed touch
             endX = e.changedTouches[0].clientX;
             endY = e.changedTouches[0].clientY;
 
-            // Calculate the difference in X and Y coordinates
             const diffX = endX - startX;
             const diffY = endY - startY;
-
-            // Get absolute differences for comparison
             const absDiffX = Math.abs(diffX);
             const absDiffY = Math.abs(diffY);
 
             let detectedGesture = '';
 
-            // Determine if it's a tap or a swipe
             if (absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD) {
-                // If movement is very small, it's a tap
                 detectedGesture = 'Tap';
             } else if (absDiffX > absDiffY) {
-                // Horizontal movement is more significant than vertical
                 if (absDiffX > SWIPE_THRESHOLD) {
                     detectedGesture = diffX > 0 ? 'Right' : 'Left';
                 }
             } else {
-                // Vertical movement is more significant than horizontal
                 if (absDiffY > SWIPE_THRESHOLD) {
                     detectedGesture = diffY > 0 ? 'Down' : 'Up';
                 }
             }
+            
+            // --- Logic for Triple-Tap Reset ---
+            const currentTime = new Date().getTime();
+            if (detectedGesture === 'Tap') {
+                if (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) {
+                    tapCount++;
+                } else {
+                    tapCount = 1;
+                }
+                lastTapTime = currentTime;
+                
+                if (tapCount === 3) {
+                    resetApp();
+                    return; // Exit the function to prevent further processing
+                }
+            } else {
+                tapCount = 0; // Any other gesture resets the tap count
+            }
+            // --- End of Triple-Tap Logic ---
 
-            // Process the detected gesture
+            if (!isSessionActive) return;
+
+            // Process the detected gesture for QR code generation and text display
             if (detectedGesture) {
-                // Get the corresponding code from the mapping
                 const gestureCode = gestureCodes[detectedGesture];
                 if (gestureCode) {
                     gestureSequence.push(gestureCode);
                     gestureCount++;
+
+                    if (gestureCount >= 1 && gestureCount <= 3) {
+                        const textToShow = gestureTexts[gestureCount - 1][detectedGesture];
+                        if (textToShow) {
+                            gestureTextHistory.push(textToShow);
+                        }
+                    }
                 }
             }
 
-            // Check if the session is complete
             if (gestureCount >= 3) {
                 isSessionActive = false;
                 
-                // Compile the gestures into a single code string
                 const compiledCode = gestureSequence.join('');
-                
-                // Construct the final URL with the compiled code
                 const finalUrl = `https://atmamagic.vercel.app/smith-family.html?id=${compiledCode}`;
                 
-                // Generate and display the final QR code
+                // Generate QR code immediately without delay
                 generateQRCode(finalUrl);
             }
         });
@@ -185,9 +308,8 @@
         window.onload = initializeApp;
         window.onresize = () => {
             if (isSessionActive) {
-                initializeApp(); // Re-generate on resize to maintain aspect ratio
+                initializeApp();
             } else {
-                // If session is over, regenerate with the final URL
                 const compiledCode = gestureSequence.join('');
                 const finalUrl = `https://atmamagic.vercel.app/smith-family.html?id=${compiledCode}`;
                 generateQRCode(finalUrl);
