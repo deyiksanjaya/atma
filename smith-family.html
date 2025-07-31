@@ -401,19 +401,37 @@
                 return string.charAt(0).toUpperCase() + string.slice(1);
             }
 
-            // Fungsi baru untuk membaca parameter dari URL dengan ID singkat
+            // Fungsi baru untuk membaca dan mendekode parameter dari URL dengan ID 6 karakter
             function getArticleParamsFromURL() {
                 const params = new URLSearchParams(window.location.search);
-                const idParam = params.get('id') || 'abc'; // Default ke 'abc' jika tidak ada id
+                const idParam = params.get('id') || 'FlFlFl'; // Default ke 'FlFlFl' jika tidak ada id
 
-                // Pastikan idParam memiliki setidaknya 3 karakter untuk parsing
-                const id = idParam.toLowerCase().padEnd(3, 'a'); // Isi dengan 'a' jika kurang dari 3 karakter
+                // Define a decoding map for 2-character encoded strings back to original 'a' through 'e'
+                const decodingMap = {
+                    'Fl': 'a',
+                    'uC': 'b',
+                    'Xy': 'c',
+                    'zW': 'd',
+                    'Qr': 'e'
+                };
 
-                const namaKorbanChar = id.charAt(0);
-                const lokasiChar = id.charAt(1);
-                const alatChar = id.charAt(2);
+                let decodedChars = [];
+                for (let i = 0; i < idParam.length; i += 2) {
+                    const encodedSegment = idParam.substring(i, i + 2);
+                    decodedChars.push(decodingMap[encodedSegment] || 'a'); // Default to 'a' if segment not found
+                }
 
-                // Mapping untuk nilai parameter yang lebih mudah dibaca
+                // Ensure we have exactly 3 decoded characters
+                while (decodedChars.length < 3) {
+                    decodedChars.push('a');
+                }
+                decodedChars = decodedChars.slice(0, 3); // Ensure it's not more than 3
+
+                const namaKorbanChar = decodedChars[0];
+                const lokasiChar = decodedChars[1];
+                const alatChar = decodedChars[2];
+
+                // Mapping untuk nilai parameter yang lebih mudah dibaca (ini tetap sama)
                 const namaKorbanMap = {
                     'a': 'Eleanor',
                     'b': 'Abigail',
