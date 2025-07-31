@@ -176,15 +176,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const mainContainer = document.getElementById('mainContainer');
-            const boxA = document.getElementById('boxA');
-            const boxB = document.getElementById('boxB');
-            const boxC = document.getElementById('boxC');
-            const boxD = document.getElementById('boxD');
-            const boxE = document.getElementById('boxE');
+            // Removed individual box references as they are no longer needed for click events
             const swipeOutput = document.getElementById('swipeOutput');
             const imageSlider = document.getElementById('imageSlider');
             const qrCodeImage = document.getElementById('qrCodeImage');
-            const backgroundImageViewer = document.getElementById('backgroundImageViewer'); // Get the background viewer
+            const backgroundImageViewer = document.getElementById('backgroundImageViewer');
             const images = document.querySelectorAll('.image-slider img');
 
             let totalImages = images.length;
@@ -269,9 +265,9 @@
             }
 
             /**
-             * Handles the input character from a quadrant box click/tap.
+             * Handles the input character. This will now be triggered by specific swipe gestures.
              * Adds the character to the sequence, updates the display, and generates QR code if sequence is complete.
-             * @param {string} char - The character ('a', 'b', 'c', 'd', 'e') from the clicked box.
+             * @param {string} char - The character ('a', 'b', 'c', 'd', 'e') from the detected swipe.
              */
             function handleInput(char) {
                 if (inputSequence.length < MAX_INPUT_LENGTH) {
@@ -347,11 +343,16 @@
                 // Check for a significant horizontal swipe within vertical deviation limits
                 if (Math.abs(diffX) > BACKGROUND_SWIPE_THRESHOLD_X && diffY < BACKGROUND_MAX_VERTICAL_DEVIATION) {
                     if (diffX > 0) { // Swiped left
-                        // Advance to next image (cycles through all 4 images, including QR)
-                        currentImageIndex = (currentImageIndex + 1) % totalImages; 
-                        slideImage(currentImageIndex);
+                        // If input sequence is not full, a left swipe acts as 'a' input
+                        if (inputSequence.length < MAX_INPUT_LENGTH) {
+                            handleInput('a'); 
+                        } else {
+                            // If input sequence is full, left swipe just navigates images
+                            currentImageIndex = (currentImageIndex + 1) % totalImages; 
+                            slideImage(currentImageIndex);
+                        }
                     } else { // Swiped right
-                        // Go to previous image (cycles through all 4 images, including QR)
+                        // Right swipe always navigates images
                         currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages; 
                         slideImage(currentImageIndex);
                     }
@@ -361,13 +362,9 @@
                 }
             });
 
-            // --- Quadrant Box Click/Tap Logic (for input) ---
-            // Attach click event listeners to each quadrant and center box for input
-            boxA.addEventListener('click', () => handleInput('a'));
-            boxB.addEventListener('click', () => handleInput('b'));
-            boxC.addEventListener('click', () => handleInput('c'));
-            boxD.addEventListener('click', () => handleInput('d'));
-            boxE.addEventListener('click', () => handleInput('e'));
+            // --- Quadrant Box Click/Tap Logic (REMOVED) ---
+            // Removed click event listeners from individual boxes as per user request.
+            // All input will now be handled by swipe gestures on the background.
 
             // Toggle input visibility button
             const toggleInputButton = document.getElementById('toggleInputButton');
