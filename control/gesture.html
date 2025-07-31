@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Meta tags untuk PWA -->
+    <meta name="theme-color" content="#E1F5FE">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Divina">
+    <link rel="apple-touch-icon" href="https://images2.imgbox.com/c4/02/as2b5MEJ_o.png">
+    <link rel="icon" href="https://images2.imgbox.com/c4/02/as2b5MEJ_o.png">
+
+    <title>Gesture Encoder</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QR Code Generator Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        /* Custom styles for the app */
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: #000; /* Black background */
+        }
+        .touch-area {
+            /* Make the touch area cover the full screen */
+            width: 100vw;
+            height: 100vh;
+        }
+        /* Style for the QR code container */
+        #qrcode-container {
+            width: 100vw; /* Fills the entire width of the screen */
+            height: 100vw; /* Creates a square that matches the width */
+            max-width: 100vh; /* Ensures it doesn't get too large on wide screens */
+            max-height: 100vh; /* Ensures it doesn't get too large on wide screens */
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Add some padding inside the white area */
+            box-sizing: border-box; /* Include padding in element's total width and height */
+        }
+        #qrcode-container img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body id="touchArea" class="touch-area flex items-center justify-center">
+    <!-- Container for the QR Code -->
+    <div id="qrcode-container"></div>
+
+    <script>
+        // Get references to DOM elements
+        const qrcodeContainer = document.getElementById('qrcode-container');
+        const touchArea = document.getElementById('touchArea');
+
+        // Variables to store touch coordinates and state
+        let startX = 0;
+        let startY = 0;
+        let endX = 0;
+        let endY = 0;
+
+        let gestureCount = 0;
+        const gestureSequence = [];
+        let isSessionActive = true;
+
+        // Thresholds for gesture detection
+        const SWIPE_THRESHOLD = 50; // Minimum pixels moved to be considered a swipe
+        const TAP_THRESHOLD = 10;   // Maximum pixels moved to be considered a tap
+
+        // Gesture to code mapping
+        const gestureCodes = {
+            'Up': 'Fl',
+            'Right': 'uC',
+            'Down': 'Xy',
+            'Left': 'zW',
+            'Tap': 'Qr'
+        };
+
+        /**
+         * Generates a QR code and displays it in the container.
+         * @param {string} url - The URL to encode in the QR code.
+         */
+        function generateQRCode(url) {
+            // Clear any existing QR code
+            qrcodeContainer.innerHTML = '';
+
+            const qrCodeSize = Math.min(qrcodeContainer.offsetWidth, qrcodeContainer.offsetHeight) - 40;
+
+            // Create a new QR code instance
+            new QRCode(qrcodeContainer, {
+                text: url,
+                width: qrCodeSize,
+                height: qrCodeSize,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        /**
+         * Handles the touchstart event.
+         * Records the initial touch coordinates.
+         * @param {TouchEvent} e - The touch event object.
+         */
+        touchArea.addEventListener('touchstart', (e) => {
+            if (!isSessionActive) return; // Ignore gestures if the session is over
+            // Prevent default touch behavior (like scrolling) to ensure gesture detection
+            e.preventDefault();
+            // Store the initial X and Y coordinates of the first touch
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: false }); // Use passive: false to allow preventDefault()
+
+        /**
+         * Handles the touchend event.
+         * Calculates the gesture based on start and end coordinates.
+         * @param {TouchEvent} e - The touch event object.
+         */
+        touchArea.addEventListener('touchend', (e) => {
+            if (!isSessionActive) return; // Ignore gestures if the session is over
+
+            // Store the final X and Y coordinates of the first changed touch
+            endX = e.changedTouches[0].clientX;
+            endY = e.changedTouches[0].clientY;
+
+            // Calculate the difference in X and Y coordinates
+            const diffX = endX - startX;
+            const diffY = endY - startY;
+
+            // Get absolute differences for comparison
+            const absDiffX = Math.abs(diffX);
+            const absDiffY = Math.abs(diffY);
+
+            let detectedGesture = '';
+
+            // Determine if it's a tap or a swipe
+            if (absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD) {
+                // If movement is very small, it's a tap
+                detectedGesture = 'Tap';
+            } else if (absDiffX > absDiffY) {
+                // Horizontal movement is more significant than vertical
+                if (absDiffX > SWIPE_THRESHOLD) {
+                    detectedGesture = diffX > 0 ? 'Right' : 'Left';
+                }
+            } else {
+                // Vertical movement is more significant than horizontal
+                if (absDiffY > SWIPE_THRESHOLD) {
+                    detectedGesture = diffY > 0 ? 'Down' : 'Up';
+                }
+            }
+
+            // Process the detected gesture
+            if (detectedGesture) {
+                // Get the corresponding code from the mapping
+                const gestureCode = gestureCodes[detectedGesture];
+                if (gestureCode) {
+                    gestureSequence.push(gestureCode);
+                    gestureCount++;
+                }
+            }
+
+            // Check if the session is complete
+            if (gestureCount >= 3) {
+                isSessionActive = false;
+                
+                // Compile the gestures into a single code string
+                const compiledCode = gestureSequence.join('');
+                
+                // Construct the final URL with the compiled code
+                const finalUrl = `https://atmamagic.vercel.app/smith-family.html?id=${compiledCode}`;
+                
+                // Generate and display the final QR code
+                generateQRCode(finalUrl);
+            }
+        });
+
+        // Generate the initial QR code on page load and handle resize
+        function initializeApp() {
+            const initialUrl = "https://atmamagic.vercel.app/smith-family.html?id=QrQrQr";
+            generateQRCode(initialUrl);
+        }
+
+        window.onload = initializeApp;
+        window.onresize = () => {
+            if (isSessionActive) {
+                initializeApp(); // Re-generate on resize to maintain aspect ratio
+            } else {
+                // If session is over, regenerate with the final URL
+                const compiledCode = gestureSequence.join('');
+                const finalUrl = `https://atmamagic.vercel.app/smith-family.html?id=${compiledCode}`;
+                generateQRCode(finalUrl);
+            }
+        };
+    </script>
+</body>
+</html>
