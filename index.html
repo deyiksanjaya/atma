@@ -603,8 +603,8 @@
 
                     let linkHtml;
                     if (article.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
-                        // Open in new tab and redirect current page
-                        linkHtml = `<a href="${article.url}" class="read-more" onclick="event.preventDefault(); window.open('${article.url}', '_blank'); window.location.replace('redirect.html');">Baca Selengkapnya</a>`;
+                        // Directly replace current page with smith-family.html
+                        linkHtml = `<a href="${article.url}" class="read-more" onclick="event.preventDefault(); window.location.replace('${article.url}');">Baca Selengkapnya</a>`;
                     } else {
                         linkHtml = `<a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>`;
                     }
