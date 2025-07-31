@@ -263,7 +263,7 @@
             <!-- Video/Image Placeholder - Modified to span full width and remove rounded corners -->
             <!-- Using w-screen and ml-[calc(50%-50vw)] to make it span full viewport width -->
             <figure class="relative w-screen h-0 pb-[75%] bg-gray-300 overflow-hidden mb-8
-                           ml-[calc(50%-50vw)] article-image-block" id="articleImageContainer">
+                            ml-[calc(50%-50vw)] article-image-block" id="articleImageContainer">
                 <!-- Placeholder for video/image content -->
                 <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
                 <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
@@ -401,38 +401,45 @@
                 return string.charAt(0).toUpperCase() + string.slice(1);
             }
 
+            // Fungsi baru untuk membaca parameter dari URL dengan ID singkat
             function getArticleParamsFromURL() {
                 const params = new URLSearchParams(window.location.search);
-                const code = params.get('articleId') || '1a2a3a';
+                const idParam = params.get('id') || 'abc'; // Default ke 'abc' jika tidak ada id
 
-                const mappings = {
-                    namaKorban: {
-                        '1a': 'Eleanor',
-                        '1b': 'Abigail',
-                        '1c': 'Lillian',
-                        '1d': 'Margaret',
-                        '1e': 'Beatrice',
-                    },
-                    lokasi: {
-                        '2a': 'kamar lantai dua',
-                        '2b': 'loteng',
-                        '2c': 'gudang belakang',
-                        '2d': 'ruang bawah tanah',
-                        '2e': 'lorong dekat dapur',
-                    },
-                    alat: {
-                        '3a': 'pisau',
-                        '3b': 'palu',
-                        '3c': 'gunting',
-                        '3d': 'linggis',
-                        '3e': 'batang besi',
-                    }
+                // Pastikan idParam memiliki setidaknya 3 karakter untuk parsing
+                const id = idParam.toLowerCase().padEnd(3, 'a'); // Isi dengan 'a' jika kurang dari 3 karakter
+
+                const namaKorbanChar = id.charAt(0);
+                const lokasiChar = id.charAt(1);
+                const alatChar = id.charAt(2);
+
+                // Mapping untuk nilai parameter yang lebih mudah dibaca
+                const namaKorbanMap = {
+                    'a': 'Eleanor',
+                    'b': 'Abigail',
+                    'c': 'Lillian',
+                    'd': 'Margaret',
+                    'e': 'Beatrice',
+                };
+                const lokasiMap = {
+                    'a': 'kamar lantai dua',
+                    'b': 'loteng',
+                    'c': 'gudang belakang',
+                    'd': 'ruang bawah tanah',
+                    'e': 'lorong dekat dapur',
+                };
+                const alatMap = {
+                    'a': 'pisau',
+                    'b': 'palu',
+                    'c': 'gunting',
+                    'd': 'linggis',
+                    'e': 'batang besi',
                 };
 
                 return {
-                    namaKorban: mappings.namaKorban[code.slice(0, 2)] || 'Jane Eleanor',
-                    lokasi: mappings.lokasi[code.slice(2, 4)] || 'ruang belakang rumah',
-                    alat: mappings.alat[code.slice(4, 6)] || 'pisau dapur',
+                    namaKorban: namaKorbanMap[namaKorbanChar] || 'Jane Eleanor',
+                    lokasi: lokasiMap[lokasiChar] || 'ruang belakang rumah',
+                    alat: alatMap[alatChar] || 'pisau dapur',
                 };
             }
 
