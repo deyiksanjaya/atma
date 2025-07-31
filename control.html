@@ -247,7 +247,7 @@
             // Variables for swipe detection
             let touchStartX = 0;
             let touchStartY = 0;
-            let isDragging = false; // New flag to distinguish drag from tap
+            let isSwiping = false; // Flag to indicate if a swipe (not just a drag) is occurring
             // Reduced SWIPE_THRESHOLD_X for faster detection
             const SWIPE_THRESHOLD_X = 20; // Minimum horizontal pixels for a swipe
             // Increased MAX_VERTICAL_DEVIATION for more lenient swipe detection
@@ -260,7 +260,7 @@
                 currentImageIndex = index; // Update the global index
             }
 
-            // Handle input (click or swipe)
+            // Handle input (only 'a' from left swipe now)
             function handleInput(char) {
                 if (inputSequence.length < MAX_INPUT_LENGTH) {
                     inputSequence.push(char);
@@ -297,7 +297,7 @@
             mainContainer.addEventListener('touchstart', (e) => {
                 touchStartX = e.touches[0].clientX;
                 touchStartY = e.touches[0].clientY;
-                isDragging = false; // Reset drag flag
+                isSwiping = false; // Reset swipe flag
                 imageSlider.style.transition = 'none'; // Disable transition during drag
             });
 
@@ -310,7 +310,7 @@
 
                 // If horizontal movement is significant and vertical movement is small, it's a drag
                 if (Math.abs(deltaX) > 5 || deltaY > 5) { // Small threshold to detect any movement
-                    isDragging = true;
+                    isSwiping = true; // Mark as potential swipe/drag
                 }
 
                 // Only allow horizontal drag if vertical deviation is small
@@ -336,22 +336,15 @@
                 // Check for a significant horizontal swipe
                 if (Math.abs(diffX) > SWIPE_THRESHOLD_X && diffY < MAX_VERTICAL_DEVIATION) {
                     if (diffX > 0) { // Swiped left
-                        // If input sequence is not complete, this swipe is an input
-                        if (inputSequence.length < MAX_INPUT_LENGTH) {
-                            handleInput('a'); 
-                        } else {
-                            // If input sequence is complete, just navigate images
-                            currentImageIndex = (currentImageIndex + 1) % totalImages;
-                            slideImage(currentImageIndex);
-                        }
+                        // This swipe is an input for 'a'
+                        handleInput('a'); 
                     } else { // Swiped right
-                        // If input sequence is not complete, swiping right does not count as an input for the code
+                        // Swiping right does not count as an input for the code, but navigates images
                         if (inputSequence.length < MAX_INPUT_LENGTH) {
                             currentImageIndex = (currentImageIndex - 1 + (totalImages - 1)) % (totalImages - 1); // Cycle through 0, 1, 2
                             slideImage(currentImageIndex);
                         } else {
-                            // If input sequence is complete, cycle through all 4 images (including QR)
-                            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages;
+                            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages; // Cycle through all 4
                             slideImage(currentImageIndex);
                         }
                     }
@@ -359,22 +352,15 @@
                     // Not a significant swipe, snap back to the original image
                     slideImage(currentImageIndex);
                 }
-                isDragging = false; // Reset drag flag
+                isSwiping = false; // Reset swipe flag
             });
 
-            // Add click event listeners to individual boxes (only for input, not image sliding)
-            boxes.forEach(box => {
-                box.addEventListener('click', (e) => {
-                    // Prevent click if it was part of a drag motion
-                    if (isDragging) {
-                        e.preventDefault();
-                        return;
-                    }
-                    const boxLabel = box.textContent.trim().toLowerCase(); // Get 'a', 'b', 'c', 'd', 'e'
-                    handleInput(boxLabel);
-                    // Clicks on boxes do NOT trigger image slides unless it's the 3rd input generating QR
-                });
-            });
+            // Remove click event listeners from individual boxes as per request
+            // boxes.forEach(box => {
+            //     box.addEventListener('click', (e) => {
+            //         // This logic is now removed. All inputs are handled by swipe.
+            //     });
+            // });
 
             // Toggle input visibility
             toggleInputButton.addEventListener('click', () => {
