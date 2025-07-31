@@ -142,7 +142,7 @@
 </head>
 <body>
     <!-- Background Image Carousel, now OUTSIDE main-container -->
-    <div class="background-image-viewer">
+    <div class="background-image-viewer" id="backgroundImageViewer">
         <div class="image-slider" id="imageSlider">
             <!-- Updated placeholder image sizes to landscape orientation (1920x1080) -->
             <img src="https://placehold.co/1920x1080/0000FF/FFFFFF?text=Gambar+1" alt="Gambar Latar Belakang 1">
@@ -175,21 +175,24 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const mainContainer = document.querySelector('.main-container');
-            const boxes = document.querySelectorAll('.quadrant-box, .center-box');
+            const mainContainer = document.getElementById('mainContainer');
+            const boxA = document.getElementById('boxA');
+            const boxB = document.getElementById('boxB');
+            const boxC = document.getElementById('boxC');
+            const boxD = document.getElementById('boxD');
+            const boxE = document.getElementById('boxE');
             const swipeOutput = document.getElementById('swipeOutput');
             const imageSlider = document.getElementById('imageSlider');
-            const qrCodeImage = document.getElementById('qrCodeImage'); // Get the QR code image element
-            const images = document.querySelectorAll('.image-slider img'); // Re-select all images including QR placeholder
-            const toggleInputButton = document.getElementById('toggleInputButton'); // Get the toggle button
+            const qrCodeImage = document.getElementById('qrCodeImage');
+            const backgroundImageViewer = document.getElementById('backgroundImageViewer'); // Get the background viewer
+            const images = document.querySelectorAll('.image-slider img');
 
-            let totalImages = images.length; // Will be 4 initially
-            let currentImageIndex = 0; // Ensures Gambar 1 is shown initially
+            let totalImages = images.length;
+            let currentImageIndex = 0;
 
-            let inputSequence = []; // Array to store the sequence of inputs (a, b, c, d, e)
-            const MAX_INPUT_LENGTH = 3; // Number of inputs required before generating QR
+            let inputSequence = [];
+            const MAX_INPUT_LENGTH = 3;
 
-            // Define the encoding map, matching the one in homepage-cnn.html
             const encodingMap = {
                 'a': 'Fl',
                 'b': 'uC',
@@ -198,12 +201,19 @@
                 'e': 'Qr'
             };
 
-            // Function to translate raw input characters into the secret ID format
+            /**
+             * Translates raw input characters into the secret ID format based on the encoding map.
+             * It takes the first MAX_INPUT_LENGTH characters and translates them,
+             * padding with 'Fl' if the input is shorter than MAX_INPUT_LENGTH.
+             * @param {string} input - The raw input string (e.g., "abc").
+             * @returns {string} The translated and padded secret ID.
+             */
             function translateInputForSecretId(input) {
                 let translated = '';
                 const maxLength = 3; 
                 
-                const encodingMapInternal = { // Use a local copy or reference the global one
+                // Use a local copy or reference the global one
+                const encodingMapInternal = { 
                     'a': 'Fl',
                     'b': 'uC',
                     'c': 'Xy',
@@ -216,17 +226,21 @@
                     if (encodingMapInternal[char]) { 
                         translated += encodingMapInternal[char];
                     } else {
-                        translated += encodingMapInternal['a']; // Default to 'Fl'
+                        translated += encodingMapInternal['a']; // Default to 'Fl' if character not in map
                     }
                 }
                 
+                // Pad the translated string with 'Fl' if it's shorter than maxLength * 2
                 while (translated.length < maxLength * 2) { 
                     translated += encodingMapInternal['a']; 
                 }
                 return translated;
             }
 
-            // Function to generate QR code and update the 4th image slot
+            /**
+             * Generates a QR code from a given URL and updates the source of the QR code image element.
+             * @param {string} url - The URL to encode in the QR code.
+             */
             function generateQRCodeImage(url) {
                 const tempCanvas = document.createElement('canvas');
                 const qrSize = 500; // A larger square size for better resolution
@@ -244,31 +258,29 @@
                 qrCodeImage.alt = "Generated QR Code";
             }
 
-            // Variables for swipe detection
-            let touchStartX = 0;
-            let touchStartY = 0;
-            let isSwiping = false; // Flag to indicate if a swipe (not just a drag) is occurring
-            // Reduced SWIPE_THRESHOLD_X for faster detection
-            const SWIPE_THRESHOLD_X = 20; // Minimum horizontal pixels for a swipe
-            // Increased MAX_VERTICAL_DEVIATION for more lenient swipe detection
-            const MAX_VERTICAL_DEVIATION = 50; // Maximum vertical deviation for a horizontal swipe
-
-            // Function to slide the background image to a specific index
+            /**
+             * Slides the background image carousel to a specific image index.
+             * @param {number} index - The index of the image to display (0-based).
+             */
             function slideImage(index) {
                 imageSlider.style.transition = 'transform 0.8s ease-in-out'; // Enable smooth transition
                 imageSlider.style.transform = `translateX(-${index * 100}vw)`;
                 currentImageIndex = index; // Update the global index
             }
 
-            // Handle input (only 'a' from left swipe now)
+            /**
+             * Handles the input character from a quadrant box click/tap.
+             * Adds the character to the sequence, updates the display, and generates QR code if sequence is complete.
+             * @param {string} char - The character ('a', 'b', 'c', 'd', 'e') from the clicked box.
+             */
             function handleInput(char) {
                 if (inputSequence.length < MAX_INPUT_LENGTH) {
                     inputSequence.push(char);
                     swipeOutput.textContent = `Input: ${inputSequence.join(', ').toUpperCase()}`;
                     
                     // Advance to the next placeholder image (Gambar 1 -> Gambar 2 -> Gambar 3)
-                    // Only advance if we are still collecting inputs for the code
-                    if (inputSequence.length <= MAX_INPUT_LENGTH) { // Check if it's the 1st, 2nd, or 3rd input
+                    // Only advance if we are still collecting inputs for the code (1st, 2nd, or 3rd input)
+                    if (inputSequence.length <= MAX_INPUT_LENGTH) { 
                         currentImageIndex = (currentImageIndex + 1) % (totalImages - 1); // Cycle through 0, 1, 2
                         slideImage(currentImageIndex);
                     }
@@ -283,7 +295,7 @@
                     console.log(`Kode gabungan: ${rawCode}, Kode terenkripsi: ${encodedCode}`);
                     console.log(`Link QR: ${qrLink}`);
 
-                    generateQRCodeImage(qrLink); // This only generates the image data
+                    generateQRCodeImage(qrLink);
                     
                     // Set currentImageIndex directly to the QR code image index (3)
                     currentImageIndex = totalImages - 1; // totalImages is 4, so index 3
@@ -293,29 +305,29 @@
                 }
             }
 
-            // Add touch event listeners to the main container (for swipe detection and dragging)
-            mainContainer.addEventListener('touchstart', (e) => {
-                touchStartX = e.touches[0].clientX;
-                touchStartY = e.touches[0].clientY;
-                isSwiping = false; // Reset swipe flag
-                imageSlider.style.transition = 'none'; // Disable transition during drag
+            // --- Background Image Swipe Logic (on backgroundImageViewer) ---
+            let backgroundTouchStartX = 0;
+            let backgroundTouchStartY = 0;
+            // Thresholds for background image swiping
+            const BACKGROUND_SWIPE_THRESHOLD_X = 50; // Minimum horizontal pixels for a swipe to register
+            const BACKGROUND_MAX_VERTICAL_DEVIATION = 75; // Maximum vertical deviation allowed for a horizontal swipe
+
+            backgroundImageViewer.addEventListener('touchstart', (e) => {
+                backgroundTouchStartX = e.touches[0].clientX;
+                backgroundTouchStartY = e.touches[0].clientY;
+                imageSlider.style.transition = 'none'; // Disable transition during drag for smooth dragging
             });
 
-            mainContainer.addEventListener('touchmove', (e) => {
+            backgroundImageViewer.addEventListener('touchmove', (e) => {
                 const touchCurrentX = e.touches[0].clientX;
                 const touchCurrentY = e.touches[0].clientY;
 
-                const deltaX = touchCurrentX - touchStartX;
-                const deltaY = Math.abs(touchCurrentY - touchStartY);
-
-                // If horizontal movement is significant and vertical movement is small, it's a drag
-                if (Math.abs(deltaX) > 5 || deltaY > 5) { // Small threshold to detect any movement
-                    isSwiping = true; // Mark as potential swipe/drag
-                }
+                const deltaX = touchCurrentX - backgroundTouchStartX;
+                const deltaY = Math.abs(touchCurrentY - backgroundTouchStartY);
 
                 // Only allow horizontal drag if vertical deviation is small
-                if (deltaY < MAX_VERTICAL_DEVIATION) {
-                    e.preventDefault(); // Prevent scrolling while dragging horizontally
+                if (deltaY < BACKGROUND_MAX_VERTICAL_DEVIATION) {
+                    e.preventDefault(); // Prevent default browser scrolling while dragging horizontally
                     // Calculate the new translateX based on drag
                     const currentOffsetPx = currentImageIndex * window.innerWidth;
                     const newOffsetPx = currentOffsetPx - deltaX;
@@ -323,46 +335,42 @@
                 }
             });
 
-            mainContainer.addEventListener('touchend', (e) => {
+            backgroundImageViewer.addEventListener('touchend', (e) => {
                 const touchEndX = e.changedTouches[0].clientX;
                 const touchEndY = e.changedTouches[0].clientY;
 
-                const diffX = touchStartX - touchEndX; // Positive for left swipe, negative for right swipe
-                const diffY = Math.abs(touchStartY - touchEndY);
+                const diffX = backgroundTouchStartX - touchEndX; // Positive for left swipe, negative for right swipe
+                const diffY = Math.abs(backgroundTouchStartY - touchEndY);
 
-                // Re-enable transition for snapping
-                imageSlider.style.transition = 'transform 0.8s ease-in-out';
+                imageSlider.style.transition = 'transform 0.8s ease-in-out'; // Re-enable transition for snapping effect
 
-                // Check for a significant horizontal swipe
-                if (Math.abs(diffX) > SWIPE_THRESHOLD_X && diffY < MAX_VERTICAL_DEVIATION) {
+                // Check for a significant horizontal swipe within vertical deviation limits
+                if (Math.abs(diffX) > BACKGROUND_SWIPE_THRESHOLD_X && diffY < BACKGROUND_MAX_VERTICAL_DEVIATION) {
                     if (diffX > 0) { // Swiped left
-                        // This swipe is an input for 'a'
-                        handleInput('a'); 
+                        // Advance to next image (cycles through all 4 images, including QR)
+                        currentImageIndex = (currentImageIndex + 1) % totalImages; 
+                        slideImage(currentImageIndex);
                     } else { // Swiped right
-                        // Swiping right does not count as an input for the code, but navigates images
-                        if (inputSequence.length < MAX_INPUT_LENGTH) {
-                            currentImageIndex = (currentImageIndex - 1 + (totalImages - 1)) % (totalImages - 1); // Cycle through 0, 1, 2
-                            slideImage(currentImageIndex);
-                        } else {
-                            currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages; // Cycle through all 4
-                            slideImage(currentImageIndex);
-                        }
+                        // Go to previous image (cycles through all 4 images, including QR)
+                        currentImageIndex = (currentImageIndex - 1 + totalImages) % totalImages; 
+                        slideImage(currentImageIndex);
                     }
                 } else {
-                    // Not a significant swipe, snap back to the original image
+                    // Not a significant swipe, snap back to the currently displayed image
                     slideImage(currentImageIndex);
                 }
-                isSwiping = false; // Reset swipe flag
             });
 
-            // Remove click event listeners from individual boxes as per request
-            // boxes.forEach(box => {
-            //     box.addEventListener('click', (e) => {
-            //         // This logic is now removed. All inputs are handled by swipe.
-            //     });
-            // });
+            // --- Quadrant Box Click/Tap Logic (for input) ---
+            // Attach click event listeners to each quadrant and center box for input
+            boxA.addEventListener('click', () => handleInput('a'));
+            boxB.addEventListener('click', () => handleInput('b'));
+            boxC.addEventListener('click', () => handleInput('c'));
+            boxD.addEventListener('click', () => handleInput('d'));
+            boxE.addEventListener('click', () => handleInput('e'));
 
-            // Toggle input visibility
+            // Toggle input visibility button
+            const toggleInputButton = document.getElementById('toggleInputButton');
             toggleInputButton.addEventListener('click', () => {
                 if (mainContainer.style.display === 'none') {
                     mainContainer.style.display = 'grid'; // Show the grid
@@ -373,7 +381,7 @@
                 }
             });
 
-            // Initial display of Gambar 1
+            // Initial display of Gambar 1 when the page loads
             slideImage(currentImageIndex);
         });
     </script>
