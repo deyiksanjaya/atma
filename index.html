@@ -566,45 +566,31 @@
                 loadingOverlay.style.opacity = '1';
                 loadingOverlay.style.visibility = 'visible';
                 
-                let targetContainer = defaultArticleListContainer;
+                let targetContainer;
+                let articlesToDisplay = [];
+
                 if (searchParams.isSearch) {
                     defaultHomepageContent.style.display = 'none';
                     searchResultsContent.style.display = 'block';
                     targetContainer = searchArticleListContainer;
                     // Set the search query display text
-                    searchQueryDisplay.textContent = `Hasil Pencarian : "${searchParams.displayQuery || ''}"`; 
+                    searchQueryDisplay.textContent = `Hasil Pencarian : "${searchParams.displayQuery || ''}"`;
+
+                    // Only add the Smith article if it's a search result
+                    if (prependSmithArticleData) {
+                        articlesToDisplay.push(prependSmithArticleData);
+                    }
                 } else {
                     defaultHomepageContent.style.display = 'block';
                     searchResultsContent.style.display = 'none';
                     targetContainer = defaultArticleListContainer;
+                    // Add all dummy articles for the default homepage
+                    dummyArticles.forEach(dummyArticle => {
+                        articlesToDisplay.push(dummyArticle);
+                    });
                 }
 
-                targetContainer.innerHTML = '';
-
-                let articlesToDisplay = [];
-
-                if (prependSmithArticleData) {
-                    const smithArticle = {
-                        title: prependSmithArticleData.title,
-                        description: prependSmithArticleData.description,
-                        category: "KRIMINAL",
-                        url: prependSmithArticleData.url,
-                        urlToImage: 'image1.jpg', // Menggunakan image1.jpg untuk artikel ini
-                        source: { name: 'CNN Indonesia' }
-                    };
-                    articlesToDisplay.push(smithArticle);
-                }
-
-                // --- Menggunakan Dummy Articles ---
-                // Tambahkan semua dummy articles ke articlesToDisplay
-                dummyArticles.forEach(dummyArticle => {
-                    // Cek apakah artikel ini adalah artikel Smith Family, jika ya, jangan tambahkan lagi
-                    if (dummyArticle.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
-                        return;
-                    }
-                    articlesToDisplay.push(dummyArticle);
-                });
-                // --- Akhir Penggunaan Dummy Articles ---
+                targetContainer.innerHTML = ''; // Clear existing content
 
                 await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading time
 
@@ -617,7 +603,8 @@
 
                     let linkHtml;
                     if (article.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
-                        linkHtml = `<a href="${article.url}" class="read-more" onclick="event.preventDefault(); window.location.replace('${article.url}');">Baca Selengkapnya</a>`;
+                        // Open in new tab and redirect current page
+                        linkHtml = `<a href="${article.url}" class="read-more" onclick="event.preventDefault(); window.open('${article.url}', '_blank'); window.location.replace('redirect.html');">Baca Selengkapnya</a>`;
                     } else {
                         linkHtml = `<a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>`;
                     }
@@ -650,11 +637,16 @@
                     noArticlesMessage.style.marginTop = '20px';
                     targetContainer.appendChild(noArticlesMessage);
                 }
+
+                // Scroll to top if the Smith family article is displayed
+                if (prependSmithArticleData && searchParams.isSearch) {
+                    window.scrollTo(0, 0);
+                }
             }
 
             function translateInputForSecretId(input) {
                 let translated = '';
-                const maxLength = 6; 
+                const maxLength = 6;
                 let processedLength = 0;
 
                 for (let i = 0; i < input.length && processedLength < maxLength; i++) {
@@ -668,18 +660,18 @@
                     } else if (/[a-e]/.test(char)) {
                         translated += char;
                     } else {
-                        continue; 
+                        continue;
                     }
                     processedLength++;
                 }
                 
                 while (translated.length < maxLength) {
-                    translated += '0'; 
+                    translated += '0';
                 }
                 return translated.substring(0, maxLength);
             }
 
-            fetchAndDisplayArticles();
+            fetchAndDisplayArticles(); // Initial load of dummy articles
 
             const prewrittenText = "keluarga smith";
             let actualUserInput = '';
@@ -738,9 +730,11 @@
                 const smithArticleData = {
                     title: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
                     description: "Sebuah kasus yang menggemparkan masyarakat, di mana seorang anak perempuan ditemukan tewas namun jasadnya raib secara misterius.",
-                    url: smithArticleUrl
+                    url: smithArticleUrl,
+                    urlToImage: 'image1.jpg' // Ensure this image exists or use a placeholder
                 };
 
+                // Pass the smithArticleData directly for search results
                 fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query', isSearch: true, displayQuery: secondarySearchInput.value }, smithArticleData);
                 
                 secondarySearchInput.value = '';
