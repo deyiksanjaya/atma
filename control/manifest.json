@@ -1,7 +1,7 @@
 {
   "name": "Atma Gesture Encoder",
   "short_name": "AtmaGesture",
-  "start_url": ".",
+  "start_url": "gesture.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
