@@ -338,12 +338,11 @@
 </head>
 <body class="bg-white text-gray-900">
     <!-- Header -->
-    <header id="mainHeader" class="flex items-center justify-between py-0 bg-white sticky top-0 z-10 px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center space-x-4 max-w-4xl mx-auto w-full">
+    <header id="mainHeader" class="flex items-center justify-between py-2 bg-white sticky top-0 z-10 px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center space-x-2 max-w-4xl mx-auto w-full">
             <button class="text-gray-600 focus:outline-none">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
+                <!-- Ikon menu diganti dengan gambar menu.png -->
+                <img src="menu.png" alt="Menu Icon" class="w-6 h-6" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
             </button>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="Logo CNN" class="h-5">
             <span class="font-semibold text-lg">World</span>
@@ -351,10 +350,9 @@
         </div>
     </header>
 
-    <!-- Garis di bawah header -->
-    <div class="max-w-4xl mx-auto border-b border-gray-200"></div>
-
-    <main style="position: relative;">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-8">
+        <!-- Garis hitam di bawah header (menempel dan mengikuti lebar konten) -->
+        <div class="border-t-2 border-black"></div>
         <!-- Loading Overlay for dynamic content -->
         <div id="loadingOverlay">
             <div class="spinner"></div>
