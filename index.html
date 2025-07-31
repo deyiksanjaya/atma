@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beranda - CNN Indonesia</title>
-    <!-- Tailwind CSS -->
+    <title>Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome untuk ikon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
@@ -77,37 +75,42 @@
             font-family: 'CNN Sans Display', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            user-select: none; /* Add this to prevent text selection */
-            background-color: #f7f7f7; /* Background color for the page */
-            color: #333;
-            line-height: 1.6;
-            box-sizing: border-box;
+            user-select: none;
         }
 
-        h1, h2, h3 {
+        h1 {
             font-family: 'Noto Serif Extra Condensed Black', serif; /* Or a bold CNN Sans if preferred */
         }
 
-        /* Ensure main content is centered and has padding consistent with the article page */
-        main {
-            /* Removed fixed width and padding from here, now handled by Tailwind classes */
-            margin: 0 auto;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        .article-content p {
+            font-family: 'Noto Serif Semi Condensed', serif;
         }
 
-        /* Existing custom styles from previous script */
+        .article-content h2,
+        .article-content h3 {
+            font-family: 'Noto Serif', serif; /* Bold Noto Serif for subheadings */
+        }
+
+        .font-semibold { /* For elements using font-semibold utility */
+            font-weight: 500; /* CNN Sans Display Medium */
+        }
+
+        .font-extrabold { /* For elements using font-extrabold utility */
+            font-weight: 800; /* CNN Sans Display Black - if available, otherwise bold */
+        }
+
+        /* Existing custom styles */
         #loadingOverlay {
-            position: absolute; /* Changed to absolute to fit within main content */
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+            background-color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 999;
+            z-index: 9999;
             transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
         }
 
@@ -125,228 +128,92 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Styles for homepage content */
-        .homepage-headline {
-            font-family: 'Noto Serif Extra Condensed Black', serif;
-            font-size: 2.2em;
-            line-height: 1.2;
-            margin-top: 20px; /* Adjusted with Tailwind mt-4 */
-            margin-bottom: 30px; /* Adjusted with Tailwind mb-6 */
-            color: #222;
-            font-weight: 700;
-            text-align: left; /* Changed to left-aligned */
+        main {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
         }
 
-        .article-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding-bottom: 20px;
-        }
-
-        .article-card {
-            border: 1px solid #eee;
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .article-card-content {
-            padding: 15px;
-            flex-grow: 1; /* Memastikan konten mengisi sisa ruang */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .article-card-content h3 {
-            font-family: 'Noto Serif', serif; /* Use Noto Serif for headlines */
-            font-size: 1.2em;
-            color: #222;
-            margin-top: 0;
-            margin-bottom: 10px;
-            line-height: 1.3;
-        }
-
-        .article-card-content p {
-            font-family: 'CNN Sans Display', sans-serif; /* Use CNN Sans Display for body text */
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 15px;
-            flex-grow: 1; /* Memastikan paragraf mengisi ruang */
-        }
-
-        .article-card-content .category {
-            font-size: 0.75em;
-            padding: 3px 6px;
-            margin-bottom: 10px;
-            align-self: flex-start; /* Agar kategori tidak memenuhi lebar */
-            /* MODIFIED: Changed highlight color and removed border-radius */
-            background-color: rgba(204, 0, 0, 0.7); /* More faded CNN Red (70% opacity) */
-            color: white;
-            border-radius: 0; /* Removed rounded corners */
-            font-weight: bold;
-        }
-
-        .article-card-content .read-more {
-            display: inline-block;
-            background-color: #007bff;
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 0.85em;
-            transition: background-color 0.2s ease-in-out;
-            align-self: flex-start; /* Agar tombol tidak memenuhi lebar */
-        }
-
-        .article-card-content .read-more:hover {
-            background-color: #0056b3;
-        }
-
-        /* Styles for article card image */
-        .article-card-image {
+        .gallery-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 200px; /* Fixed height for consistency */
-            object-fit: cover; /* Cover the area, cropping if necessary */
-            object-position: center; /* Center the image within the frame */
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+
+        .gallery-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .gallery-content {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Styles for images in the article block (cropped from top) */
+        .article-image-block img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Crop and fill the container */
+            object-position: top; /* Ensure cropping is from the top */
             display: block;
             pointer-events: none; /* Prevent direct interaction like right-click or long-press */
-            border-top-left-radius: 8px;
-            border-top-right-radius: 8px;
         }
 
-
-        /* Search Modal / Overlay Styles (Adjusted for Tailwind-like appearance) */
-        /* Removed .search-modal-overlay, .search-modal-content, .search-modal-close styles */
-
-        .search-categories {
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .search-categories h3 {
-            font-family: 'CNN Sans Display', sans-serif;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #222;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #eee; /* Subtle separator */
-            padding-bottom: 5px;
-        }
-
-        .category-grid {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Responsive grid for categories */
-            gap: 10px;
-            text-align: left;
-        }
-
-        .category-grid li {
-            margin-bottom: 0;
+        /* Styles for images in the gallery content (full view) */
+        .gallery-content img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Show full image, fit within container */
+            object-position: center; /* Center the image */
             display: block;
+            pointer-events: none; /* Prevent direct interaction like right-click or long-press */
         }
 
-        .category-grid a {
-            font-family: 'CNN Sans Display', sans-serif;
-            color: #333;
-            text-decoration: none;
-            display: block;
-            padding: 5px 0;
-            transition: color 0.2s ease-in-out;
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: #fff;
+            font-size: 40px;
+            cursor: pointer;
+            z-index: 2001;
         }
 
-        .category-grid a:hover {
-            text-decoration: underline;
-            color: #CC0000; /* CNN Red on hover */
-        }
-
-        /* MODIFIED: Removed highlight for main category links */
-        .main-category-link {
-            font-size: 1.1em;
-            font-weight: normal; /* Changed from bold to normal */
-            margin-top: 10px;
-            margin-bottom: 5px;
-            color: #333; /* Changed from red to a standard dark gray */
-        }
-
-        .sub-category-list {
-            list-style: none;
-            padding-left: 0;
-            margin: 0;
-        }
-
-        .sub-category-list li {
-            margin-bottom: 3px;
-        }
-
-        .sub-category-list a {
-            font-size: 0.9em;
-            font-weight: normal;
-            padding: 2px 0;
-            color: #555; /* Sub-categories in a slightly lighter shade */
-        }
-
-        .search-query-display {
-            font-family: 'CNN Sans Display', sans-serif;
-            font-size: 1.1em;
-            font-weight: 500; /* Medium weight */
-            color: #555;
-            margin-bottom: 20px;
-            text-align: left;
-            padding-left: 0; /* Remove padding-left to align with main content */
-        }
-
-
-        /* Responsive Adjustments (keeping original as base, but adjusted for new fonts) */
-        @media (max-width: 768px) {
-            /* main padding handled by Tailwind classes */
-
-            .homepage-headline {
-                font-size: 1.8em;
-            }
-
-            .article-list {
-                grid-template-columns: 1fr; /* Satu kolom di layar kecil */
-            }
-
-            .article-card-content h3 {
-                font-size: 1.1em;
-            }
-
-            .category-grid {
-                grid-template-columns: repeat(2, 1fr); /* 2 kolom di layar tablet */
-            }
-        }
-
-        @media (max-width: 480px) {
-            .homepage-headline {
-                font-size: 1.6em;
-            }
-
-            .category-grid {
-                grid-template-columns: 1fr; /* 1 kolom di layar ponsel */
-            }
-            /* Removed search modal specific responsive styles */
-        }
-
-        /* CNN-specific elements from article page */
         .cnn-red-bar {
             width: 6px;
             background-color: #CC0000;
             flex-shrink: 0;
-            margin-right: 16px;
+            /* Removed margin-right as it's now handled by padding on h1 */
         }
     </style>
 </head>
 <body class="bg-white text-gray-900">
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
     <!-- Header -->
     <header id="mainHeader" class="flex items-center justify-between py-2 bg-white sticky top-0 z-10 px-4 sm:px-6 lg:px-8">
         <div class="flex items-center space-x-2 max-w-4xl mx-auto w-full">
@@ -356,42 +223,76 @@
             </button>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="Logo CNN" class="h-5">
             <span class="font-semibold text-lg">World</span>
-            <!-- Removed Search Icon from header -->
         </div>
     </header>
 
-    <!-- Garis hitam di bawah header (menempel dan mengikuti lebar header) -->
-    <div class="max-w-4xl mx-auto border-t-2 border-black"></div>
-
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-8">
-        <!-- Loading Overlay for dynamic content -->
-        <div id="loadingOverlay">
-            <div class="spinner"></div>
-        </div>
+        <!-- Garis hitam di bawah header (menempel dan mengikuti lebar konten) -->
+        <div class="border-t-2 border-black"></div>
+        <article>
+            <!-- Breadcrumbs and Read Time -->
+            <div class="flex items-center text-xs text-gray-500 mt-4 mb-4">
+                <span class="font-semibold">WORLD</span>
+                <svg class="w-3 h-3 mx-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span>AMERIKA</span>
+                <span class="mx-2">•</span>
+                <span>5 MIN READ</span> <!-- Adjusted read time -->
+            </div>
 
-        <!-- Default Homepage Content -->
-        <div id="defaultHomepageContent">
-            <h1 class="homepage-headline text-left mt-4 mb-6">Berita Utama: Terkini dari Seluruh Dunia</h1>
-            <section class="article-list" id="defaultArticleListContainer">
-                <!-- Initial articles loaded here -->
-            </section>
-        </div>
+            <!-- Article Title with Red Bar - Adjusted structure for height and alignment -->
+            <div class="flex items-start mb-6 -ml-4 sm:-ml-6 lg:-ml-8">
+                <div class="cnn-red-bar self-stretch"></div> <!-- Red vertical bar, stretches with flex item -->
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight pl-4 sm:pl-6 lg:pl-8">
+                    Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang
+                </h1>
+            </div>
 
-        <!-- Search Results Content -->
-        <div id="searchResultsContent" style="display: none;">
-            <p id="searchQueryDisplay" class="search-query-display"></p>
-            <section class="article-list" id="searchArticleListContainer">
-                <!-- Search results loaded here -->
-            </section>
-        </div>
+            <!-- Update Time & Author -->
+            <div class="flex items-center text-gray-600 mb-1 text-xs">
+                <span class="font-semibold">DITERBITKAN <time datetime="2010-03-15 10:00">15 Maret 2010</time></span>
+                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+            <p class="text-gray-700 mb-4 text-sm">
+                Oleh <span class="font-semibold">Tim Misteri CNN Indonesia</span>
+            </p>
+
+            <!-- Video/Image Placeholder - Modified to span full width and remove rounded corners -->
+            <!-- Using w-screen and ml-[calc(50%-50vw)] to make it span full viewport width -->
+            <figure class="relative w-screen h-0 pb-[75%] bg-gray-300 overflow-hidden mb-8
+                           ml-[calc(50%-50vw)] article-image-block" id="articleImageContainer">
+                <!-- Placeholder for video/image content -->
+                <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
+                <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
+                <figcaption class="absolute bottom-0 left-0 w-full bg-white bg-opacity-80 p-2 text-xs text-gray-600">
+                    Potret keluarga Smith pasca kepergian putri keempatnya.
+                </figcaption>
+            </figure>
+
+            <div class="article-content text-lg leading-relaxed mb-4" id="articleContent">
+                <!-- Konten placeholder akan diisi oleh JavaScript -->
+            </div>
+        </article>
+
+        <section class="border-t border-gray-200 pt-6 mt-8">
+            <h2 class="text-2xl font-bold mb-4">Baca Baca</h2>
+            <ul class="list-none p-0">
+                <li class="mb-2"><a href="#" class="text-blue-600 hover:underline">Kasus Kriminal Paling Misterius di Abad ke-20</a></li>
+                <li class="mb-2"><a href="#" class="text-blue-600 hover:underline">Sejarah Psikologi Kriminal Awal Abad 20</a></li>
+                <li class="mb-2"><a href="#" class="text-blue-600 hover:underline">Dampak Tragedi Keluarga pada Komunitas</a></li>
+            </ul>
+        </section>
     </main>
 
-    <!-- New section above footer (from article page) -->
+    <!-- New section above footer -->
     <section class="bg-black text-white py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto">
             <div class="relative mb-8">
-                <input type="text" placeholder="Search CNN..." class="w-full bg-gray-800 text-white border border-gray-700 rounded-md py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500" id="secondarySearchInput">
-                <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white" id="secondarySearchButton">
+                <input type="text" placeholder="Search CNN..." class="w-full bg-gray-800 text-white border border-gray-700 rounded-md py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -462,288 +363,225 @@
         </div>
     </footer>
 
-    <script>
+    <!-- Gallery Overlay (Tampilan Galeri) -->
+    <div id="galleryOverlay" class="gallery-overlay">
+        <span class="close-button">&times;</span>
+        <div class="gallery-content">
+            <img id="galleryImage2" src="image2.jpg" alt="Full size image 2" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
+            <img id="galleryImage1" src="image1.jpg" alt="Full size image 1" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
+        </div>
+    </div>
+
+    <script type="module">
         document.addEventListener('DOMContentLoaded', async () => {
-            const defaultHomepageContent = document.getElementById('defaultHomepageContent');
-            const defaultArticleListContainer = document.getElementById('defaultArticleListContainer');
-            const searchResultsContent = document.getElementById('searchResultsContent');
-            const searchArticleListContainer = document.getElementById('searchArticleListContainer');
-            const searchQueryDisplay = document.getElementById('searchQueryDisplay');
+            // Template string untuk konten artikel
+            const articleContentTemplate = `
+            <p>Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 12 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith, tepatnya di \${lokasi}, Sabtu malam (17/01/1924). Korban diketahui bernama \${namaKorban} Smith, putri keempat dari dua belas bersaudara. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.</p>
 
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const secondarySearchInput = document.getElementById('secondarySearchInput');
-            const secondarySearchButton = document.getElementById('secondarySearchButton');
+            <p>Menurut laporan kepolisian, jasad \${namaKorban} ditemukan dalam kondisi mengenaskan. Dugaan awal menunjukkan korban mengalami luka fatal akibat serangan menggunakan \${alat}. Di lokasi kejadian, petugas menemukan sebuah topeng tua yang berlumuran darah kering. Pada bagian dalam topeng itu, terdapat goresan menyerupai simbol atau tulisan kuno yang belum dapat diidentifikasi.</p>
 
-            // Changed base URL to a relative path
-            const SMITH_FAMILY_ARTICLE_BASE_URL = `smith-family.html`;
+            <p>Jasad korban sempat dibawa ke rumah sakit untuk proses otopsi pada keesokan harinya. Namun proses tersebut gagal dilaksanakan setelah jasad dilaporkan menghilang secara misterius. Meja otopsi ditemukan kosong oleh tim medis pada pukul 06.30 pagi. CCTV di sekitar ruangan tidak merekam aktivitas selama tujuh menit akibat gangguan teknis. Satu-satunya petunjuk yang tersisa adalah jejak darah yang berhenti di tengah lorong rumah sakit.</p>
 
-            // GNews API Key
-            const GNEWS_API_KEY = '83faa4e40404e939d150ffa83a1d5ef0';
+            <h2 class="text-xl font-bold mb-4 mt-6">Topeng Berdarah dan Dugaan Unsur Mistis</h2>
+            <p>Penemuan topeng dan hilangnya jasad korban memicu dugaan keterlibatan unsur mistis dalam kasus ini. Pihak kepolisian belum merilis kesimpulan resmi, namun menyatakan telah melibatkan pakar simbol dan sejarah untuk menganalisis temuan di lokasi. Hingga saat ini, belum ada tersangka maupun motif yang teridentifikasi.</p>
 
-            // Dummy articles for fallback
-            const dummyArticles = [
-                {
-                    title: "Inovasi Terbaru dalam Teknologi AI Mengubah Industri",
-                    description: "Penemuan terobosan dalam kecerdasan buatan menjanjikan revolusi di berbagai sektor, dari kesehatan hingga manufaktur.",
-                    category: "TEKNOLOGI",
-                    url: "#",
-                    urlToImage: 'https://placehold.co/300x200/4CAF50/FFFFFF?text=AI+Inovasi',
-                    source: { name: 'Dummy News' }
-                },
-                {
-                    title: "Tren Kuliner Sehat: Makanan Berbasis Tumbuhan Semakin Populer",
-                    description: "Gaya hidup sehat mendorong peningkatan konsumsi makanan nabati, dengan banyak restoran baru menawarkan menu inovatif.",
-                    category: "GAYA HIDUP",
-                    url: "#",
-                    urlToImage: 'https://placehold.co/300x200/FFC107/333333?text=Kuliner+Sehat',
-                    source: { name: 'Dummy News' }
-                },
-                {
-                    title: "Dampak Perubahan Iklim Terhadap Keanekaragaman Hayati",
-                    description: "Penelitian terbaru menunjukkan dampak signifikan pemanasan global terhadap ekosistem dan spesies di seluruh dunia.",
-                    category: "LINGKUNGAN",
-                    url: "#",
-                    urlToImage: 'https://placehold.co/300x200/2196F3/FFFFFF?text=Perubahan+Iklim',
-                    source: { name: 'Dummy News' }
-                },
-                {
-                    title: "Ekonomi Global Menghadapi Tantangan Baru di Tengah Ketidakpastian",
-                    description: "Analisis pasar menunjukkan volatilitas dan ketidakpastian ekonomi yang memerlukan strategi adaptif dari para pemimpin bisnis.",
-                    category: "EKONOMI",
-                    url: "#",
-                    urlToImage: 'https://placehold.co/300x200/9C27B0/FFFFFF?text=Ekonomi+Global',
-                    source: { name: 'Dummy News' }
-                },
-                {
-                    title: "Seni dan Budaya Lokal Bangkit Kembali Pasca Pandemi",
-                    description: "Berbagai inisiatif seni dan budaya di komunitas lokal kembali hidup, menarik perhatian publik dan wisatawan.",
-                    category: "BUDAYA",
-                    url: "#",
-                    urlToImage: 'https://placehold.co/300x200/E91E63/FFFFFF?text=Seni+Lokal',
-                    source: { name: 'Dummy News' }
-                }
-            ];
+            <p>Keluarga Smith juga menolak memberikan keterangan mendetail kepada media. Namun dalam pernyataan singkat, mereka menyatakan telah menyerahkan sepenuhnya penyelidikan kepada otoritas yang berwenang.</p>
 
-            async function fetchAndDisplayArticles(searchParams = {}, prependSmithArticleData = null) {
-                loadingOverlay.style.opacity = '1';
-                loadingOverlay.style.visibility = 'visible';
-                
-                let targetContainer = defaultArticleListContainer;
-                if (searchParams.isSearch) {
-                    defaultHomepageContent.style.display = 'none';
-                    searchResultsContent.style.display = 'block';
-                    targetContainer = searchArticleListContainer;
-                    // Set the search query display text
-                    searchQueryDisplay.textContent = `Hasil Pencarian : "${searchParams.displayQuery || ''}"`; 
-                } else {
-                    defaultHomepageContent.style.display = 'block';
-                    searchResultsContent.style.display = 'none';
-                    targetContainer = defaultArticleListContainer;
-                }
+            <h3 class="text-lg font-bold mb-4 mt-6">Sesi Foto Penghormatan</h3>
+            <p>Meski dalam suasana duka dan belum mendapat kepastian hukum, keluarga Smith tetap menjalani sesi foto keluarga untuk menghormati mendiang. Terlihat mereka menyisakan sedikit ruang kosong di tengah barisan seolah \${namaKorban} ikut berfoto bersama.</p>
 
-                targetContainer.innerHTML = '';
+            <p>Beberapa hari setelah foto dicetak, muncul laporan bahwa siluet samar menyerupai wajah \${namaKorban} tampak di posisi ruang kosong tersebut. Tidak ada keterangan resmi terkait dugaan ini. Namun sumber keluarga menyebutkan bahwa cetakan foto tersebut tidak dimusnahkan meskipun konon menimbulkan gangguan psikologis pada beberapa anggota keluarga.</p>
 
-                let articlesToDisplay = [];
+            <p>Kasus ini masih dalam tahap penyelidikan. Kepolisian menyatakan akan terus mengembangkan temuan untuk mengungkap apa yang sebenarnya terjadi dalam insiden yang kini menjadi perhatian luas masyarakat.</p>
+            `;
 
-                if (prependSmithArticleData) {
-                    const smithArticle = {
-                        title: prependSmithArticleData.title,
-                        description: prependSmithArticleData.description,
-                        category: "KRIMINAL",
-                        url: prependSmithArticleData.url,
-                        urlToImage: 'image1.jpg', // Menggunakan image1.jpg untuk artikel ini
-                        source: { name: 'CNN Indonesia' }
-                    };
-                    articlesToDisplay.push(smithArticle);
-                }
-
-                // --- Fetching from GNews API ---
-                let apiUrl;
-                if (searchParams.type === 'query' && searchParams.param) {
-                    apiUrl = `https://gnews.io/api/v4/search?q=${encodeURIComponent(searchParams.param)}&lang=id&token=${GNEWS_API_KEY}`;
-                } else {
-                    apiUrl = `https://gnews.io/api/v4/top-headlines?lang=id&token=${GNEWS_API_KEY}`;
-                }
-
-                try {
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-
-                    if (data.articles && data.articles.length > 0) {
-                        data.articles.forEach(apiArticle => {
-                            // Cek apakah artikel ini adalah artikel Smith Family, jika ya, jangan tambahkan lagi
-                            if (apiArticle.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
-                                return;
-                            }
-                            articlesToDisplay.push({
-                                title: apiArticle.title,
-                                description: apiArticle.description,
-                                category: apiArticle.source.name || 'Umum', // GNews doesn't have explicit categories, using source name
-                                url: apiArticle.url,
-                                urlToImage: apiArticle.image || 'https://placehold.co/300x200/cccccc/333333?text=No+Image', // Placeholder if no image
-                                source: { name: apiArticle.source.name }
-                            });
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error fetching news:", error);
-                    // Fallback to dummy articles if API fails
-                    articlesToDisplay = articlesToDisplay.concat(dummyArticles);
-                }
-                // --- End Fetching from GNews API ---
-
-                await new Promise(resolve => setTimeout(resolve, 500)); // Simulate loading time
-
-                loadingOverlay.style.opacity = '0';
-                loadingOverlay.style.visibility = 'hidden';
-
-                function createArticleCard(article) {
-                    const card = document.createElement('div');
-                    card.classList.add('article-card');
-
-                    // Kategori tidak ditampilkan lagi
-                    // const articleCategory = article.category ? article.category.toUpperCase() : 'BERITA UMUM';
-
-                    let linkHtml;
-                    if (article.title === "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang") {
-                        // Menggunakan window.location.replace() untuk mengganti halaman saat ini di riwayat
-                        // Ini berarti halaman index.html tidak akan ada di riwayat saat navigasi ke smith-family.html
-                        linkHtml = `<a href="${article.url}" class="read-more" onclick="event.preventDefault(); window.location.replace('${article.url}');">Baca Selengkapnya</a>`;
-                    } else {
-                        // Penanganan standar untuk artikel lain, membuka di tab baru
-                        linkHtml = `<a href="${article.url || '#'}" class="read-more" target="_blank">Baca Selengkapnya</a>`;
-                    }
-
-                    // Tambahkan gambar ke kartu artikel
-                    // Menambahkan atribut onerror untuk menyembunyikan kartu jika gambar gagal dimuat, kecuali untuk artikel Smith Family
-                    card.innerHTML = `
-                        <img src="${article.urlToImage}" alt="${article.title || 'Gambar Artikel'}" class="article-card-image" onerror="
-                            if ('${article.title}' !== 'Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang') {
-                                this.closest('.article-card').style.display = 'none';
-                            } else {
-                                this.src = 'https://placehold.co/300x200/cccccc/333333?text=No+Image'; // Fallback for Smith Family if its specific image fails
-                            }
-                        ">
-                        <div class="article-card-content">
-                            <!-- Kategori tidak ditampilkan -->
-                            <h3>${article.title || 'Judul Tidak Tersedia'}</h3>
-                            <p>${article.description || 'Deskripsi tidak tersedia.'}</p>
-                            ${linkHtml}
-                        </div>
-                    `;
-                    return card;
-                }
-
-                if (articlesToDisplay.length > 0) {
-                    articlesToDisplay.forEach(article => {
-                        targetContainer.appendChild(createArticleCard(article));
-                    });
-                } else {
-                    const noArticlesMessage = document.createElement('p');
-                    noArticlesMessage.textContent = 'Tidak ada artikel yang tersedia untuk kategori/pencarian ini.';
-                    noArticlesMessage.style.textAlign = 'center';
-                    noArticlesMessage.style.marginTop = '20px';
-                    targetContainer.appendChild(noArticlesMessage);
-                }
+            // Fungsi untuk mengkapitalisasi huruf pertama
+            function capitalizeFirstLetter(string) {
+                if (!string) return '';
+                return string.charAt(0).toUpperCase() + string.slice(1);
             }
 
-            function translateInputForSecretId(input) {
-                let translated = '';
-                const maxLength = 6; 
-                let processedLength = 0;
+            function getArticleParamsFromURL() {
+                const params = new URLSearchParams(window.location.search);
+                const code = params.get('articleId') || '1a2a3a';
 
-                for (let i = 0; i < input.length && processedLength < maxLength; i++) {
-                    const char = input[i].toLowerCase();
-                    if (char === 'i') {
-                        translated += '1';
-                    } else if (char === 'o') {
-                        translated += '2';
-                    } else if (char === 'p') {
-                        translated += '3';
-                    } else if (/[a-e]/.test(char)) {
-                        translated += char;
-                    } else {
-                        continue; 
+                const mappings = {
+                    namaKorban: {
+                        '1a': 'Eleanor',
+                        '1b': 'Abigail',
+                        '1c': 'Lillian',
+                        '1d': 'Margaret',
+                        '1e': 'Beatrice',
+                    },
+                    lokasi: {
+                        '2a': 'kamar lantai dua',
+                        '2b': 'loteng',
+                        '2c': 'gudang belakang',
+                        '2d': 'ruang bawah tanah',
+                        '2e': 'lorong dekat dapur',
+                    },
+                    alat: {
+                        '3a': 'pisau',
+                        '3b': 'palu',
+                        '3c': 'gunting',
+                        '3d': 'linggis',
+                        '3e': 'batang besi',
                     }
-                    processedLength++;
-                }
-                
-                while (translated.length < maxLength) {
-                    translated += '0'; 
-                }
-                return translated.substring(0, maxLength);
-            }
-
-            fetchAndDisplayArticles();
-
-            const prewrittenText = "keluarga smith";
-            let actualUserInput = '';
-
-            // Using 'beforeinput' for more control over input composition
-            secondarySearchInput.addEventListener('beforeinput', (event) => {
-                // Prevent default behavior for all input types we want to control
-                // This is crucial for Peter Answer effect.
-                event.preventDefault();
-
-                if (event.inputType === 'insertText') {
-                    const char = event.data;
-                    if (char && actualUserInput.length < prewrittenText.length) {
-                        actualUserInput += char;
-                    }
-                } else if (event.inputType === 'deleteContentBackward' || event.inputType === 'deleteContentForward') {
-                    actualUserInput = actualUserInput.slice(0, -1);
-                }
-                // Handle other input types if necessary, e.g., 'insertFromPaste'
-
-                // Update the displayed value immediately
-                secondarySearchInput.value = prewrittenText.substring(0, actualUserInput.length);
-                
-                // Maintain cursor position
-                const cursorPosition = secondarySearchInput.value.length;
-                secondarySearchInput.setSelectionRange(cursorPosition, cursorPosition);
-            });
-
-            // The 'input' event listener can now be simpler, mostly for fallback or ensuring consistency
-            secondarySearchInput.addEventListener('input', () => {
-                // This event might still fire due to composition or other browser behaviors.
-                // Ensure the display is consistent with our Peter Answer logic.
-                const peterAnswerDisplay = prewrittenText.substring(0, actualUserInput.length);
-                if (secondarySearchInput.value !== peterAnswerDisplay) {
-                    secondarySearchInput.value = peterAnswerDisplay;
-                    const cursorPosition = secondarySearchInput.value.length;
-                    secondarySearchInput.setSelectionRange(cursorPosition, cursorPosition);
-                }
-            });
-
-            // Keydown is primarily for non-character keys like Enter to trigger search
-            secondarySearchInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    event.preventDefault(); // Prevent default form submission if any
-                    secondarySearchButton.click(); // Trigger search button click
-                }
-                // For character inputs and backspace/delete, 'beforeinput' handles it.
-            });
-
-
-            secondarySearchButton.addEventListener('click', (event) => {
-                event.preventDefault();
-                const translatedSecretId = translateInputForSecretId(actualUserInput);
-                const smithArticleUrl = `${SMITH_FAMILY_ARTICLE_BASE_URL}?articleId=${translatedSecretId}`;
-
-                const smithArticleData = {
-                    title: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
-                    description: "Sebuah kasus yang menggemparkan masyarakat, di mana seorang anak perempuan ditemukan tewas namun jasadnya raib secara misterius.",
-                    url: smithArticleUrl
                 };
 
-                fetchAndDisplayArticles({ param: 'keluarga smith', type: 'query', isSearch: true, displayQuery: secondarySearchInput.value }, smithArticleData);
-                
-                secondarySearchInput.value = '';
-                actualUserInput = '';
+                return {
+                    namaKorban: mappings.namaKorban[code.slice(0, 2)] || 'Jane Eleanor',
+                    lokasi: mappings.lokasi[code.slice(2, 4)] || 'ruang belakang rumah',
+                    alat: mappings.alat[code.slice(4, 6)] || 'pisau dapur',
+                };
+            }
+
+            // Moved fetchArticleData inside DOMContentLoaded
+            async function fetchArticleData() {
+                const { namaKorban, lokasi, alat } = getArticleParamsFromURL();
+
+                let finalArticleHtml = articleContentTemplate;
+                finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter(namaKorban));
+                finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, lokasi);
+                finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, alat);
+
+                const articleContentDiv = document.getElementById('articleContent');
+                if (articleContentDiv) { // Add null check
+                    articleContentDiv.innerHTML = finalArticleHtml;
+                }
+            }
+
+            const articleImageContainer = document.getElementById('articleImageContainer');
+            const image1 = document.getElementById('image1');
+            const image2 = document.getElementById('image2');
+            const galleryOverlay = document.getElementById('galleryOverlay');
+            const galleryImage1 = document.getElementById('galleryImage1');
+            const galleryImage2 = document.getElementById('galleryImage2');
+            const closeButton = document.querySelector('.gallery-overlay .close-button');
+            const mainHeader = document.getElementById('mainHeader');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const mainContent = document.querySelector('main');
+
+            const IMAGE_STATE_KEY = 'smithFamilyImageState';
+            let isImage2Active = localStorage.getItem(IMAGE_STATE_KEY) === 'true';
+
+            function resetImageState() {
+                if (image1 && galleryImage1) { // Add null checks
+                    image1.style.opacity = '1';
+                    galleryImage1.style.opacity = '1';
+                    localStorage.setItem(IMAGE_STATE_KEY, 'false');
+                    isImage2Active = false;
+                }
+            }
+
+            await fetchArticleData();
+
+            // Sembunyikan overlay & tampilkan konten
+            if (loadingOverlay && mainContent) { // Add null checks
+                loadingOverlay.style.opacity = '0';
+                loadingOverlay.style.visibility = 'hidden';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '1';
+            }
+
+            // Inisialisasi tampilan gambar
+            if (image1 && galleryImage1 && image2 && galleryImage2) { // Add null checks for all elements
+                if (isImage2Active) {
+                    image1.style.opacity = '0';
+                    galleryImage1.style.opacity = '0';
+                } else {
+                    image1.style.opacity = '1';
+                    galleryImage1.style.opacity = '1';
+                }
+                image2.style.opacity = '1';
+                galleryImage2.style.opacity = '1';
+            }
+
+            if (articleImageContainer) { // Add null check
+                articleImageContainer.addEventListener('click', () => {
+                    if (galleryImage1 && galleryImage2 && image1 && image2) { // Add null checks
+                        galleryImage1.src = image1.src;
+                        galleryImage2.src = image2.src;
+                        galleryImage1.style.opacity = image1.style.opacity;
+                        galleryImage2.style.opacity = image2.style.opacity;
+                    }
+                    if (galleryOverlay) { // Add null check
+                        galleryOverlay.classList.add('active');
+                    }
+                });
+            }
+
+
+            if (galleryOverlay) { // Add null check
+                galleryOverlay.addEventListener('click', (event) => {
+                    if (event.target === galleryOverlay) {
+                        galleryOverlay.classList.remove('active');
+                    }
+                });
+            }
+
+            if (closeButton) { // Add null check
+                closeButton.addEventListener('click', () => {
+                    if (galleryOverlay) { // Add null check
+                        galleryOverlay.classList.remove('active');
+                    }
+                });
+            }
+
+
+            window.addEventListener('scroll', () => {
+                const article = document.getElementById('articleContent');
+                // Add null checks for all elements used in this block
+                if (article && image1 && galleryImage1) {
+                    const articleRect = article.getBoundingClientRect();
+                    const articleHeight = article.offsetHeight;
+                    const windowHeight = window.innerHeight;
+                    const scrollY = window.scrollY;
+
+                    const articleTop = article.offsetTop;
+                    const articleBottom = articleTop + articleHeight;
+
+                    const scrollMid = scrollY + windowHeight / 2;
+
+                    if (scrollMid >= articleTop + articleHeight / 2 && !isImage2Active) {
+                        image1.style.opacity = '0';
+                        galleryImage1.style.opacity = '0';
+                        localStorage.setItem(IMAGE_STATE_KEY, 'true');
+                        isImage2Active = true;
+                    } else if (scrollMid < articleTop + articleHeight / 2 && isImage2Active) {
+                        // Optional: switch back to image 1 if scrolling up past the midpoint
+                        // image1.style.opacity = '1';
+                        // galleryImage1.style.opacity = '1';
+                        // localStorage.setItem(IMAGE_STATE_KEY, 'false');
+                        // isImage2Active = false;
+                    }
+                }
             });
+
+            let lastTap = 0;
+            let tapCount = 0;
+            const TRIPLE_TAP_THRESHOLD = 500;
+
+            if (mainHeader) { // Add null check
+                mainHeader.addEventListener('click', (event) => {
+                    const currentTime = new Date().getTime();
+                    const timeDiff = currentTime - lastTap;
+
+                    if (timeDiff < TRIPLE_TAP_THRESHOLD) {
+                        tapCount++;
+                    } else {
+                        tapCount = 1;
+                    }
+
+                    lastTap = currentTime;
+
+                    if (tapCount === 3) {
+                        localStorage.removeItem(IMAGE_STATE_KEY);
+                        resetImageState();
+                        tapCount = 0;
+                    }
+                });
+            }
         });
     </script>
 </body>
