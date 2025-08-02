@@ -607,7 +607,26 @@
                     }
                 });
             }
+            let inactivityRedirectTimer;
+
+            // Fungsi yang akan dijalankan untuk mengalihkan halaman
+            function performMagicRedirect() {
+                // Ganti URL ini dengan tujuan yang Anda inginkan untuk efek sulap
+                window.location.replace("https://cnn.com/");
+            }
+
+            // Mendengarkan perubahan visibilitas tab
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    // Jika tab menjadi tidak aktif, mulai timer 1 menit (60000 ms)
+                    inactivityRedirectTimer = setTimeout(performMagicRedirect, 60000);
+                } else {
+                    // Jika pengguna kembali ke tab, batalkan timer
+                    clearTimeout(inactivityRedirectTimer);
+                }
+            });
         });
+        
     </script>
 </body>
 </html>
