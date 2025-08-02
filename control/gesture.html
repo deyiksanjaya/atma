@@ -301,7 +301,7 @@
 
         // Generate the initial QR code on page load and handle resize
         function initializeApp() {
-            const initialUrl = "https://atmamagic.vercel.app/smith-family.html?id=QrQrQr";
+            const initialUrl = "https://www.cnid.my.id/smith-family.html?id=QrQrQr";
             generateQRCode(initialUrl);
         }
 
@@ -311,7 +311,7 @@
                 initializeApp();
             } else {
                 const compiledCode = gestureSequence.join('');
-                const finalUrl = `https://atmamagic.vercel.app/smith-family.html?id=${compiledCode}`;
+                const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${compiledCode}`;
                 generateQRCode(finalUrl);
             }
         };
