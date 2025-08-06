@@ -23,6 +23,9 @@
             background-color: #000; /* Black background */
             color: #000; /* Default text color for content inside the white box */
             overflow: hidden; /* Prevent scrolling */
+            position: fixed; /* Prevent pull-to-refresh */
+            width: 100%;
+            height: 100%;
         }
         .touch-area {
             /* Make the touch area cover the full screen */
@@ -77,11 +80,78 @@
     <!-- History overlay -->
     <div id="history-overlay"></div>
 
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden z-50">
+        <div class="bg-white rounded-lg p-6 w-11/12 max-w-sm text-black">
+            <h2 id="settings-title" class="text-2xl font-bold mb-4"></h2>
+            <div class="mb-4">
+                <label id="language-label" class="block mb-2 font-medium"></label>
+                <div class="flex space-x-2">
+                    <button id="lang-id" class="flex-1 p-2 rounded-md border-2"></button>
+                    <button id="lang-eng" class="flex-1 p-2 rounded-md border-2"></button>
+                </div>
+            </div>
+            <button id="close-settings" class="w-full bg-gray-500 text-white p-2 rounded-md mt-4"></button>
+        </div>
+    </div>
+
+
     <script>
-        // Get references to DOM elements
+        // --- DOM ELEMENT REFERENCES ---
         const displayArea = document.getElementById('display-area');
         const touchArea = document.getElementById('touchArea');
         const historyOverlayElement = document.getElementById('history-overlay');
+        const settingsModal = document.getElementById('settings-modal');
+        const settingsTitle = document.getElementById('settings-title');
+        const languageLabel = document.getElementById('language-label');
+        const langIdButton = document.getElementById('lang-id');
+        const langEngButton = document.getElementById('lang-eng');
+        const closeSettingsButton = document.getElementById('close-settings');
+
+        // --- LANGUAGE & TRANSLATIONS ---
+        const translations = {
+            id: {
+                victimName: 'Nama Korban:',
+                crimeScene: 'Lokasi Kejadian:',
+                weapon: 'Alat yang Dipakai:',
+                noHistory: 'Tidak ada riwayat gerakan.',
+                settingsTitle: 'Pengaturan',
+                languageLabel: 'Bahasa:',
+                closeButton: 'Tutup',
+                langId: 'Indonesia',
+                langEng: 'English'
+            },
+            eng: {
+                victimName: "Victim's Name:",
+                crimeScene: 'Crime Scene:',
+                weapon: 'Weapon Used:',
+                noHistory: 'No gesture history.',
+                settingsTitle: 'Settings',
+                languageLabel: 'Language:',
+                closeButton: 'Close',
+                langId: 'Indonesia',
+                langEng: 'English'
+            }
+        };
+
+        const displayContent = {
+            id: [
+                { title: translations.id.victimName, items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] },
+                { title: translations.id.crimeScene, items: ['Kamar lantai dua', 'Loteng', 'Gudang belakang', 'Ruang bawah tanah', 'Lorong dekat dapur'] },
+                { title: translations.id.weapon, items: ['Pisau', 'Palu', 'Gunting', 'Linggis', 'Batang besi'] }
+            ],
+            eng: [
+                { title: translations.eng.victimName, items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] },
+                { title: translations.eng.crimeScene, items: ['Second floor room', 'Attic', 'Back warehouse', 'Basement', 'Hallway near kitchen'] },
+                { title: translations.eng.weapon, items: ['Knife', 'Hammer', 'Scissors', 'Crowbar', 'Iron rod'] }
+            ]
+        };
+        
+        const gestureTexts = [
+            { 'Up': 'Eleanor', 'Right': 'Abigail', 'Down': 'Lillian', 'Left': 'Margaret', 'Tap': 'Beatrice' },
+            { 'Up': 'kamar lantai dua', 'Right': 'loteng', 'Down': 'gudang belakang', 'Left': 'ruang bawah tanah', 'Tap': 'lorong dekat dapur' },
+            { 'Up': 'pisau', 'Right': 'palu', 'Down': 'gunting', 'Left': 'linggis', 'Tap': 'batang besi' }
+        ];
 
         // --- STATE VARIABLES ---
         let startX = 0, startY = 0, endX = 0, endY = 0;
@@ -89,48 +159,43 @@
         const gestureSequence = [];
         let gestureTextHistory = [];
         let isSessionActive = true;
-
-        // Variables for triple-tap detection
         let tapCount = 0;
         let lastTapTime = 0;
-        const DOUBLE_TAP_TIMEOUT = 300; // ms
-
-        // Variables for tap-and-hold detection
         let tapHoldTimeout = null;
-        const TAP_HOLD_DURATION = 500; // ms
+        let currentLanguage = 'id';
+        let twoFingerTrack = null;
+        let multiTouchJustEnded = false; // *** BUG FIX: Flag to prevent stray touch events ***
 
         // --- CONSTANTS ---
         const SWIPE_THRESHOLD = 50; // Min pixels for a swipe
         const TAP_THRESHOLD = 10;   // Max pixels for a tap
+        const DOUBLE_TAP_TIMEOUT = 300; // ms
+        const TAP_HOLD_DURATION = 500; // ms
 
-        // Gesture to code mapping
-        const gestureCodes = {
-            'Up': 'Fl', 'Right': 'uC', 'Down': 'Xy', 'Left': 'zW', 'Tap': 'Qr'
-        };
+        // --- CORE FUNCTIONS ---
 
-        // Text content for each stage of the trick
-        const displayContent = [
-            { title: 'Nama Korban:', items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] },
-            { title: 'Lokasi Kejadian:', items: ['Kamar lantai dua', 'Loteng', 'Gudang belakang', 'Ruang bawah tanah', 'Lorong dekat dapur'] },
-            { title: 'Alat yang Dipakai:', items: ['Pisau', 'Palu', 'Gunting', 'Linggis', 'Batang besi'] }
-        ];
-        
-        // Gesture to text mappings for history overlay
-        const gestureTexts = [
-            { 'Up': 'Eleanor', 'Right': 'Abigail', 'Down': 'Lillian', 'Left': 'Margaret', 'Tap': 'Beatrice' },
-            { 'Up': 'kamar lantai dua', 'Right': 'loteng', 'Down': 'gudang belakang', 'Left': 'ruang bawah tanah', 'Tap': 'lorong dekat dapur' },
-            { 'Up': 'pisau', 'Right': 'palu', 'Down': 'gunting', 'Left': 'linggis', 'Tap': 'batang besi' }
-        ];
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            const t = translations[currentLanguage];
+            settingsTitle.textContent = t.settingsTitle;
+            languageLabel.textContent = t.languageLabel;
+            closeSettingsButton.textContent = t.closeButton;
+            langIdButton.textContent = t.langId;
+            langEngButton.textContent = t.langEng;
+            if (lang === 'id') {
+                langIdButton.className = 'flex-1 p-2 rounded-md border-2 border-blue-500 bg-blue-500 text-white';
+                langEngButton.className = 'flex-1 p-2 rounded-md border-2 border-gray-300 bg-white text-black';
+            } else {
+                langIdButton.className = 'flex-1 p-2 rounded-md border-2 border-gray-300 bg-white text-black';
+                langEngButton.className = 'flex-1 p-2 rounded-md border-2 border-blue-500 bg-blue-500 text-white';
+            }
+            updateDisplay();
+        }
 
-        /**
-         * Updates the main display area with either text or a QR code.
-         */
         function updateDisplay() {
-            displayArea.innerHTML = ''; // Clear previous content
-
+            displayArea.innerHTML = ''; 
             if (gestureCount < 3) {
-                // Display text content if trick is not complete
-                const content = displayContent[gestureCount];
+                const content = displayContent[currentLanguage][gestureCount];
                 const listItems = content.items.map(item => `<li class="ml-4 text-xl">• ${item}</li>`).join('');
                 displayArea.innerHTML = `
                     <div class="p-4 text-left w-full h-full flex flex-col justify-center">
@@ -139,20 +204,15 @@
                     </div>
                 `;
             } else {
-                // Display QR code when 3 gestures are made
-                isSessionActive = false; // The session is now inactive
+                isSessionActive = false; 
                 const compiledCode = gestureSequence.join('');
-                const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${compiledCode}`;
+                const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${compiledCode}&lang=${currentLanguage}`;
                 generateQRCode(finalUrl);
             }
         }
 
-        /**
-         * Generates a QR code and displays it in the container.
-         * @param {string} url - The URL to encode in the QR code.
-         */
         function generateQRCode(url) {
-            displayArea.innerHTML = ''; // Ensure area is clear
+            displayArea.innerHTML = ''; 
             const qrCodeSize = Math.min(displayArea.offsetWidth, displayArea.offsetHeight) - 40;
             new QRCode(displayArea, {
                 text: url,
@@ -164,12 +224,9 @@
             });
         }
         
-        /**
-         * Displays the history of gestures in an overlay.
-         */
         function showHistoryOverlay() {
             if (gestureTextHistory.length === 0) {
-                historyOverlayElement.innerHTML = `<ul><li>Tidak ada riwayat gerakan.</li></ul>`;
+                historyOverlayElement.innerHTML = `<ul><li>${translations[currentLanguage].noHistory}</li></ul>`;
             } else {
                 const historyHtml = `<ul>${gestureTextHistory.map(item => `<li class="mb-1">${item}</li>`).join('')}</ul>`;
                 historyOverlayElement.innerHTML = historyHtml;
@@ -177,12 +234,10 @@
             historyOverlayElement.classList.add('show');
         }
 
-        /** Hides the history overlay. */
         function hideHistoryOverlay() {
             historyOverlayElement.classList.remove('show');
         }
         
-        /** Resets the application to its initial state. */
         function resetApp() {
             gestureCount = 0;
             gestureSequence.length = 0;
@@ -190,18 +245,37 @@
             isSessionActive = true;
             tapCount = 0;
             lastTapTime = 0;
-            initializeApp(); // Re-initialize the app
+            updateDisplay(); 
+        }
+
+        // --- MODAL FUNCTIONS ---
+        function openSettingsModal() {
+            settingsModal.classList.remove('hidden');
+        }
+        function closeSettingsModal() {
+            settingsModal.classList.add('hidden');
         }
 
         // --- EVENT LISTENERS ---
 
         touchArea.addEventListener('touchstart', (e) => {
+            if (e.target.closest('#settings-modal')) {
+                return;
+            }
             e.preventDefault();
-            // Always record start position for gesture/tap detection
+            
+            if (e.touches.length === 2) {
+                twoFingerTrack = {
+                    startY1: e.touches[0].clientY,
+                    startY2: e.touches[1].clientY,
+                    swiped: false
+                };
+                return; 
+            }
+
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
 
-            // Start timer for tap-and-hold ONLY after QR code is shown
             if (!isSessionActive) {
                 tapHoldTimeout = setTimeout(() => {
                     showHistoryOverlay();
@@ -209,17 +283,51 @@
             }
         }, { passive: false });
 
+        touchArea.addEventListener('touchmove', (e) => {
+            if (e.target.closest('#settings-modal')) {
+                return;
+            }
+            e.preventDefault();
+            if (twoFingerTrack && e.touches.length === 2 && !twoFingerTrack.swiped) {
+                const deltaY1 = e.touches[0].clientY - twoFingerTrack.startY1;
+                const deltaY2 = e.touches[1].clientY - twoFingerTrack.startY2;
+
+                if (deltaY1 > SWIPE_THRESHOLD && deltaY2 > SWIPE_THRESHOLD) {
+                    openSettingsModal();
+                    twoFingerTrack.swiped = true; 
+                }
+            }
+        }, { passive: false });
+
         touchArea.addEventListener('touchend', (e) => {
-            // Always clear the hold timer and hide the overlay on touchend
+            if (e.target.closest('#settings-modal')) {
+                return;
+            }
+
+            // *** BUG FIX: Handle the end of a multi-touch gesture ***
+            if (twoFingerTrack) {
+                twoFingerTrack = null;
+                multiTouchJustEnded = true;
+                // After a very short delay, reset the flag.
+                // This prevents stray 'touchend' events from being processed as single-finger gestures.
+                setTimeout(() => { multiTouchJustEnded = false; }, 50);
+                return; // Stop processing for this event.
+            }
+
+            // *** BUG FIX: If a multi-touch gesture just finished, ignore this event. ***
+            if (multiTouchJustEnded) {
+                return;
+            }
+            
             if (tapHoldTimeout) clearTimeout(tapHoldTimeout);
             hideHistoryOverlay();
 
-            // Always calculate the gesture for tap detection
             endX = e.changedTouches[0].clientX;
             endY = e.changedTouches[0].clientY;
             const diffX = endX - startX, diffY = endY - startY;
             const absDiffX = Math.abs(diffX), absDiffY = Math.abs(diffY);
             let detectedGesture = '';
+
             if (absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD) {
                 detectedGesture = 'Tap';
             } else if (absDiffX > absDiffY) {
@@ -228,9 +336,7 @@
                 if (absDiffY > SWIPE_THRESHOLD) detectedGesture = diffY > 0 ? 'Down' : 'Up';
             }
             
-            // --- LOGIC FOR INACTIVE SESSION (QR CODE SHOWN) ---
             if (!isSessionActive) {
-                // Check for Triple-Tap Reset
                 if (detectedGesture === 'Tap') {
                     const currentTime = new Date().getTime();
                     if (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) {
@@ -244,14 +350,14 @@
                         resetApp();
                     }
                 } else {
-                    tapCount = 0; // Any other gesture resets tap count
+                    tapCount = 0;
                 }
-                return; // Stop further processing if session is inactive
+                return;
             }
 
-            // --- LOGIC FOR ACTIVE SESSION (TEXT SHOWN) ---
-            if (!detectedGesture) return; // Ignore if it wasn't a valid gesture
+            if (!detectedGesture) return;
 
+            const gestureCodes = { 'Up': 'Fl', 'Right': 'uC', 'Down': 'Xy', 'Left': 'zW', 'Tap': 'Qr' };
             const gestureCode = gestureCodes[detectedGesture];
             if (gestureCode) {
                 gestureSequence.push(gestureCode);
@@ -262,19 +368,36 @@
                 }
                 
                 gestureCount++;
-                updateDisplay(); // Update the screen after each gesture
+                updateDisplay();
             }
         });
 
+        // Modal button listeners
+        langIdButton.addEventListener('click', () => setLanguage('id'));
+        langEngButton.addEventListener('click', () => setLanguage('eng'));
+        closeSettingsButton.addEventListener('click', closeSettingsModal);
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                closeSettingsModal();
+            }
+        });
+
+
         /** Initializes the application on load. */
         function initializeApp() {
-            updateDisplay(); // Show the initial text content
+            setLanguage('id'); 
         }
 
         // --- INITIALIZATION ---
         window.onload = initializeApp;
         window.onresize = () => {
-            updateDisplay(); // Re-render content on resize
+            if (isSessionActive) {
+                updateDisplay();
+            } else {
+                const compiledCode = gestureSequence.join('');
+                const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${compiledCode}&lang=${currentLanguage}`;
+                generateQRCode(finalUrl);
+            }
         };
     </script>
 </body>
