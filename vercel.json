@@ -1,9 +1,18 @@
 {
-  "redirects": [
+  "rewrites": [
     {
-      "source": "https://user.cnid.my.id/:path*",
-      "destination": "https://cnid.my.id/control/gesture.html",
-      "permanent": true
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "user.cnid.my.id"
+        }
+      ],
+      "destination": "/control/gesture.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
     }
   ]
 }
