@@ -15,16 +15,25 @@ export const translations = {
     authorPrefix: "By",
     authorName: "CNN Mystery Team",
     imageFigcaption: "A portrait of the Smith family after the departure of their fourth daughter.",
-    articleP1: "Jakarta, CNN Indonesia -- A 12-year-old girl was found dead under unnatural circumstances at the Smith family residence in ${lokasi}, on Saturday night (01/17/1924). The victim was identified as ${namaKorban} Smith, the fourth of twelve children. The incident occurred just hours before the family was scheduled for their annual photo session on their porch.",
-    articleP2: "According to the police report, ${namaKorban}'s body was found in a gruesome state. Initial suspicions suggest the victim suffered fatal injuries from an attack using a ${alat}. At the scene, officers found an old mask stained with dried blood. Inside the mask, there were scratches resembling an ancient symbol or writing that has not yet been identified.",
-    articleP3: "The victim's body was taken to the hospital for an autopsy the next day. However, the procedure failed after the body was reported mysteriously missing. The autopsy table was found empty by the medical team at 6:30 AM. CCTV in the vicinity did not record any activity for seven minutes due to a technical glitch. The only remaining clue was a trail of blood that stopped in the middle of the hospital corridor.",
-    articleH2: "Bloody Mask and Suspicions of Mystical Elements",
-    articleP4: "The discovery of the mask and the disappearance of the victim's body have fueled speculation about the involvement of mystical elements in the case. The police have not released an official conclusion but stated they have involved experts in symbols and history to analyze the findings at the scene. To date, no suspects or motives have been identified.",
-    articleP5: "The Smith family has also refused to provide detailed statements to the media. However, in a brief statement, they said they have fully entrusted the investigation to the competent authorities.",
-    articleH3: "Commemorative Photo Session",
-    articleP6: "Despite the atmosphere of grief and the lack of legal certainty, the Smith family proceeded with the family photo session to honor the deceased. They were seen leaving a small empty space in the middle of the line as if ${namaKorban} were posing with them.",
-    articleP7: "A few days after the photo was printed, reports emerged that a faint silhouette resembling ${namaKorban}'s face appeared in the empty space. There has been no official statement regarding this allegation. However, a family source mentioned that the photo print was not destroyed, although it reportedly caused psychological distress to some family members.",
-    articleP8: "This case is still under investigation. The police have stated they will continue to develop their findings to uncover what really happened in the incident that has now become a matter of widespread public attention.",
+    articleP1: "Jakarta, CNN Indonesia — A 12-year-old girl was found dead under suspicious circumstances at the Smith family residence in ${lokasi} on Saturday night (01/17/1924). The victim, identified as ${namaKorban} Smith, was the fourth of twelve siblings. The incident occurred just hours before the family’s scheduled annual photo session on their front porch.",
+
+articleP2: "According to the police report, ${namaKorban}'s body was discovered in a horrific condition. Initial investigations suggest she suffered fatal injuries caused by an attack involving a ${alat}. At the scene, officers recovered an old mask stained with dried blood. Inside the mask were scratch marks resembling ancient symbols or writings that have yet to be deciphered.",
+
+articleP3: "The body was transported to the hospital for an autopsy the following day. However, the procedure was never carried out, as the corpse was reported missing under mysterious circumstances. At 6:30 AM, the medical team found the autopsy table completely empty. CCTV footage from the area showed no activity for a span of seven minutes due to a technical failure. The only clue left behind was a blood trail that abruptly ended in the middle of the hospital corridor.",
+
+articleH2: "Bloody Mask and Suspicions of the Supernatural",
+
+articleP4: "The discovery of the mask and the unexplained disappearance of the body have led to growing speculation about possible supernatural involvement. While the police have not issued an official conclusion, they confirmed that experts in ancient symbols and historical artifacts have been brought in to examine the evidence. So far, no suspects or motives have been identified.",
+
+articleP5: "The Smith family has declined to give detailed comments to the media. In a brief statement, they said they have placed their full trust in the authorities to carry out a thorough investigation.",
+
+articleH3: "A Photo to Remember",
+
+articleP6: "Despite the grief and lingering uncertainty, the Smith family proceeded with their annual photo session as a tribute to the deceased. A small empty space was left in the center of the group—as if ${namaKorban} were still standing among them.",
+
+articleP7: "Days after the photo was developed, reports surfaced that a faint silhouette resembling ${namaKorban}’s face had appeared in the empty space. There has been no official comment regarding the claim. However, a family source stated the photo was not destroyed, despite reportedly causing psychological distress to some family members.",
+
+articleP8: "The case remains under investigation. Police have stated that they will continue to follow every lead to uncover the truth behind the incident, which has since drawn widespread public attention.",
     relatedTitle: "Read More",
     relatedLink1: "The Most Mysterious Criminal Cases of the 20th Century",
     relatedLink2: "History of Early 20th Century Criminal Psychology",
