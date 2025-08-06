@@ -596,7 +596,7 @@
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     inactivityRedirectTimer = setTimeout(() => {
-                        window.location.replace("https://www.cnid.my.id/redirect.html");
+                        window.location.replace("https://www.cnid.my.id/index.html");
                     }, 60000);
                 } else {
                     clearTimeout(inactivityRedirectTimer);
