@@ -52,7 +52,30 @@ export const translations = {
     about: "About",
     newsletters: "Newsletters",
     transcripts: "Transcripts",
-    copyright: "© 2025 Cable News Network. A Warner Bros. Discovery Company. All Rights Reserved.<br>CNN Sans ™ & © 2016 Cable News Network."
+    copyright: "© 2025 Cable News Network. A Warner Bros. Discovery Company. All Rights Reserved.<br>CNN Sans ™ & © 2016 Cable News Network.",
+    articleParams: {
+        namaKorbanMap: {
+            'a': 'Eleanor',
+            'b': 'Abigail',
+            'c': 'Lillian',
+            'd': 'Margaret',
+            'e': 'Beatrice',
+        },
+        lokasiMap: {
+            'a': 'the second-floor room',
+            'b': 'the attic',
+            'c': 'the back shed',
+            'd': 'the basement',
+            'e': 'the hallway near the kitchen',
+        },
+        alatMap: {
+            'a': 'a knife',
+            'b': 'a hammer',
+            'c': 'scissors',
+            'd': 'a crowbar',
+            'e': 'an iron rod',
+        }
+    }
   },
   // Indonesian Translations
   id: {
@@ -61,7 +84,7 @@ export const translations = {
     headerWorld: "Dunia",
     breadcrumbWorld: "DUNIA",
     breadcrumbAmerica: "AMERIKA",
-    readTime: "5 MENIT BACA",
+    readTime: "5 MENIT",
     articleTitle: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
     publishedLabel: "DITERBITKAN",
     publishedTime: "15 Maret 2010",
@@ -105,6 +128,29 @@ export const translations = {
     about: "Tentang",
     newsletters: "Buletin",
     transcripts: "Transkrip",
-    copyright: "© 2025 Cable News Network. Sebuah Perusahaan Warner Bros. Discovery. Semua Hak Dilindungi Undang-Undang.<br>CNN Sans ™ & © 2016 Cable News Network."
+    copyright: "© 2025 Cable News Network. Sebuah Perusahaan Warner Bros. Discovery. Semua Hak Dilindungi Undang-Undang.<br>CNN Sans ™ & © 2016 Cable News Network.",
+    articleParams: {
+        namaKorbanMap: {
+            'a': 'Eleanor',
+            'b': 'Abigail',
+            'c': 'Lillian',
+            'd': 'Margaret',
+            'e': 'Beatrice',
+        },
+        lokasiMap: {
+            'a': 'kamar lantai dua',
+            'b': 'loteng',
+            'c': 'gudang belakang',
+            'd': 'ruang bawah tanah',
+            'e': 'lorong dekat dapur',
+        },
+        alatMap: {
+            'a': 'pisau',
+            'b': 'palu',
+            'c': 'gunting',
+            'd': 'linggis',
+            'e': 'batang besi',
+        }
+    }
   }
 };
