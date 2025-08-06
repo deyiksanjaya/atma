@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang</title>
+    <title id="pageTitle">Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <style>
         /* Custom Fonts (simulating CNN's look) */
         @font-face {
@@ -204,7 +203,6 @@
             width: 6px;
             background-color: #CC0000;
             flex-shrink: 0;
-            /* Removed margin-right as it's now handled by padding on h1 */
         }
     </style>
 </head>
@@ -218,11 +216,10 @@
     <header id="mainHeader" class="flex items-center justify-between py-2 bg-white sticky top-0 z-10 px-4 sm:px-6 lg:px-8">
         <div class="flex items-center space-x-2 max-w-4xl mx-auto w-full">
             <button class="text-gray-600 focus:outline-none">
-                <!-- Ikon menu diganti dengan gambar menu.png -->
                 <img src="menu.png" alt="Menu Icon" class="w-6 h-6" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
             </button>
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/CNN.svg/960px-CNN.svg.png" alt="Logo CNN" class="h-5">
-            <span class="font-semibold text-lg">World</span>
+            <span id="headerWorld" class="font-semibold text-lg">World</span>
         </div>
     </header>
 
@@ -232,57 +229,56 @@
         <article>
             <!-- Breadcrumbs and Read Time -->
             <div class="flex items-center text-xs text-gray-500 mt-4 mb-4">
-                <span class="font-semibold">WORLD</span>
+                <span id="breadcrumbWorld" class="font-semibold">WORLD</span>
                 <svg class="w-3 h-3 mx-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
                 </svg>
-                <span>AMERIKA</span>
+                <span id="breadcrumbAmerica">AMERIKA</span>
                 <span class="mx-2">•</span>
-                <span>5 MIN READ</span> <!-- Adjusted read time -->
+                <span id="readTime">5 MIN READ</span>
             </div>
 
-            <!-- Article Title with Red Bar - Adjusted structure for height and alignment -->
+            <!-- Article Title with Red Bar -->
             <div class="flex items-start mb-6 -ml-4 sm:-ml-6 lg:-ml-8">
-                <div class="cnn-red-bar self-stretch"></div> <!-- Red vertical bar, stretches with flex item -->
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight pl-4 sm:pl-6 lg:pl-8">
+                <div class="cnn-red-bar self-stretch"></div>
+                <h1 id="articleTitle" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight pl-4 sm:pl-6 lg:pl-8">
                     Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang
                 </h1>
             </div>
 
             <!-- Update Time & Author -->
             <div class="flex items-center text-gray-600 mb-1 text-xs">
-                <span class="font-semibold">DITERBITKAN <time datetime="2010-03-15 10:00">15 Maret 2010</time></span>
+                <span id="publishedLabel" class="font-semibold">DITERBITKAN</span>
+                <time id="publishedTime" datetime="2010-03-15 10:00" class="ml-1">15 Maret 2010</time>
                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                 </svg>
             </div>
             <p class="text-gray-700 mb-4 text-sm">
-                Oleh <span class="font-semibold">Tim Misteri CNN Indonesia</span>
+                <span id="authorPrefix">Oleh</span> <span id="authorName" class="font-semibold">Tim Misteri CNN Indonesia</span>
             </p>
 
-            <!-- Video/Image Placeholder - Modified to span full width and remove rounded corners -->
-            <!-- Using w-screen and ml-[calc(50%-50vw)] to make it span full viewport width -->
+            <!-- Video/Image Placeholder -->
             <figure class="relative w-screen h-0 pb-[75%] bg-gray-300 overflow-hidden mb-8
                             ml-[calc(50%-50vw)] article-image-block" id="articleImageContainer">
-                <!-- Placeholder for video/image content -->
                 <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
                 <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
-                <figcaption class="absolute bottom-0 left-0 w-full bg-white bg-opacity-80 p-2 text-xs text-gray-600">
+                <figcaption id="imageFigcaption" class="absolute bottom-0 left-0 w-full bg-white bg-opacity-80 p-2 text-xs text-gray-600">
                     Potret keluarga Smith pasca kepergian putri keempatnya.
                 </figcaption>
             </figure>
 
             <div class="article-content text-lg leading-relaxed mb-4" id="articleContent">
-                <!-- Konten placeholder akan diisi oleh JavaScript -->
+                <!-- Konten akan diisi oleh JavaScript -->
             </div>
         </article>
 
         <section class="border-t border-gray-200 pt-6 mt-8">
-            <h2 class="text-2xl font-bold mb-4">Baca Baca</h2>
+            <h2 id="relatedTitle" class="text-2xl font-bold mb-4">Baca Baca</h2>
             <ul class="list-none p-0">
-                <li class="mb-2"><a href="#" class="text-blue-600 hover:underline">Kasus Kriminal Paling Misterius di Abad ke-20</a></li>
-                <li class="mb-2"><a href="#" class="text-blue-600 hover:underline">Sejarah Psikologi Kriminal Awal Abad 20</a></li>
-                <li class="mb-2"><a href="#" class="text-blue-600 hover:underline">Dampak Tragedi Keluarga pada Komunitas</a></li>
+                <li class="mb-2"><a id="relatedLink1" href="#" class="text-blue-600 hover:underline">Kasus Kriminal Paling Misterius di Abad ke-20</a></li>
+                <li class="mb-2"><a id="relatedLink2" href="#" class="text-blue-600 hover:underline">Sejarah Psikologi Kriminal Awal Abad 20</a></li>
+                <li class="mb-2"><a id="relatedLink3" href="#" class="text-blue-600 hover:underline">Dampak Tragedi Keluarga pada Komunitas</a></li>
             </ul>
         </section>
     </main>
@@ -291,7 +287,7 @@
     <section class="bg-black text-white py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto">
             <div class="relative mb-8">
-                <input type="text" placeholder="Search CNN..." class="w-full bg-gray-800 text-white border border-gray-700 rounded-md py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input id="searchPlaceholder" type="text" placeholder="Search CNN..." class="w-full bg-gray-800 text-white border border-gray-700 rounded-md py-3 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -300,27 +296,27 @@
             </div>
 
             <div class="border-b border-gray-700 mb-8 pb-8">
-                <a href="#" class="block text-center text-white text-lg font-semibold hover:underline">Sign in</a>
+                <a id="signIn" href="#" class="block text-center text-white text-lg font-semibold hover:underline">Sign in</a>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                 <ul class="list-none p-0">
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Live TV</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Listen</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Watch</a></li>
+                    <li class="mb-2"><a id="liveTv" href="#" class="text-white hover:text-gray-400">Live TV</a></li>
+                    <li class="mb-2"><a id="listen" href="#" class="text-white hover:text-gray-400">Listen</a></li>
+                    <li class="mb-2"><a id="watch" href="#" class="text-white hover:text-gray-400">Watch</a></li>
                 </ul>
                 <ul class="list-none p-0">
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">World</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">US Politics</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Business</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Markets</a></li>
+                    <li class="mb-2"><a id="world" href="#" class="text-white hover:text-gray-400">World</a></li>
+                    <li class="mb-2"><a id="usPolitics" href="#" class="text-white hover:text-gray-400">US Politics</a></li>
+                    <li class="mb-2"><a id="business" href="#" class="text-white hover:text-gray-400">Business</a></li>
+                    <li class="mb-2"><a id="markets" href="#" class="text-white hover:text-gray-400">Markets</a></li>
                 </ul>
                 <ul class="list-none p-0">
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Health</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Entertainment</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Tech</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Style</a></li>
-                    <li class="mb-2"><a href="#" class="text-white hover:text-gray-400">Travel</a></li>
+                    <li class="mb-2"><a id="health" href="#" class="text-white hover:text-gray-400">Health</a></li>
+                    <li class="mb-2"><a id="entertainment" href="#" class="text-white hover:text-gray-400">Entertainment</a></li>
+                    <li class="mb-2"><a id="tech" href="#" class="text-white hover:text-gray-400">Tech</a></li>
+                    <li class="mb-2"><a id="style" href="#" class="text-white hover:text-gray-400">Style</a></li>
+                    <li class="mb-2"><a id="travel" href="#" class="text-white hover:text-gray-400">Travel</a></li>
                 </ul>
             </div>
         </div>
@@ -333,11 +329,11 @@
                 <span class="font-bold text-xl text-white">World</span>
             </div>
 
-            <p class="text-sm font-semibold mb-6">FOLLOW CNN</p>
+            <p id="followCnn" class="text-sm font-semibold mb-6">FOLLOW CNN</p>
 
             <div class="flex justify-center space-x-6 mb-8">
                 <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-twitter"></i></a> <!-- Using Twitter for X icon -->
+                <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-twitter"></i></a>
                 <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-instagram"></i></a>
                 <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-tiktok"></i></a>
                 <a href="#" class="text-gray-400 hover:text-white text-2xl"><i class="fab fa-linkedin-in"></i></a>
@@ -345,25 +341,25 @@
 
             <div class="border-t border-gray-700 pt-8 mb-8">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-2 text-sm">
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">Terms of Use</a>
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a>
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">Cookie Settings</a>
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">Ad Choices</a>
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">Accessibility & CC</a>
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">About</a>
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">Newsletters</a>
-                    <a href="#" class="text-gray-400 hover:text-white mx-2">Transcripts</a>
+                    <a id="termsOfUse" href="#" class="text-gray-400 hover:text-white mx-2">Terms of Use</a>
+                    <a id="privacyPolicy" href="#" class="text-gray-400 hover:text-white mx-2">Privacy Policy</a>
+                    <a id="cookieSettings" href="#" class="text-gray-400 hover:text-white mx-2">Cookie Settings</a>
+                    <a id="adChoices" href="#" class="text-gray-400 hover:text-white mx-2">Ad Choices</a>
+                    <a id="accessibility" href="#" class="text-gray-400 hover:text-white mx-2">Accessibility & CC</a>
+                    <a id="about" href="#" class="text-gray-400 hover:text-white mx-2">About</a>
+                    <a id="newsletters" href="#" class="text-gray-400 hover:text-white mx-2">Newsletters</a>
+                    <a id="transcripts" href="#" class="text-gray-400 hover:text-white mx-2">Transcripts</a>
                 </div>
             </div>
 
-            <p class="text-xs text-gray-500 leading-relaxed">
+            <p id="copyright" class="text-xs text-gray-500 leading-relaxed">
                 &copy; 2025 Cable News Network. A Warner Bros. Discovery Company. All Rights Reserved.<br>
                 CNN Sans &trade; &copy; 2016 Cable News Network.
             </p>
         </div>
     </footer>
 
-    <!-- Gallery Overlay (Tampilan Galeri) -->
+    <!-- Gallery Overlay -->
     <div id="galleryOverlay" class="gallery-overlay">
         <span class="close-button">&times;</span>
         <div class="gallery-content">
@@ -373,108 +369,154 @@
     </div>
 
     <script type="module">
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Template string untuk konten artikel
-            const articleContentTemplate = `
-            <p>Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 12 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith, tepatnya di \${lokasi}, Sabtu malam (17/01/1924). Korban diketahui bernama \${namaKorban} Smith, putri keempat dari dua belas bersaudara. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.</p>
+        // Import translations from the external file
+        import { translations } from './languages.js';
 
-            <p>Menurut laporan kepolisian, jasad \${namaKorban} ditemukan dalam kondisi mengenaskan. Dugaan awal menunjukkan korban mengalami luka fatal akibat serangan menggunakan \${alat}. Di lokasi kejadian, petugas menemukan sebuah topeng tua yang berlumuran darah kering. Pada bagian dalam topeng itu, terdapat goresan menyerupai simbol atau tulisan kuno yang belum dapat diidentifikasi.</p>
-
-            <p>Jasad korban sempat dibawa ke rumah sakit untuk proses otopsi pada keesokan harinya. Namun proses tersebut gagal dilaksanakan setelah jasad dilaporkan menghilang secara misterius. Meja otopsi ditemukan kosong oleh tim medis pada pukul 06.30 pagi. CCTV di sekitar ruangan tidak merekam aktivitas selama tujuh menit akibat gangguan teknis. Satu-satunya petunjuk yang tersisa adalah jejak darah yang berhenti di tengah lorong rumah sakit.</p>
-
-            <h2 class="text-xl font-bold mb-4 mt-6">Topeng Berdarah dan Dugaan Unsur Mistis</h2>
-            <p>Penemuan topeng dan hilangnya jasad korban memicu dugaan keterlibatan unsur mistis dalam kasus ini. Pihak kepolisian belum merilis kesimpulan resmi, namun menyatakan telah melibatkan pakar simbol dan sejarah untuk menganalisis temuan di lokasi. Hingga saat ini, belum ada tersangka maupun motif yang teridentifikasi.</p>
-
-            <p>Keluarga Smith juga menolak memberikan keterangan mendetail kepada media. Namun dalam pernyataan singkat, mereka menyatakan telah menyerahkan sepenuhnya penyelidikan kepada otoritas yang berwenang.</p>
-
-            <h3 class="text-lg font-bold mb-4 mt-6">Sesi Foto Penghormatan</h3>
-            <p>Meski dalam suasana duka dan belum mendapat kepastian hukum, keluarga Smith tetap menjalani sesi foto keluarga untuk menghormati mendiang. Terlihat mereka menyisakan sedikit ruang kosong di tengah barisan seolah \${namaKorban} ikut berfoto bersama.</p>
-
-            <p>Beberapa hari setelah foto dicetak, muncul laporan bahwa siluet samar menyerupai wajah \${namaKorban} tampak di posisi ruang kosong tersebut. Tidak ada keterangan resmi terkait dugaan ini. Namun sumber keluarga menyebutkan bahwa cetakan foto tersebut tidak dimusnahkan meskipun konon menimbulkan gangguan psikologis pada beberapa anggota keluarga.</p>
-
-            <p>Kasus ini masih dalam tahap penyelidikan. Kepolisian menyatakan akan terus mengembangkan temuan untuk mengungkap apa yang sebenarnya terjadi dalam insiden yang kini menjadi perhatian luas masyarakat.</p>
-            `;
-
-            // Fungsi untuk mengkapitalisasi huruf pertama
-            function capitalizeFirstLetter(string) {
-                if (!string) return '';
-                return string.charAt(0).toUpperCase() + string.slice(1);
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- LANGUAGE AND CONTENT SETUP ---
+            
+            // 1. Determine the language from URL parameter (?lang=eng)
+            function getLanguage() {
+                const params = new URLSearchParams(window.location.search);
+                const lang = params.get('lang');
+                return (lang === 'eng') ? 'eng' : 'id';
             }
 
-            // Fungsi baru untuk membaca dan mendekode parameter dari URL dengan ID 6 karakter
-            function getArticleParamsFromURL() {
+            // 2. Apply all static translations to the page
+            function applyTranslations(lang) {
+                const t = translations[lang];
+                if (!t) {
+                    console.error(`Translations for language "${lang}" not found.`);
+                    return;
+                }
+
+                const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+                const setHTML = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+                const setPlaceholder = (id, text) => { const el = document.getElementById(id); if (el) el.placeholder = text; };
+
+                document.documentElement.lang = t.htmlLang;
+                setText('pageTitle', t.title);
+                setText('headerWorld', t.headerWorld);
+                setText('breadcrumbWorld', t.breadcrumbWorld);
+                setText('breadcrumbAmerica', t.breadcrumbAmerica);
+                setText('readTime', t.readTime);
+                setText('articleTitle', t.articleTitle);
+                setText('publishedLabel', t.publishedLabel);
+                setText('publishedTime', t.publishedTime);
+                setText('authorPrefix', t.authorPrefix);
+                setText('authorName', t.authorName);
+                setText('imageFigcaption', t.imageFigcaption);
+                setText('relatedTitle', t.relatedTitle);
+                setText('relatedLink1', t.relatedLink1);
+                setText('relatedLink2', t.relatedLink2);
+                setText('relatedLink3', t.relatedLink3);
+                setPlaceholder('searchPlaceholder', t.searchPlaceholder);
+                setText('signIn', t.signIn);
+                setText('liveTv', t.liveTv);
+                setText('listen', t.listen);
+                setText('watch', t.watch);
+                setText('world', t.world);
+                setText('usPolitics', t.usPolitics);
+                setText('business', t.business);
+                setText('markets', t.markets);
+                setText('health', t.health);
+                setText('entertainment', t.entertainment);
+                setText('tech', t.tech);
+                setText('style', t.style);
+                setText('travel', t.travel);
+                setText('followCnn', t.followCnn);
+                setText('termsOfUse', t.termsOfUse);
+                setText('privacyPolicy', t.privacyPolicy);
+                setText('cookieSettings', t.cookieSettings);
+                setText('adChoices', t.adChoices);
+                setText('accessibility', t.accessibility);
+                setText('about', t.about);
+                setText('newsletters', t.newsletters);
+                setText('transcripts', t.transcripts);
+                setHTML('copyright', t.copyright);
+            }
+            
+            // 3. Get decoded parameters from URL using the correct language maps
+            function getArticleParams(lang) {
                 const params = new URLSearchParams(window.location.search);
-                const idParam = params.get('id') || 'FlFlFl'; // Default ke 'FlFlFl' jika tidak ada id
+                const idParam = params.get('id') || 'FlFlFl';
 
-                // Define a decoding map for 2-character encoded strings back to original 'a' through 'e'
-                const decodingMap = {
-                    'Fl': 'a',
-                    'uC': 'b',
-                    'Xy': 'c',
-                    'zW': 'd',
-                    'Qr': 'e'
-                };
-
+                const decodingMap = { 'Fl': 'a', 'uC': 'b', 'Xy': 'c', 'zW': 'd', 'Qr': 'e' };
                 let decodedChars = [];
                 for (let i = 0; i < idParam.length; i += 2) {
                     const encodedSegment = idParam.substring(i, i + 2);
-                    decodedChars.push(decodingMap[encodedSegment] || 'a'); // Default to 'a' if segment not found
+                    decodedChars.push(decodingMap[encodedSegment] || 'a');
                 }
+                while (decodedChars.length < 3) decodedChars.push('a');
+                decodedChars = decodedChars.slice(0, 3);
 
-                // Ensure we have exactly 3 decoded characters
-                while (decodedChars.length < 3) {
-                    decodedChars.push('a');
-                }
-                decodedChars = decodedChars.slice(0, 3); // Ensure it's not more than 3
-
-                const namaKorbanChar = decodedChars[0];
-                const lokasiChar = decodedChars[1];
-                const alatChar = decodedChars[2];
-
-                // Mapping untuk nilai parameter yang lebih mudah dibaca (ini tetap sama)
-                const namaKorbanMap = {
-                    'a': 'Eleanor',
-                    'b': 'Abigail',
-                    'c': 'Lillian',
-                    'd': 'Margaret',
-                    'e': 'Beatrice',
-                };
-                const lokasiMap = {
-                    'a': 'kamar lantai dua',
-                    'b': 'loteng',
-                    'c': 'gudang belakang',
-                    'd': 'ruang bawah tanah',
-                    'e': 'lorong dekat dapur',
-                };
-                const alatMap = {
-                    'a': 'pisau',
-                    'b': 'palu',
-                    'c': 'gunting',
-                    'd': 'linggis',
-                    'e': 'batang besi',
-                };
+                const [namaKorbanChar, lokasiChar, alatChar] = decodedChars;
+                
+                // Get the correct maps from the translations object
+                const { namaKorbanMap, lokasiMap, alatMap } = translations[lang].articleParams;
 
                 return {
                     namaKorban: namaKorbanMap[namaKorbanChar] || 'Jane Eleanor',
-                    lokasi: lokasiMap[lokasiChar] || 'ruang belakang rumah',
-                    alat: alatMap[alatChar] || 'pisau dapur',
+                    lokasi: lokasiMap[lokasiChar] || 'a room in the house',
+                    alat: alatMap[alatChar] || 'a sharp object',
                 };
             }
 
-            // Moved fetchArticleData inside DOMContentLoaded
-            async function fetchArticleData() {
-                const { namaKorban, lokasi, alat } = getArticleParamsFromURL();
+            // 4. Populate dynamic article content using translated text and parameters
+            function populateArticleContent(lang, articleParams) {
+                const t = translations[lang];
+                const { namaKorban, lokasi, alat } = articleParams;
 
-                let finalArticleHtml = articleContentTemplate;
+                const articleHTML = `
+                    <p>${t.articleP1}</p>
+                    <p>${t.articleP2}</p>
+                    <p>${t.articleP3}</p>
+                    <h2 class="text-xl font-bold mb-4 mt-6">${t.articleH2}</h2>
+                    <p>${t.articleP4}</p>
+                    <p>${t.articleP5}</p>
+                    <h3 class="text-lg font-bold mb-4 mt-6">${t.articleH3}</h3>
+                    <p>${t.articleP6}</p>
+                    <p>${t.articleP7}</p>
+                    <p>${t.articleP8}</p>
+                `;
+
+                let finalArticleHtml = articleHTML;
                 finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter(namaKorban));
                 finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, lokasi);
                 finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, alat);
 
                 const articleContentDiv = document.getElementById('articleContent');
-                if (articleContentDiv) { // Add null check
+                if (articleContentDiv) {
                     articleContentDiv.innerHTML = finalArticleHtml;
                 }
             }
+
+            // --- HELPER FUNCTIONS ---
+            function capitalizeFirstLetter(string) {
+                if (!string) return '';
+                return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+
+            // --- INITIALIZATION ---
+            
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const mainContent = document.querySelector('main');
+            
+            // Run the setup
+            const currentLang = getLanguage();
+            const articleParams = getArticleParams(currentLang);
+            applyTranslations(currentLang);
+            populateArticleContent(currentLang, articleParams);
+
+            // Hide loading overlay and show content
+            if (loadingOverlay && mainContent) {
+                loadingOverlay.style.opacity = '0';
+                loadingOverlay.style.visibility = 'hidden';
+                mainContent.style.visibility = 'visible';
+                mainContent.style.opacity = '1';
+            }
+
+            // --- INTERACTIVITY LOGIC ---
 
             const articleImageContainer = document.getElementById('articleImageContainer');
             const image1 = document.getElementById('image1');
@@ -484,147 +526,83 @@
             const galleryImage2 = document.getElementById('galleryImage2');
             const closeButton = document.querySelector('.gallery-overlay .close-button');
             const mainHeader = document.getElementById('mainHeader');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const mainContent = document.querySelector('main');
-
             const IMAGE_STATE_KEY = 'smithFamilyImageState';
             let isImage2Active = localStorage.getItem(IMAGE_STATE_KEY) === 'true';
 
-            function resetImageState() {
-                if (image1 && galleryImage1) { // Add null checks
-                    image1.style.opacity = '1';
-                    galleryImage1.style.opacity = '1';
-                    localStorage.setItem(IMAGE_STATE_KEY, 'false');
-                    isImage2Active = false;
+            function updateImageVisibility() {
+                if (image1 && galleryImage1 && image2 && galleryImage2) {
+                    image1.style.opacity = isImage2Active ? '0' : '1';
+                    galleryImage1.style.opacity = isImage2Active ? '0' : '1';
+                    image2.style.opacity = '1';
+                    galleryImage2.style.opacity = '1';
                 }
             }
+            
+            updateImageVisibility();
 
-            await fetchArticleData();
-
-            // Sembunyikan overlay & tampilkan konten
-            if (loadingOverlay && mainContent) { // Add null checks
-                loadingOverlay.style.opacity = '0';
-                loadingOverlay.style.visibility = 'hidden';
-                mainContent.style.visibility = 'visible';
-                mainContent.style.opacity = '1';
-            }
-
-            // Inisialisasi tampilan gambar
-            if (image1 && galleryImage1 && image2 && galleryImage2) { // Add null checks for all elements
-                if (isImage2Active) {
-                    image1.style.opacity = '0';
-                    galleryImage1.style.opacity = '0';
-                } else {
-                    image1.style.opacity = '1';
-                    galleryImage1.style.opacity = '1';
-                }
-                image2.style.opacity = '1';
-                galleryImage2.style.opacity = '1';
-            }
-
-            if (articleImageContainer) { // Add null check
+            if (articleImageContainer) {
                 articleImageContainer.addEventListener('click', () => {
-                    if (galleryImage1 && galleryImage2 && image1 && image2) { // Add null checks
-                        galleryImage1.src = image1.src;
-                        galleryImage2.src = image2.src;
-                        galleryImage1.style.opacity = image1.style.opacity;
-                        galleryImage2.style.opacity = image2.style.opacity;
-                    }
-                    if (galleryOverlay) { // Add null check
-                        galleryOverlay.classList.add('active');
-                    }
+                    if (galleryOverlay) galleryOverlay.classList.add('active');
                 });
             }
 
-
-            if (galleryOverlay) { // Add null check
+            if (galleryOverlay) {
                 galleryOverlay.addEventListener('click', (event) => {
-                    if (event.target === galleryOverlay) {
-                        galleryOverlay.classList.remove('active');
-                    }
+                    if (event.target === galleryOverlay) galleryOverlay.classList.remove('active');
                 });
             }
-
-            if (closeButton) { // Add null check
+            
+            if (closeButton) {
                 closeButton.addEventListener('click', () => {
-                    if (galleryOverlay) { // Add null check
-                        galleryOverlay.classList.remove('active');
-                    }
+                    if (galleryOverlay) galleryOverlay.classList.remove('active');
                 });
             }
-
 
             window.addEventListener('scroll', () => {
                 const article = document.getElementById('articleContent');
-                // Add null checks for all elements used in this block
                 if (article && image1 && galleryImage1) {
                     const articleRect = article.getBoundingClientRect();
-                    const articleHeight = article.offsetHeight;
-                    const windowHeight = window.innerHeight;
-                    const scrollY = window.scrollY;
-
-                    const articleTop = article.offsetTop;
-                    const articleBottom = articleTop + articleHeight;
-
-                    const scrollMid = scrollY + windowHeight / 2;
-
-                    if (scrollMid >= articleTop + articleHeight / 2 && !isImage2Active) {
+                    const scrollMidPoint = window.innerHeight / 2;
+                    if (articleRect.top + articleRect.height / 2 <= scrollMidPoint && !isImage2Active) {
                         image1.style.opacity = '0';
                         galleryImage1.style.opacity = '0';
                         localStorage.setItem(IMAGE_STATE_KEY, 'true');
                         isImage2Active = true;
-                    } else if (scrollMid < articleTop + articleHeight / 2 && isImage2Active) {
-                        // Optional: switch back to image 1 if scrolling up past the midpoint
-                        // image1.style.opacity = '1';
-                        // galleryImage1.style.opacity = '1';
-                        // localStorage.setItem(IMAGE_STATE_KEY, 'false');
-                        // isImage2Active = false;
                     }
                 }
             });
-
+            
             let lastTap = 0;
             let tapCount = 0;
-            const TRIPLE_TAP_THRESHOLD = 500;
-
-            if (mainHeader) { // Add null check
-                mainHeader.addEventListener('click', (event) => {
+            if (mainHeader) {
+                mainHeader.addEventListener('click', () => {
                     const currentTime = new Date().getTime();
-                    const timeDiff = currentTime - lastTap;
-
-                    if (timeDiff < TRIPLE_TAP_THRESHOLD) {
+                    if (currentTime - lastTap < 500) {
                         tapCount++;
                     } else {
                         tapCount = 1;
                     }
-
                     lastTap = currentTime;
-
                     if (tapCount === 3) {
                         localStorage.removeItem(IMAGE_STATE_KEY);
-                        resetImageState();
+                        isImage2Active = false;
+                        updateImageVisibility();
                         tapCount = 0;
                     }
                 });
             }
-            let inactivityRedirectTimer;
-            function performMagicRedirect() {
-                window.location.replace("https://www.cnid.my.id/redirect.html");
-            }
 
-            // Mendengarkan perubahan visibilitas tab
+            let inactivityRedirectTimer;
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
-                    // Jika tab menjadi tidak aktif, mulai timer 1 menit (60000 ms)
-                    inactivityRedirectTimer = setTimeout(performMagicRedirect, 60000);
+                    inactivityRedirectTimer = setTimeout(() => {
+                        window.location.replace("https://www.cnid.my.id/redirect.html");
+                    }, 60000);
                 } else {
-                    // Jika pengguna kembali ke tab, batalkan timer
                     clearTimeout(inactivityRedirectTimer);
                 }
             });
         });
-        
     </script>
 </body>
 </html>
-
