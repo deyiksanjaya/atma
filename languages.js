@@ -14,8 +14,8 @@ export const translations = {
     publishedTime: "March 15, 2010",
     authorPrefix: "By",
     authorName: "CNN Mystery Team",
-    imageFigcaption: "A portrait of the Smith family after the departure of their fourth daughter.",
-    articleP1: "Jakarta, CNN Indonesia — A 12-year-old girl was found dead under suspicious circumstances at the Smith family residence in ${lokasi} on Saturday night (01/17/1924). The victim, identified as ${namaKorban} Smith, was the fourth of twelve siblings. The incident occurred just hours before the family’s scheduled annual photo session on their front porch.",
+    imageFigcaption: "A portrait of the Smith family taken after the death of their fourth daughter",
+    articleP1: "America — A 12-year-old girl was found dead under suspicious circumstances at the Smith family residence in ${lokasi} on Saturday night (01/17/1924). The victim, identified as ${namaKorban} Smith, was the fourth of twelve siblings. The incident occurred just hours before the family’s scheduled annual photo session on their front porch.",
 
 articleP2: "According to the police report, ${namaKorban}'s body was discovered in a horrific condition. Initial investigations suggest she suffered fatal injuries caused by an attack involving a ${alat}. At the scene, officers recovered an old mask stained with dried blood. Inside the mask were scratch marks resembling ancient symbols or writings that have yet to be deciphered.",
 
