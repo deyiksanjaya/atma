@@ -1,8 +1,8 @@
 {
   "redirects": [
     {
-      "source": "https://user.cnid.my.id/(.*)",
-      "destination": "/control/gesture.html",
+      "source": "https://user.cnid.my.id/:path*",
+      "destination": "https://cnid.my.id/control/gesture.html",
       "permanent": true
     }
   ]
