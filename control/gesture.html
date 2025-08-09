@@ -6,7 +6,8 @@
     <!-- Meta tags for PWA -->
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- CHANGE: Use 'black' for a solid black status bar on iOS -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-title" content="AtmaGesture">
     <link rel="apple-touch-icon" href="https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png" onerror="this.onerror=null;this.src='https://placehold.co/180x180/000000/FFFFFF?text=Icon';">
     <link rel="icon" href="https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png" onerror="this.onerror=null;this.src='https://placehold.co/32x32/000000/FFFFFF?text=Icon';">
@@ -327,7 +328,6 @@
             startY = e.touches[0].clientY;
             startArea = getGridArea(startX, startY);
 
-            // Set a timeout to show history only if the session is over
             if (!isSessionActive) {
                 tapHoldTimeout = setTimeout(showHistoryOverlay, TAP_HOLD_DURATION);
             }
@@ -358,8 +358,7 @@
             }
 
             if (multiTouchJustEnded) return;
-
-            // Always clear the tap-hold timeout and hide the overlay on touchend
+            
             if (tapHoldTimeout) clearTimeout(tapHoldTimeout);
             hideHistoryOverlay();
             
@@ -371,7 +370,6 @@
 
             // --- GALLERY NAVIGATION LOGIC (POST-SESSION) ---
             if (!isSessionActive) {
-                // Handle triple tap to reset
                 const isTap = absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD;
                 if (isTap) {
                     const currentTime = new Date().getTime();
@@ -381,7 +379,6 @@
                     return;
                 }
                 
-                // Handle gallery swipe
                 if (absDiffX > SWIPE_THRESHOLD && absDiffX > absDiffY) {
                     if (diffX > 0 && currentSlideIndex > 0) { // Swipe Right
                         animateToSlide(currentSlideIndex - 1);
@@ -444,7 +441,6 @@
             setLanguage('id');
         };
         window.onresize = () => {
-            // Re-align slide on resize to maintain correct position
             animateToSlide(currentSlideIndex);
         };
     </script>
