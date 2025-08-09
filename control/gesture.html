@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <!-- Meta tags for PWA -->
-    <meta name="theme-color" content="#E1F5FE">
+    <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="AtmaGesture">
@@ -20,40 +20,58 @@
         /* Custom styles for the app */
         body {
             font-family: "Inter", sans-serif;
-            background-color: #000; /* Black background */
-            color: #000; /* Default text color for content inside the white box */
+            color: #000; /* Default text color */
             overflow: hidden; /* Prevent scrolling */
             position: fixed; /* Prevent pull-to-refresh */
             width: 100%;
             height: 100%;
+            margin: 0;
         }
-        .touch-area {
-            /* Make the touch area cover the full screen */
+        /* Main container for the solid black background */
+        #app-container {
             width: 100vw;
             height: 100vh;
+            background-color: #000;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
-        /* Style for the display area (for text and QR code) */
+        /* The gallery frame, an overlay on the black background */
         #display-area {
             position: relative;
             width: 100vw;
             height: 100vw;
-            max-width: 100vh;
             max-height: 100vh;
+            box-sizing: border-box;
+            overflow: hidden; /* Crucial for gallery effect */
+        }
+        #slide-container {
+            height: 100%;
+            display: flex;
+            transition: transform 0.4s ease-in-out;
+            /* Use gap to create space BETWEEN slides */
+            gap: 20px;
+        }
+        /* The transparent container for each photo */
+        .slide {
+            height: 100%;
+            width: 100vw;
+            flex-shrink: 0; /* Prevent slides from shrinking */
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* The actual white "photo" content */
+        .slide-content {
+            width: 100%;
+            height: 100%;
             background-color: #fff;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 25px; /* Inner padding for text */
             box-sizing: border-box;
-            margin-bottom: 10px;
-        }
-        #display-area img {
-            max-width: 100%;
-            height: auto;
         }
         /* Style for the history overlay */
         #history-overlay {
@@ -74,9 +92,15 @@
         }
     </style>
 </head>
-<body id="touchArea" class="touch-area">
-    <!-- Container for the Display Content (Text and QR Code) -->
-    <div id="display-area"></div>
+<body id="touchArea">
+    <!-- Main container with solid black background -->
+    <div id="app-container">
+        <!-- The gallery frame, centered on the black background -->
+        <div id="display-area">
+            <div id="slide-container"></div>
+        </div>
+    </div>
+
     <!-- History overlay -->
     <div id="history-overlay"></div>
 
@@ -99,6 +123,7 @@
     <script>
         // --- DOM ELEMENT REFERENCES ---
         const displayArea = document.getElementById('display-area');
+        const slideContainer = document.getElementById('slide-container');
         const touchArea = document.getElementById('touchArea');
         const historyOverlayElement = document.getElementById('history-overlay');
         const settingsModal = document.getElementById('settings-modal');
@@ -154,8 +179,9 @@
         ];
 
         // --- STATE VARIABLES ---
-        let startX = 0, startY = 0, endX = 0, endY = 0;
+        let startX = 0, startY = 0;
         let gestureCount = 0;
+        let currentSlideIndex = 0;
         const gestureSequence = [];
         let gestureTextHistory = [];
         let isSessionActive = true;
@@ -164,13 +190,21 @@
         let tapHoldTimeout = null;
         let currentLanguage = 'id';
         let twoFingerTrack = null;
-        let multiTouchJustEnded = false; // *** BUG FIX: Flag to prevent stray touch events ***
+        let multiTouchJustEnded = false;
+        let startArea = null;
 
         // --- CONSTANTS ---
-        const SWIPE_THRESHOLD = 50; // Min pixels for a swipe
-        const TAP_THRESHOLD = 10;   // Max pixels for a tap
-        const DOUBLE_TAP_TIMEOUT = 300; // ms
-        const TAP_HOLD_DURATION = 500; // ms
+        const SWIPE_THRESHOLD = 50;
+        const TAP_THRESHOLD = 10;
+        const DOUBLE_TAP_TIMEOUT = 300;
+        const TAP_HOLD_DURATION = 500;
+        const TOTAL_SLIDES = 4; // 3 questions + 1 QR code
+        const SLIDE_GAP = 20; // The gap in pixels between slides
+        
+        // --- MAPPINGS for Grid Logic ---
+        const gridToGesture = { 'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E' };
+        const gestureToCode = { 'A': 'Fl', 'B': 'uC', 'C': 'zW', 'D': 'Xy', 'E': 'Qr' };
+        const gestureToTextKey = { 'A': 'Up', 'B': 'Right', 'C': 'Left', 'D': 'Down', 'E': 'Tap' };
 
         // --- CORE FUNCTIONS ---
 
@@ -189,39 +223,57 @@
                 langIdButton.className = 'flex-1 p-2 rounded-md border-2 border-gray-300 bg-white text-black';
                 langEngButton.className = 'flex-1 p-2 rounded-md border-2 border-blue-500 bg-blue-500 text-white';
             }
-            updateDisplay();
+            resetApp();
         }
 
-        function updateDisplay() {
-            displayArea.innerHTML = ''; 
-            if (gestureCount < 3) {
-                const content = displayContent[currentLanguage][gestureCount];
-                const listItems = content.items.map(item => `<li class="ml-4 text-xl">• ${item}</li>`).join('');
-                displayArea.innerHTML = `
-                    <div class="p-4 text-left w-full h-full flex flex-col justify-center">
-                        <h2 class="text-3xl font-bold mb-4">${content.title}</h2>
+        function createSlide(slideIndex) {
+            const slide = document.createElement('div');
+            slide.className = 'slide';
+            
+            const slideContent = document.createElement('div');
+            slideContent.className = 'slide-content';
+
+            if (slideIndex < 3) { // Question slides
+                const contentData = displayContent[currentLanguage][slideIndex];
+                const listItems = contentData.items.map(item => `<li class="ml-4 text-xl">• ${item}</li>`).join('');
+                slideContent.innerHTML = `
+                    <div class="text-left w-full h-full flex flex-col justify-center">
+                        <h2 class="text-3xl font-bold mb-4">${contentData.title}</h2>
                         <ul class="list-none space-y-2">${listItems}</ul>
                     </div>
                 `;
-            } else {
-                isSessionActive = false; 
-                const compiledCode = gestureSequence.join('');
-                const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${compiledCode}&lang=${currentLanguage}`;
-                generateQRCode(finalUrl);
+            } else { // QR Code slide - it will be populated later
+                slideContent.innerHTML = ''; // Start empty
             }
+            slide.appendChild(slideContent);
+            return slide;
+        }
+        
+        function animateToSlide(slideIndex) {
+            const slideWidth = displayArea.getBoundingClientRect().width;
+            const totalTranslation = (slideWidth * slideIndex) + (SLIDE_GAP * slideIndex);
+            slideContainer.style.transform = `translateX(-${totalTranslation}px)`;
+            currentSlideIndex = slideIndex;
         }
 
-        function generateQRCode(url) {
-            displayArea.innerHTML = ''; 
-            const qrCodeSize = Math.min(displayArea.offsetWidth, displayArea.offsetHeight) - 40;
-            new QRCode(displayArea, {
-                text: url,
-                width: qrCodeSize,
-                height: qrCodeSize,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+        function setupInitialView() {
+            slideContainer.innerHTML = '';
+            for(let i = 0; i < TOTAL_SLIDES; i++) {
+                const slide = createSlide(i);
+                slideContainer.appendChild(slide);
+            }
+            animateToSlide(0);
+        }
+        
+        function resetApp() {
+            gestureCount = 0;
+            currentSlideIndex = 0;
+            gestureSequence.length = 0;
+            gestureTextHistory.length = 0;
+            isSessionActive = true;
+            tapCount = 0;
+            lastTapTime = 0;
+            setupInitialView();
         }
         
         function showHistoryOverlay() {
@@ -237,61 +289,57 @@
         function hideHistoryOverlay() {
             historyOverlayElement.classList.remove('show');
         }
-        
-        function resetApp() {
-            gestureCount = 0;
-            gestureSequence.length = 0;
-            gestureTextHistory.length = 0;
-            isSessionActive = true;
-            tapCount = 0;
-            lastTapTime = 0;
-            updateDisplay(); 
+
+        // --- GRID FUNCTIONS ---
+        function getGridArea(clientX, clientY) {
+            const rect = displayArea.getBoundingClientRect();
+            if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return null;
+            const localX = clientX - rect.left;
+            const localY = clientY - rect.top;
+            const centerXStart = rect.width * 0.25, centerXEnd = rect.width * 0.75;
+            const centerYStart = rect.height * 0.25, centerYEnd = rect.height * 0.75;
+            if (localX > centerXStart && localX < centerXEnd && localY > centerYStart && localY < centerYEnd) return 'e';
+            const midX = rect.width / 2, midY = rect.height / 2;
+            if (localX < midX && localY < midY) return 'a';
+            if (localX >= midX && localY < midY) return 'b';
+            if (localX < midX && localY >= midY) return 'c';
+            if (localX >= midX && localY >= midY) return 'd';
+            return null;
         }
 
+
         // --- MODAL FUNCTIONS ---
-        function openSettingsModal() {
-            settingsModal.classList.remove('hidden');
-        }
-        function closeSettingsModal() {
-            settingsModal.classList.add('hidden');
-        }
+        function openSettingsModal() { settingsModal.classList.remove('hidden'); }
+        function closeSettingsModal() { settingsModal.classList.add('hidden'); }
 
         // --- EVENT LISTENERS ---
 
         touchArea.addEventListener('touchstart', (e) => {
-            if (e.target.closest('#settings-modal')) {
-                return;
-            }
+            if (e.target.closest('#settings-modal')) return;
             e.preventDefault();
             
             if (e.touches.length === 2) {
-                twoFingerTrack = {
-                    startY1: e.touches[0].clientY,
-                    startY2: e.touches[1].clientY,
-                    swiped: false
-                };
+                twoFingerTrack = { startY1: e.touches[0].clientY, startY2: e.touches[1].clientY, swiped: false };
                 return; 
             }
 
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
+            startArea = getGridArea(startX, startY);
 
+            // Set a timeout to show history only if the session is over
             if (!isSessionActive) {
-                tapHoldTimeout = setTimeout(() => {
-                    showHistoryOverlay();
-                }, TAP_HOLD_DURATION);
+                tapHoldTimeout = setTimeout(showHistoryOverlay, TAP_HOLD_DURATION);
             }
+
         }, { passive: false });
 
         touchArea.addEventListener('touchmove', (e) => {
-            if (e.target.closest('#settings-modal')) {
-                return;
-            }
+            if (e.target.closest('#settings-modal')) return;
             e.preventDefault();
             if (twoFingerTrack && e.touches.length === 2 && !twoFingerTrack.swiped) {
                 const deltaY1 = e.touches[0].clientY - twoFingerTrack.startY1;
                 const deltaY2 = e.touches[1].clientY - twoFingerTrack.startY2;
-
                 if (deltaY1 > SWIPE_THRESHOLD && deltaY2 > SWIPE_THRESHOLD) {
                     openSettingsModal();
                     twoFingerTrack.swiped = true; 
@@ -300,75 +348,88 @@
         }, { passive: false });
 
         touchArea.addEventListener('touchend', (e) => {
-            if (e.target.closest('#settings-modal')) {
-                return;
-            }
+            if (e.target.closest('#settings-modal')) return;
 
-            // *** BUG FIX: Handle the end of a multi-touch gesture ***
             if (twoFingerTrack) {
                 twoFingerTrack = null;
                 multiTouchJustEnded = true;
-                // After a very short delay, reset the flag.
-                // This prevents stray 'touchend' events from being processed as single-finger gestures.
                 setTimeout(() => { multiTouchJustEnded = false; }, 50);
-                return; // Stop processing for this event.
-            }
-
-            // *** BUG FIX: If a multi-touch gesture just finished, ignore this event. ***
-            if (multiTouchJustEnded) {
                 return;
             }
-            
+
+            if (multiTouchJustEnded) return;
+
+            // Always clear the tap-hold timeout and hide the overlay on touchend
             if (tapHoldTimeout) clearTimeout(tapHoldTimeout);
             hideHistoryOverlay();
-
-            endX = e.changedTouches[0].clientX;
-            endY = e.changedTouches[0].clientY;
-            const diffX = endX - startX, diffY = endY - startY;
-            const absDiffX = Math.abs(diffX), absDiffY = Math.abs(diffY);
-            let detectedGesture = '';
-
-            if (absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD) {
-                detectedGesture = 'Tap';
-            } else if (absDiffX > absDiffY) {
-                if (absDiffX > SWIPE_THRESHOLD) detectedGesture = diffX > 0 ? 'Right' : 'Left';
-            } else {
-                if (absDiffY > SWIPE_THRESHOLD) detectedGesture = diffY > 0 ? 'Down' : 'Up';
-            }
             
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const diffX = endX - startX;
+            const absDiffX = Math.abs(diffX);
+            const absDiffY = Math.abs(endY - startY);
+
+            // --- GALLERY NAVIGATION LOGIC (POST-SESSION) ---
             if (!isSessionActive) {
-                if (detectedGesture === 'Tap') {
+                // Handle triple tap to reset
+                const isTap = absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD;
+                if (isTap) {
                     const currentTime = new Date().getTime();
-                    if (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) {
-                        tapCount++;
-                    } else {
-                        tapCount = 1;
-                    }
+                    tapCount = (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) ? tapCount + 1 : 1;
                     lastTapTime = currentTime;
-                    
-                    if (tapCount === 3) {
-                        resetApp();
+                    if (tapCount === 3) resetApp();
+                    return;
+                }
+                
+                // Handle gallery swipe
+                if (absDiffX > SWIPE_THRESHOLD && absDiffX > absDiffY) {
+                    if (diffX > 0 && currentSlideIndex > 0) { // Swipe Right
+                        animateToSlide(currentSlideIndex - 1);
+                    } else if (diffX < 0 && currentSlideIndex < TOTAL_SLIDES - 1) { // Swipe Left
+                        animateToSlide(currentSlideIndex + 1);
                     }
-                } else {
-                    tapCount = 0;
                 }
                 return;
             }
+
+            // --- ACTIVE SESSION GESTURE LOGIC ---
+            let detectedGesture = '';
+            if (startArea && diffX < 0 && absDiffX > SWIPE_THRESHOLD && absDiffX > absDiffY) {
+                detectedGesture = gridToGesture[startArea];
+            }
+            startArea = null;
 
             if (!detectedGesture) return;
 
-            const gestureCodes = { 'Up': 'Fl', 'Right': 'uC', 'Down': 'Xy', 'Left': 'zW', 'Tap': 'Qr' };
-            const gestureCode = gestureCodes[detectedGesture];
+            const gestureCode = gestureToCode[detectedGesture];
             if (gestureCode) {
                 gestureSequence.push(gestureCode);
                 
-                if (gestureCount < 3) {
-                    const textToShow = gestureTexts[gestureCount][detectedGesture];
-                    if (textToShow) gestureTextHistory.push(textToShow);
-                }
+                const textKey = gestureToTextKey[detectedGesture];
+                const textToShow = gestureTexts[gestureCount][textKey];
+                if (textToShow) gestureTextHistory.push(textToShow);
                 
                 gestureCount++;
-                updateDisplay();
+
+                // Animate to the next slide
+                animateToSlide(gestureCount);
+                
+                // Check if the session should end
+                if (gestureCount >= 3) {
+                    isSessionActive = false;
+                    const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
+                    lastSlideContent.innerHTML = ''; // Clear placeholder content
+                    const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${gestureSequence.join('')}&lang=${currentLanguage}`;
+                    const qrCodeSize = Math.min(lastSlideContent.offsetWidth, lastSlideContent.offsetHeight) * 0.9;
+                     new QRCode(lastSlideContent, {
+                        text: finalUrl,
+                        width: qrCodeSize,
+                        height: qrCodeSize,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }
             }
         });
 
@@ -376,28 +437,15 @@
         langIdButton.addEventListener('click', () => setLanguage('id'));
         langEngButton.addEventListener('click', () => setLanguage('eng'));
         closeSettingsButton.addEventListener('click', closeSettingsModal);
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) {
-                closeSettingsModal();
-            }
-        });
-
-
-        /** Initializes the application on load. */
-        function initializeApp() {
-            setLanguage('id'); 
-        }
+        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
         // --- INITIALIZATION ---
-        window.onload = initializeApp;
+        window.onload = () => {
+            setLanguage('id');
+        };
         window.onresize = () => {
-            if (isSessionActive) {
-                updateDisplay();
-            } else {
-                const compiledCode = gestureSequence.join('');
-                const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${compiledCode}&lang=${currentLanguage}`;
-                generateQRCode(finalUrl);
-            }
+            // Re-align slide on resize to maintain correct position
+            animateToSlide(currentSlideIndex);
         };
     </script>
 </body>
