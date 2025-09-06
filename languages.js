@@ -15,7 +15,7 @@ export const translations = {
     authorPrefix: "By",
     authorName: "CNN Mystery Team",
     imageFigcaption: "A portrait of the Smith family taken after the death of their fourth daughter",
-    articleP1: "America — A 12-year-old girl was found dead under suspicious circumstances at the Smith family residence in ${lokasi} on Saturday night (01/17/1924). The victim, identified as ${namaKorban} Smith, was the fourth of twelve siblings. The incident occurred just hours before the family’s scheduled annual photo session on their front porch.",
+    articleP1: "America — A 12-year-old girl was found dead under suspicious circumstances at the Smith family residence in ${lokasi} on Saturday night (01/17/1924). The victim, identified as ${namaKorban} Smith. The incident occurred just hours before the family’s scheduled annual photo session on their front porch.",
 
 articleP2: "According to the police report, ${namaKorban}'s body was discovered in a horrific condition. Initial investigations suggest she suffered fatal injuries caused by an attack involving a ${alat}. At the scene, officers recovered an old mask stained with dried blood. Inside the mask were scratch marks resembling ancient symbols or writings that have yet to be deciphered.",
 
@@ -100,7 +100,7 @@ articleP8: "The case remains under investigation. Police have stated that they w
     authorPrefix: "Oleh",
     authorName: "Tim Misteri CNN Indonesia",
     imageFigcaption: "Potret keluarga Smith pasca kepergian putri keempatnya.",
-    articleP1: "Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 12 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith, tepatnya di ${lokasi}, Sabtu malam (17/01/1924). Korban diketahui bernama ${namaKorban} Smith, putri keempat dari dua belas bersaudara. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.",
+    articleP1: "Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 12 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith, tepatnya di ${lokasi}, Sabtu malam (17/01/1924). Korban diketahui bernama ${namaKorban} Smith. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.",
     articleP2: "Menurut laporan kepolisian, jasad ${namaKorban} ditemukan dalam kondisi mengenaskan. Dugaan awal menunjukkan korban mengalami luka fatal akibat serangan menggunakan ${alat}. Di lokasi kejadian, petugas menemukan sebuah topeng tua yang berlumuran darah kering. Pada bagian dalam topeng itu, terdapat goresan menyerupai simbol atau tulisan kuno yang belum dapat diidentifikasi.",
     articleP3: "Jasad korban sempat dibawa ke rumah sakit untuk proses otopsi pada keesokan harinya. Namun proses tersebut gagal dilaksanakan setelah jasad dilaporkan menghilang secara misterius. Meja otopsi ditemukan kosong oleh tim medis pada pukul 06.30 pagi. CCTV di sekitar ruangan tidak merekam aktivitas selama tujuh menit akibat gangguan teknis. Satu-satunya petunjuk yang tersisa adalah jejak darah yang berhenti di tengah lorong rumah sakit.",
     articleH2: "Topeng Berdarah dan Dugaan Unsur Mistis",
