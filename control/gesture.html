@@ -12,6 +12,10 @@
     <link rel="icon" href="https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png" onerror="this.onerror=null;this.src='https://placehold.co/32x32/000000/FFFFFF?text=Icon';">
 
     <title>Gesture Encoder</title>
+    <!-- Google Fonts untuk nuansa koran antik -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- QR Code Generator Library -->
@@ -26,6 +30,9 @@
             width: 100%;
             height: 100%;
             margin: 0;
+        }
+        #app-wrapper.locked {
+            display: none;
         }
         /* Main container for the solid black background */
         #app-container {
@@ -89,38 +96,92 @@
         #history-overlay.show {
             display: block;
         }
+        /* Utilitas font kustom untuk modal */
+        .font-playfair { font-family: 'Playfair Display', serif; }
+        .font-lora { font-family: 'Lora', serif; }
+        
+        /* Spinner for loading state */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body id="touchArea">
-    <!-- Main container with solid black background -->
-    <div id="app-container">
-        <!-- The gallery frame, centered on the black background -->
-        <div id="display-area">
-            <div id="slide-container"></div>
+<body id="touchArea" class="bg-black">
+
+    <!-- License Modal -->
+    <div id="license-modal" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 p-4">
+        <div class="font-lora bg-[#fdfaf3] rounded-sm p-6 w-full max-w-sm text-[#1a1a1a] border-2 border-black shadow-2xl text-center">
+            <h2 class="font-playfair text-2xl mb-4 border-b-2 border-gray-400 pb-2 uppercase">License Activation</h2>
+            <p class="mb-6">Please enter your license key to unlock the app.</p>
+            <input type="text" id="license-key-input" placeholder="ABC-123-XYZ" class="w-full p-3 text-center border-2 border-black rounded-sm mb-4 bg-white text-lg tracking-widest">
+            <button id="verify-license-btn" class="font-playfair w-full bg-black hover:bg-gray-800 text-[#fdfaf3] p-3 rounded-sm uppercase tracking-wider transition-colors duration-300 flex items-center justify-center">
+                <span>Activate</span>
+            </button>
+            <p id="license-error" class="text-red-600 mt-4 text-sm h-5"></p>
         </div>
     </div>
 
-    <!-- History overlay -->
-    <div id="history-overlay"></div>
+    <!-- App Wrapper -->
+    <div id="app-wrapper" class="locked">
+        <!-- NEW: One-time Settings Notification -->
+        <div id="settings-toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 w-11/12 max-w-sm bg-[#fdfaf3] text-[#1a1a1a] p-3 rounded-sm shadow-lg z-30 flex items-center justify-between font-lora border-2 border-black">
+            <p>Tip: Two-finger swipe down to open settings.</p>
+            <button id="close-toast-btn" class="text-2xl font-bold leading-none pl-4">&times;</button>
+        </div>
 
-    <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center hidden z-50">
-        <div class="bg-white rounded-lg p-6 w-11/12 max-w-sm text-black">
-            <h2 id="settings-title" class="text-2xl font-bold mb-4"></h2>
-            <div class="mb-4">
-                <label id="language-label" class="block mb-2 font-medium"></label>
-                <div class="flex space-x-2">
-                    <button id="lang-id" class="flex-1 p-2 rounded-md border-2"></button>
-                    <button id="lang-eng" class="flex-1 p-2 rounded-md border-2"></button>
-                </div>
+        <!-- Main container with solid black background -->
+        <div id="app-container">
+            <!-- The gallery frame, centered on the black background -->
+            <div id="display-area">
+                <div id="slide-container"></div>
             </div>
-            <button id="close-settings" class="w-full bg-gray-500 text-white p-2 rounded-md mt-4"></button>
+        </div>
+
+        <!-- History overlay -->
+        <div id="history-overlay"></div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center hidden z-50 p-4">
+            <div class="font-lora bg-[#fdfaf3] rounded-sm p-6 w-11/12 max-w-sm text-[#1a1a1a] border-2 border-black shadow-2xl">
+                <h2 id="settings-title" class="font-playfair text-2xl mb-4 border-b-2 border-gray-400 pb-2 uppercase"></h2>
+                <div class="my-6">
+                    <label id="language-label" class="font-playfair block mb-2 font-bold"></label>
+                    <div class="flex space-x-4">
+                        <button id="lang-id" class="flex-1 p-2 rounded-sm border-2"></button>
+                        <button id="lang-eng" class="flex-1 p-2 rounded-sm border-2"></button>
+                    </div>
+                </div>
+                
+                <a href="instructions.html" id="read-instructions-btn" class="font-playfair w-full block bg-gray-700 hover:bg-gray-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-6"></a>
+                
+                <button id="close-settings" class="font-playfair w-full bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm uppercase tracking-wider transition-colors duration-300 mt-2"></button>
+            </div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-    <script>
         // --- DOM ELEMENT REFERENCES ---
+        const licenseModal = document.getElementById('license-modal');
+        const licenseKeyInput = document.getElementById('license-key-input');
+        const verifyLicenseBtn = document.getElementById('verify-license-btn');
+        const licenseError = document.getElementById('license-error');
+        const appWrapper = document.getElementById('app-wrapper');
+        const settingsToast = document.getElementById('settings-toast'); // <-- NEW
+        const closeToastBtn = document.getElementById('close-toast-btn'); // <-- NEW
         const displayArea = document.getElementById('display-area');
         const slideContainer = document.getElementById('slide-container');
         const touchArea = document.getElementById('touchArea');
@@ -131,6 +192,22 @@
         const langIdButton = document.getElementById('lang-id');
         const langEngButton = document.getElementById('lang-eng');
         const closeSettingsButton = document.getElementById('close-settings');
+        const readInstructionsButton = document.getElementById('read-instructions-btn');
+
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFDxFe2PnyxaLRb7VctQSHhQh7ZKoSDaU",
+            authDomain: "atmamagicbyheri.firebaseapp.com",
+            projectId: "atmamagicbyheri",
+            storageBucket: "atmamagicbyheri.firebasestorage.app",
+            messagingSenderId: "672288947327",
+            appId: "1:672288947327:web:4ee5d222045bfaf6ed934a"
+        };
+
+        // --- Initialize Firebase ---
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         // --- LANGUAGE & TRANSLATIONS ---
         const translations = {
@@ -142,6 +219,7 @@
                 settingsTitle: 'Pengaturan',
                 languageLabel: 'Bahasa:',
                 closeButton: 'Tutup',
+                readInstructions: 'Baca Instruksi',
                 langId: 'Indonesia',
                 langEng: 'English'
             },
@@ -153,11 +231,13 @@
                 settingsTitle: 'Settings',
                 languageLabel: 'Language:',
                 closeButton: 'Close',
+                readInstructions: 'Read Instructions',
                 langId: 'Indonesia',
                 langEng: 'English'
             }
         };
 
+        // --- APP CONTENT ---
         const displayContent = {
             id: [
                 { title: translations.id.victimName, items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] },
@@ -170,59 +250,203 @@
                 { title: translations.eng.weapon, items: ['Knife', 'Hammer', 'Scissors', 'Crowbar', 'Iron rod'] }
             ]
         };
-        
         const gestureTexts = [
             { 'Up': 'Eleanor', 'Right': 'Abigail', 'Down': 'Lillian', 'Left': 'Margaret', 'Tap': 'Beatrice' },
             { 'Up': 'kamar lantai dua', 'Right': 'loteng', 'Down': 'gudang belakang', 'Left': 'ruang bawah tanah', 'Tap': 'lorong dekat dapur' },
             { 'Up': 'pisau', 'Right': 'palu', 'Down': 'gunting', 'Left': 'linggis', 'Tap': 'batang besi' }
         ];
 
-        // --- STATE VARIABLES ---
-        let startX = 0, startY = 0;
-        let gestureCount = 0;
-        let currentSlideIndex = 0;
-        const gestureSequence = [];
-        let gestureTextHistory = [];
-        let isSessionActive = true;
-        let tapCount = 0;
-        let lastTapTime = 0;
-        let tapHoldTimeout = null;
-        let currentLanguage = 'id';
-        let twoFingerTrack = null;
-        let multiTouchJustEnded = false;
-        let startArea = null;
-        let isDragging = false;
-        let initialTranslate = 0;
-
-        // --- CONSTANTS ---
-        const SWIPE_THRESHOLD = 50;
-        const TAP_THRESHOLD = 10;
-        const DOUBLE_TAP_TIMEOUT = 300;
-        const TAP_HOLD_DURATION = 500;
-        const TOTAL_SLIDES = 4; // 3 questions + 1 QR code
-        const SLIDE_GAP = 20; // The gap in pixels between slides
-        
-        // --- MAPPINGS for Grid Logic ---
+        // --- STATE & CONSTANTS ---
+        let startX = 0, startY = 0, gestureCount = 0, currentSlideIndex = 0;
+        const gestureSequence = [], gestureTextHistory = [];
+        let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
+        let currentLanguage = 'eng', twoFingerTrack = null, multiTouchJustEnded = false; // Default lang is now 'eng'
+        let startArea = null, isDragging = false, initialTranslate = 0;
+        const SWIPE_THRESHOLD = 50, TAP_THRESHOLD = 10, DOUBLE_TAP_TIMEOUT = 300;
+        const TAP_HOLD_DURATION = 500, TOTAL_SLIDES = 4, SLIDE_GAP = 20;
         const gridToGesture = { 'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E' };
         const gestureToCode = { 'A': 'Fl', 'B': 'uC', 'C': 'zW', 'D': 'Xy', 'E': 'Qr' };
         const gestureToTextKey = { 'A': 'Up', 'B': 'Right', 'C': 'Left', 'D': 'Down', 'E': 'Tap' };
 
-        // --- CORE FUNCTIONS ---
+        // --- LICENSE LOGIC ---
+        const showLicenseModal = () => {
+            licenseModal.style.display = 'flex';
+            appWrapper.classList.add('locked');
+        };
 
+        const hideLicenseModal = () => {
+            licenseModal.style.display = 'none';
+            appWrapper.classList.remove('locked');
+        };
+        
+        // NEW: Function to show the one-time toast notification
+        const showSettingsToastIfNeeded = () => {
+            if (!localStorage.getItem('atmaSettingsToastShown')) {
+                settingsToast.classList.remove('hidden');
+                localStorage.setItem('atmaSettingsToastShown', 'true');
+            }
+        };
+
+        const unlockApp = () => {
+            hideLicenseModal();
+            setLanguage('eng'); // Set default language to English
+            showSettingsToastIfNeeded(); // Show one-time notification
+        };
+        
+        const setButtonLoading = (isLoading) => {
+            const buttonContent = verifyLicenseBtn.querySelector('span');
+            if (isLoading) {
+                buttonContent.style.display = 'none';
+                if (!verifyLicenseBtn.querySelector('.spinner')) {
+                    const spinner = document.createElement('div');
+                    spinner.className = 'spinner';
+                    verifyLicenseBtn.appendChild(spinner);
+                }
+            } else {
+                buttonContent.style.display = 'inline';
+                const spinner = verifyLicenseBtn.querySelector('.spinner');
+                if (spinner) {
+                    spinner.remove();
+                }
+            }
+        };
+
+        const verifyLicense = async () => {
+            const key = licenseKeyInput.value.trim().toUpperCase();
+            if (!key) {
+                licenseError.textContent = 'Please enter a license key.';
+                return;
+            }
+
+            setButtonLoading(true);
+            licenseError.textContent = '';
+
+            try {
+                const availableLicenseRef = doc(db, 'availableLicenses', key);
+                const licenseSnap = await getDoc(availableLicenseRef);
+
+                if (licenseSnap.exists() && licenseSnap.data().status === 'available') {
+                    // License is valid, move it to activatedLicenses
+                    const originalData = licenseSnap.data();
+                    const activatedLicenseRef = doc(db, 'activatedLicenses', key);
+
+                    // Create new document in activatedLicenses
+                    await setDoc(activatedLicenseRef, {
+                        ...originalData,
+                        status: 'used',
+                        uid: auth.currentUser.uid,
+                        claimedAt: serverTimestamp()
+                    });
+
+                    // Delete the original license from availableLicenses
+                    await deleteDoc(availableLicenseRef);
+                    
+                    // Save to local storage
+                    const licenseData = {
+                        key: key,
+                        lastValidated: new Date().getTime()
+                    };
+                    localStorage.setItem('atmaLicense', JSON.stringify(licenseData));
+                    
+                    unlockApp();
+                } else {
+                    // License is invalid or already used
+                    licenseError.textContent = 'Invalid or already used license key.';
+                }
+            } catch (error) {
+                console.error("Error verifying license:", error);
+                licenseError.textContent = 'Verification failed. Please try again.';
+            } finally {
+                setButtonLoading(false);
+            }
+        };
+
+        const checkLicense = async () => {
+            const licenseDataString = localStorage.getItem('atmaLicense');
+            if (!licenseDataString) {
+                showLicenseModal();
+                return;
+            }
+
+            const licenseData = JSON.parse(licenseDataString);
+            const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000;
+            const isExpired = (new Date().getTime() - licenseData.lastValidated) > sevenDaysInMillis;
+
+            if (!isExpired) {
+                unlockApp();
+                return;
+            }
+            
+            // Re-verify if older than 7 days
+            try {
+                const licenseRef = doc(db, 'activatedLicenses', licenseData.key);
+                const licenseSnap = await getDoc(licenseRef);
+
+                if (licenseSnap.exists() && licenseSnap.data().uid === auth.currentUser.uid) {
+                    // Re-verification successful
+                    licenseData.lastValidated = new Date().getTime();
+                    localStorage.setItem('atmaLicense', JSON.stringify(licenseData));
+                    unlockApp();
+                } else {
+                    // Re-verification failed (license revoked or tampered)
+                    localStorage.removeItem('atmaLicense');
+                    showLicenseModal();
+                    licenseError.textContent = 'License re-validation failed. Please enter again.';
+                }
+            } catch (error) {
+                 console.error("Error re-verifying license:", error);
+                 // Unlock app anyway if offline, but don't update timestamp
+                 unlockApp();
+            }
+        };
+        
+        // --- INITIALIZATION ---
+        window.onload = async () => {
+            try {
+                await signInAnonymously(auth);
+                await checkLicense();
+            } catch (error) {
+                console.error("Firebase Auth failed:", error);
+                showLicenseModal();
+                licenseError.textContent = "Could not connect to authentication service.";
+            }
+        };
+
+        // --- EVENT LISTENERS ---
+        verifyLicenseBtn.addEventListener('click', verifyLicense);
+        licenseKeyInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                verifyLicense();
+            }
+        });
+
+        // NEW: Event listener for the toast close button
+        closeToastBtn.addEventListener('click', () => {
+            settingsToast.classList.add('hidden');
+        });
+        
+        window.onresize = () => {
+            if (!appWrapper.classList.contains('locked')) {
+                animateToSlide(currentSlideIndex);
+            }
+        };
+        
+        // --- APP CORE FUNCTIONS ---
         function setLanguage(lang) {
             currentLanguage = lang;
             const t = translations[currentLanguage];
             settingsTitle.textContent = t.settingsTitle;
             languageLabel.textContent = t.languageLabel;
             closeSettingsButton.textContent = t.closeButton;
+            readInstructionsButton.textContent = t.readInstructions;
             langIdButton.textContent = t.langId;
             langEngButton.textContent = t.langEng;
             if (lang === 'id') {
-                langIdButton.className = 'flex-1 p-2 rounded-md border-2 border-blue-500 bg-blue-500 text-white';
-                langEngButton.className = 'flex-1 p-2 rounded-md border-2 border-gray-300 bg-white text-black';
+                langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
+                langEngButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
             } else {
-                langIdButton.className = 'flex-1 p-2 rounded-md border-2 border-gray-300 bg-white text-black';
-                langEngButton.className = 'flex-1 p-2 rounded-md border-2 border-blue-500 bg-blue-500 text-white';
+                langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
+                langEngButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
             }
             resetApp();
         }
@@ -292,7 +516,6 @@
             historyOverlayElement.classList.remove('show');
         }
 
-        // --- GRID FUNCTIONS ---
         function getGridArea(clientX, clientY) {
             const rect = displayArea.getBoundingClientRect();
             if (clientX < rect.left || clientX > rect.right || clientY < rect.top || clientY > rect.bottom) return null;
@@ -309,41 +532,32 @@
             return null;
         }
 
-
-        // --- MODAL FUNCTIONS ---
         function openSettingsModal() { settingsModal.classList.remove('hidden'); }
         function closeSettingsModal() { settingsModal.classList.add('hidden'); }
 
-        // --- EVENT LISTENERS ---
-
         touchArea.addEventListener('touchstart', (e) => {
-            if (e.target.closest('#settings-modal')) return;
+            if (appWrapper.classList.contains('locked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
-            
             if (e.touches.length === 2) {
                 twoFingerTrack = { startY1: e.touches[0].clientY, startY2: e.touches[1].clientY, swiped: false };
                 return; 
             }
-
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
-            
             if (isSessionActive) {
                 startArea = getGridArea(startX, startY);
             } else {
-                isDragging = false; // Reset dragging flag
-                slideContainer.style.transition = 'none'; // Disable animation during drag
+                isDragging = false;
+                slideContainer.style.transition = 'none';
                 const slideWidth = displayArea.getBoundingClientRect().width;
                 initialTranslate = -((slideWidth * currentSlideIndex) + (SLIDE_GAP * currentSlideIndex));
                 tapHoldTimeout = setTimeout(showHistoryOverlay, TAP_HOLD_DURATION);
             }
-
         }, { passive: false });
 
         touchArea.addEventListener('touchmove', (e) => {
-            if (e.target.closest('#settings-modal')) return;
+            if (appWrapper.classList.contains('locked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
-            
             if (twoFingerTrack && e.touches.length === 2 && !twoFingerTrack.swiped) {
                 const deltaY1 = e.touches[0].clientY - twoFingerTrack.startY1;
                 const deltaY2 = e.touches[1].clientY - twoFingerTrack.startY2;
@@ -353,50 +567,37 @@
                 }
                 return;
             }
-            
-            // If session is over, handle dragging
             if (!isSessionActive) {
                 const currentX = e.touches[0].clientX;
                 const diffX = currentX - startX;
-
-                // BUG FIX: If we start moving, it's a drag, not a hold. Cancel the timeout.
                 if (Math.abs(diffX) > TAP_THRESHOLD) {
                     isDragging = true;
                     if (tapHoldTimeout) clearTimeout(tapHoldTimeout);
                 }
-
                 if (isDragging) {
                     slideContainer.style.transform = `translateX(${initialTranslate + diffX}px)`;
                 }
             }
-
         }, { passive: false });
 
         touchArea.addEventListener('touchend', (e) => {
-            if (e.target.closest('#settings-modal')) return;
-
+            if (appWrapper.classList.contains('locked') || e.target.closest('#settings-modal')) return;
             if (twoFingerTrack) {
                 twoFingerTrack = null;
                 multiTouchJustEnded = true;
                 setTimeout(() => { multiTouchJustEnded = false; }, 50);
                 return;
             }
-
             if (multiTouchJustEnded) return;
-            
             if (tapHoldTimeout) clearTimeout(tapHoldTimeout);
             hideHistoryOverlay();
-            
             const endX = e.changedTouches[0].clientX;
             const endY = e.changedTouches[0].clientY;
             const diffX = endX - startX;
             const absDiffX = Math.abs(diffX);
             const absDiffY = Math.abs(endY - startY);
-
-            // --- GALLERY NAVIGATION LOGIC (POST-SESSION) ---
             if (!isSessionActive) {
                 const isTap = absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD;
-                
                 if (isTap) {
                     const currentTime = new Date().getTime();
                     tapCount = (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) ? tapCount + 1 : 1;
@@ -409,32 +610,24 @@
                         currentSlideIndex--;
                     }
                 }
-                animateToSlide(currentSlideIndex); // Snap to the correct slide
+                animateToSlide(currentSlideIndex);
                 isDragging = false;
                 return;
             }
-
-            // --- ACTIVE SESSION GESTURE LOGIC ---
             let detectedGesture = '';
-            if (startArea && diffX < 0 && absDiffX > SWIPE_THRESHOLD && absDiffX > absDiffY) {
+            if (startArea && diffX < -SWIPE_THRESHOLD && absDiffX > absDiffY) {
                 detectedGesture = gridToGesture[startArea];
             }
             startArea = null;
-
             if (!detectedGesture) return;
-
             const gestureCode = gestureToCode[detectedGesture];
             if (gestureCode) {
                 gestureSequence.push(gestureCode);
-                
                 const textKey = gestureToTextKey[detectedGesture];
                 const textToShow = gestureTexts[gestureCount][textKey];
                 if (textToShow) gestureTextHistory.push(textToShow);
-                
                 gestureCount++;
-
                 animateToSlide(gestureCount);
-                
                 if (gestureCount >= 3) {
                     isSessionActive = false;
                     const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
@@ -453,19 +646,12 @@
             }
         });
 
-        // Modal button listeners
         langIdButton.addEventListener('click', () => setLanguage('id'));
         langEngButton.addEventListener('click', () => setLanguage('eng'));
         closeSettingsButton.addEventListener('click', closeSettingsModal);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
-        // --- INITIALIZATION ---
-        window.onload = () => {
-            setLanguage('id');
-        };
-        window.onresize = () => {
-            animateToSlide(currentSlideIndex);
-        };
     </script>
 </body>
 </html>
+
