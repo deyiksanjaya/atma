@@ -7,11 +7,11 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="AtmaGesture">
+    <meta name="apple-mobile-web-app-title" content="Photos">
     <link rel="apple-touch-icon" href="https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png" onerror="this.onerror=null;this.src='https://placehold.co/180x180/000000/FFFFFF?text=Icon';">
     <link rel="icon" href="https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png" onerror="this.onerror=null;this.src='https://placehold.co/32x32/000000/FFFFFF?text=Icon';">
 
-    <title>Gesture Encoder</title>
+    <title>Atma by Heri Sanjaya</title>
     <!-- Google Fonts untuk nuansa koran antik -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,8 +31,12 @@
             height: 100%;
             margin: 0;
         }
-        #app-wrapper.locked {
+        /* Hide app wrapper initially to prevent flash of content */
+        #app-wrapper {
             display: none;
+        }
+        #app-wrapper.unlocked {
+            display: block;
         }
         /* Main container for the solid black background */
         #app-container {
@@ -55,7 +59,6 @@
         #slide-container {
             height: 100%;
             display: flex;
-            /* Transition is now controlled by JS for dragging effect */
             gap: 20px;
         }
         /* The transparent container for each photo */
@@ -118,7 +121,7 @@
 <body id="touchArea" class="bg-black">
 
     <!-- License Modal -->
-    <div id="license-modal" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 p-4">
+    <div id="license-modal" class="fixed inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50 p-4" style="display: none;">
         <div class="font-lora bg-[#fdfaf3] rounded-sm p-6 w-full max-w-sm text-[#1a1a1a] border-2 border-black shadow-2xl text-center">
             <h2 class="font-playfair text-2xl mb-4 border-b-2 border-gray-400 pb-2 uppercase">License Activation</h2>
             <p class="mb-6">Please enter your license key to unlock the app.</p>
@@ -131,8 +134,8 @@
     </div>
 
     <!-- App Wrapper -->
-    <div id="app-wrapper" class="locked">
-        <!-- NEW: One-time Settings Notification -->
+    <div id="app-wrapper">
+        <!-- One-time Settings Notification -->
         <div id="settings-toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 w-11/12 max-w-sm bg-[#fdfaf3] text-[#1a1a1a] p-3 rounded-sm shadow-lg z-30 flex items-center justify-between font-lora border-2 border-black">
             <p>Tip: Two-finger swipe down to open settings.</p>
             <button id="close-toast-btn" class="text-2xl font-bold leading-none pl-4">&times;</button>
@@ -140,7 +143,6 @@
 
         <!-- Main container with solid black background -->
         <div id="app-container">
-            <!-- The gallery frame, centered on the black background -->
             <div id="display-area">
                 <div id="slide-container"></div>
             </div>
@@ -180,8 +182,8 @@
         const verifyLicenseBtn = document.getElementById('verify-license-btn');
         const licenseError = document.getElementById('license-error');
         const appWrapper = document.getElementById('app-wrapper');
-        const settingsToast = document.getElementById('settings-toast'); // <-- NEW
-        const closeToastBtn = document.getElementById('close-toast-btn'); // <-- NEW
+        const settingsToast = document.getElementById('settings-toast');
+        const closeToastBtn = document.getElementById('close-toast-btn');
         const displayArea = document.getElementById('display-area');
         const slideContainer = document.getElementById('slide-container');
         const touchArea = document.getElementById('touchArea');
@@ -260,7 +262,7 @@
         let startX = 0, startY = 0, gestureCount = 0, currentSlideIndex = 0;
         const gestureSequence = [], gestureTextHistory = [];
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
-        let currentLanguage = 'eng', twoFingerTrack = null, multiTouchJustEnded = false; // Default lang is now 'eng'
+        let currentLanguage = 'eng', twoFingerTrack = null, multiTouchJustEnded = false;
         let startArea = null, isDragging = false, initialTranslate = 0;
         const SWIPE_THRESHOLD = 50, TAP_THRESHOLD = 10, DOUBLE_TAP_TIMEOUT = 300;
         const TAP_HOLD_DURATION = 500, TOTAL_SLIDES = 4, SLIDE_GAP = 20;
@@ -271,15 +273,9 @@
         // --- LICENSE LOGIC ---
         const showLicenseModal = () => {
             licenseModal.style.display = 'flex';
-            appWrapper.classList.add('locked');
+            appWrapper.classList.remove('unlocked');
         };
 
-        const hideLicenseModal = () => {
-            licenseModal.style.display = 'none';
-            appWrapper.classList.remove('locked');
-        };
-        
-        // NEW: Function to show the one-time toast notification
         const showSettingsToastIfNeeded = () => {
             if (!localStorage.getItem('atmaSettingsToastShown')) {
                 settingsToast.classList.remove('hidden');
@@ -288,9 +284,10 @@
         };
 
         const unlockApp = () => {
-            hideLicenseModal();
-            setLanguage('eng'); // Set default language to English
-            showSettingsToastIfNeeded(); // Show one-time notification
+            licenseModal.style.display = 'none';
+            appWrapper.classList.add('unlocked');
+            setLanguage('eng');
+            showSettingsToastIfNeeded();
         };
         
         const setButtonLoading = (isLoading) => {
@@ -317,40 +314,28 @@
                 licenseError.textContent = 'Please enter a license key.';
                 return;
             }
-
             setButtonLoading(true);
             licenseError.textContent = '';
-
             try {
                 const availableLicenseRef = doc(db, 'availableLicenses', key);
                 const licenseSnap = await getDoc(availableLicenseRef);
-
                 if (licenseSnap.exists() && licenseSnap.data().status === 'available') {
-                    // License is valid, move it to activatedLicenses
                     const originalData = licenseSnap.data();
                     const activatedLicenseRef = doc(db, 'activatedLicenses', key);
-
-                    // Create new document in activatedLicenses
                     await setDoc(activatedLicenseRef, {
                         ...originalData,
                         status: 'used',
                         uid: auth.currentUser.uid,
                         claimedAt: serverTimestamp()
                     });
-
-                    // Delete the original license from availableLicenses
                     await deleteDoc(availableLicenseRef);
-                    
-                    // Save to local storage
                     const licenseData = {
                         key: key,
                         lastValidated: new Date().getTime()
                     };
                     localStorage.setItem('atmaLicense', JSON.stringify(licenseData));
-                    
                     unlockApp();
                 } else {
-                    // License is invalid or already used
                     licenseError.textContent = 'Invalid or already used license key.';
                 }
             } catch (error) {
@@ -361,7 +346,7 @@
             }
         };
 
-        const checkLicense = async () => {
+        const checkLicenseOnLoad = async () => {
             const licenseDataString = localStorage.getItem('atmaLicense');
             if (!licenseDataString) {
                 showLicenseModal();
@@ -381,21 +366,17 @@
             try {
                 const licenseRef = doc(db, 'activatedLicenses', licenseData.key);
                 const licenseSnap = await getDoc(licenseRef);
-
                 if (licenseSnap.exists() && licenseSnap.data().uid === auth.currentUser.uid) {
-                    // Re-verification successful
                     licenseData.lastValidated = new Date().getTime();
                     localStorage.setItem('atmaLicense', JSON.stringify(licenseData));
                     unlockApp();
                 } else {
-                    // Re-verification failed (license revoked or tampered)
                     localStorage.removeItem('atmaLicense');
                     showLicenseModal();
                     licenseError.textContent = 'License re-validation failed. Please enter again.';
                 }
             } catch (error) {
                  console.error("Error re-verifying license:", error);
-                 // Unlock app anyway if offline, but don't update timestamp
                  unlockApp();
             }
         };
@@ -404,7 +385,7 @@
         window.onload = async () => {
             try {
                 await signInAnonymously(auth);
-                await checkLicense();
+                await checkLicenseOnLoad();
             } catch (error) {
                 console.error("Firebase Auth failed:", error);
                 showLicenseModal();
@@ -415,18 +396,13 @@
         // --- EVENT LISTENERS ---
         verifyLicenseBtn.addEventListener('click', verifyLicense);
         licenseKeyInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') {
-                verifyLicense();
-            }
+            if (e.key === 'Enter') verifyLicense();
         });
-
-        // NEW: Event listener for the toast close button
         closeToastBtn.addEventListener('click', () => {
             settingsToast.classList.add('hidden');
         });
-        
         window.onresize = () => {
-            if (!appWrapper.classList.contains('locked')) {
+            if (appWrapper.classList.contains('unlocked')) {
                 animateToSlide(currentSlideIndex);
             }
         };
@@ -445,8 +421,8 @@
                 langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
                 langEngButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
             } else {
-                langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
                 langEngButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
+                langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
             }
             resetApp();
         }
@@ -454,21 +430,18 @@
         function createSlide(slideIndex) {
             const slide = document.createElement('div');
             slide.className = 'slide';
-            
             const slideContent = document.createElement('div');
             slideContent.className = 'slide-content';
-
-            if (slideIndex < 3) { // Question slides
+            if (slideIndex < 3) {
                 const contentData = displayContent[currentLanguage][slideIndex];
                 const listItems = contentData.items.map(item => `<li class="ml-4 text-xl">• ${item}</li>`).join('');
                 slideContent.innerHTML = `
                     <div class="text-left w-full h-full flex flex-col justify-center">
                         <h2 class="text-3xl font-bold mb-4">${contentData.title}</h2>
                         <ul class="list-none space-y-2">${listItems}</ul>
-                    </div>
-                `;
-            } else { // QR Code slide - it will be populated later
-                slideContent.innerHTML = ''; // Start empty
+                    </div>`;
+            } else {
+                slideContent.innerHTML = '';
             }
             slide.appendChild(slideContent);
             return slide;
@@ -485,8 +458,7 @@
         function setupInitialView() {
             slideContainer.innerHTML = '';
             for(let i = 0; i < TOTAL_SLIDES; i++) {
-                const slide = createSlide(i);
-                slideContainer.appendChild(slide);
+                slideContainer.appendChild(createSlide(i));
             }
             animateToSlide(0);
         }
@@ -536,7 +508,7 @@
         function closeSettingsModal() { settingsModal.classList.add('hidden'); }
 
         touchArea.addEventListener('touchstart', (e) => {
-            if (appWrapper.classList.contains('locked') || e.target.closest('#settings-modal')) return;
+            if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
             if (e.touches.length === 2) {
                 twoFingerTrack = { startY1: e.touches[0].clientY, startY2: e.touches[1].clientY, swiped: false };
@@ -556,7 +528,7 @@
         }, { passive: false });
 
         touchArea.addEventListener('touchmove', (e) => {
-            if (appWrapper.classList.contains('locked') || e.target.closest('#settings-modal')) return;
+            if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
             if (twoFingerTrack && e.touches.length === 2 && !twoFingerTrack.swiped) {
                 const deltaY1 = e.touches[0].clientY - twoFingerTrack.startY1;
@@ -581,7 +553,7 @@
         }, { passive: false });
 
         touchArea.addEventListener('touchend', (e) => {
-            if (appWrapper.classList.contains('locked') || e.target.closest('#settings-modal')) return;
+            if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
             if (twoFingerTrack) {
                 twoFingerTrack = null;
                 multiTouchJustEnded = true;
@@ -654,4 +626,3 @@
     </script>
 </body>
 </html>
-
