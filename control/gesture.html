@@ -283,12 +283,14 @@
             }
         };
 
-        const unlockApp = () => {
+                const unlockApp = () => {
             licenseModal.style.display = 'none';
             appWrapper.classList.add('unlocked');
-            setLanguage('eng');
+            const savedLang = localStorage.getItem('atmaLanguage') || 'eng';
+            setLanguage(savedLang);
             showSettingsToastIfNeeded();
         };
+
         
         const setButtonLoading = (isLoading) => {
             const buttonContent = verifyLicenseBtn.querySelector('span');
@@ -408,7 +410,8 @@
         };
         
         // --- APP CORE FUNCTIONS ---
-        function setLanguage(lang) {
+                function setLanguage(lang) {
+            localStorage.setItem('atmaLanguage', lang);
             currentLanguage = lang;
             const t = translations[currentLanguage];
             settingsTitle.textContent = t.settingsTitle;
