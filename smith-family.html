@@ -204,7 +204,7 @@
             background-color: #CC0000;
             flex-shrink: 0;
         }
-                .evidence-figure {
+        .evidence-figure {
             margin-top: 2rem;
             margin-bottom: 2rem;
             padding: 1rem;
@@ -229,12 +229,10 @@
     </style>
 </head>
 <body class="bg-white text-gray-900">
-    <!-- Loading Overlay -->
     <div id="loadingOverlay">
         <div class="spinner"></div>
     </div>
 
-    <!-- Header -->
     <header id="mainHeader" class="flex items-center justify-between py-2 bg-white sticky top-0 z-10 px-4 sm:px-6 lg:px-8">
         <div class="flex items-center space-x-2 max-w-4xl mx-auto w-full">
             <button class="text-gray-600 focus:outline-none">
@@ -246,10 +244,8 @@
     </header>
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-0 pb-8">
-        <!-- Garis hitam di bawah header (menempel dan mengikuti lebar konten) -->
         <div class="border-t-2 border-black"></div>
         <article>
-            <!-- Breadcrumbs and Read Time -->
             <div class="flex items-center text-xs text-gray-500 mt-4 mb-4">
                 <span id="breadcrumbWorld" class="font-semibold">WORLD</span>
                 <svg class="w-3 h-3 mx-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -260,7 +256,6 @@
                 <span id="readTime">5 MIN READ</span>
             </div>
 
-            <!-- Article Title with Red Bar -->
             <div class="flex items-start mb-6 -ml-4 sm:-ml-6 lg:-ml-8">
                 <div class="cnn-red-bar self-stretch"></div>
                 <h1 id="articleTitle" class="text-3xl sm:text-4xl lg:text-5xl font-extrabold leading-tight pl-4 sm:pl-6 lg:pl-8">
@@ -268,7 +263,6 @@
                 </h1>
             </div>
 
-            <!-- Update Time & Author -->
             <div class="flex items-center text-gray-600 mb-1 text-xs">
                 <span id="publishedLabel" class="font-semibold">DITERBITKAN</span>
                 <time id="publishedTime" datetime="2010-03-15 10:00" class="ml-1">15 Maret 2010</time>
@@ -280,7 +274,6 @@
                 <span id="authorPrefix">Oleh</span> <span id="authorName" class="font-semibold">Tim Misteri CNN Indonesia</span>
             </p>
 
-            <!-- Video/Image Placeholder -->
             <figure class="relative w-screen h-0 pb-[75%] bg-gray-300 overflow-hidden mb-8
                             ml-[calc(50%-50vw)] article-image-block" id="articleImageContainer">
                 <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
@@ -291,8 +284,7 @@
             </figure>
 
             <div class="article-content text-lg leading-relaxed mb-4" id="articleContent">
-                <!-- Konten akan diisi oleh JavaScript -->
-            </div>
+                </div>
         </article>
 
         <section class="border-t border-gray-200 pt-6 mt-8">
@@ -305,7 +297,6 @@
         </section>
     </main>
 
-    <!-- New section above footer -->
     <section class="bg-black text-white py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-4xl mx-auto">
             <div class="relative mb-8">
@@ -381,7 +372,6 @@
         </div>
     </footer>
 
-    <!-- Gallery Overlay -->
     <div id="galleryOverlay" class="gallery-overlay">
         <span class="close-button">&times;</span>
         <div class="gallery-content">
@@ -459,7 +449,7 @@
             }
             
             // 3. Get decoded parameters from URL using the correct language maps
-                        function getArticleParams(lang) {
+            function getArticleParams(lang) {
                 const params = new URLSearchParams(window.location.search);
                 const idParam = params.get('id') || 'FlFlFl';
 
@@ -487,7 +477,7 @@
             }
 
             // 4. Populate dynamic article content using translated text and parameters
-                        function populateArticleContent(lang, articleParams) {
+            function populateArticleContent(lang, articleParams) {
                 const t = translations[lang];
                 const { namaKorban, lokasi, alat, alatImage } = articleParams;
 
@@ -502,10 +492,10 @@
                     <p>${t.articleP1}</p>
                     <p>${t.articleP2}</p>
                     <p>${t.articleP3}</p>
+                    ${evidenceFigureHTML}
                     <h2 class="text-xl font-bold mb-4 mt-6">${t.articleH2}</h2>
                     <p>${t.articleP4}</p>
                     <p>${t.articleP5}</p>
-                    ${evidenceFigureHTML}
                     <h3 class="text-lg font-bold mb-4 mt-6">${t.articleH3}</h3>
                     <p>${t.articleP6}</p>
                     <p>${t.articleP7}</p>
