@@ -204,6 +204,28 @@
             background-color: #CC0000;
             flex-shrink: 0;
         }
+                .evidence-figure {
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            background-color: #f7fafc;
+        }
+        .evidence-figure img {
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+            pointer-events: none;
+        }
+        .evidence-figure figcaption {
+            margin-top: 0.75rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #4a5568;
+            font-style: italic;
+        }
     </style>
 </head>
 <body class="bg-white text-gray-900">
@@ -437,7 +459,7 @@
             }
             
             // 3. Get decoded parameters from URL using the correct language maps
-            function getArticleParams(lang) {
+                        function getArticleParams(lang) {
                 const params = new URLSearchParams(window.location.search);
                 const idParam = params.get('id') || 'FlFlFl';
 
@@ -452,20 +474,29 @@
 
                 const [namaKorbanChar, lokasiChar, alatChar] = decodedChars;
                 
-                // Get the correct maps from the translations object
                 const { namaKorbanMap, lokasiMap, alatMap } = translations[lang].articleParams;
+                
+                const alatObject = alatMap[alatChar] || { name: 'a sharp object', image: '' };
 
                 return {
                     namaKorban: namaKorbanMap[namaKorbanChar] || 'Jane Eleanor',
                     lokasi: lokasiMap[lokasiChar] || 'a room in the house',
-                    alat: alatMap[alatChar] || 'a sharp object',
+                    alat: alatObject.name,
+                    alatImage: alatObject.image
                 };
             }
 
             // 4. Populate dynamic article content using translated text and parameters
-            function populateArticleContent(lang, articleParams) {
+                        function populateArticleContent(lang, articleParams) {
                 const t = translations[lang];
-                const { namaKorban, lokasi, alat } = articleParams;
+                const { namaKorban, lokasi, alat, alatImage } = articleParams;
+
+                const evidenceFigureHTML = alatImage ? `
+                    <figure class="evidence-figure">
+                        <img src="./evidences/${alatImage}" alt="${t.evidenceCaption.replace('${alat}', alat)}" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
+                        <figcaption>${t.evidenceCaption.replace('${alat}', alat)}</figcaption>
+                    </figure>
+                ` : '';
 
                 const articleHTML = `
                     <p>${t.articleP1}</p>
@@ -474,6 +505,7 @@
                     <h2 class="text-xl font-bold mb-4 mt-6">${t.articleH2}</h2>
                     <p>${t.articleP4}</p>
                     <p>${t.articleP5}</p>
+                    ${evidenceFigureHTML}
                     <h3 class="text-lg font-bold mb-4 mt-6">${t.articleH3}</h3>
                     <p>${t.articleP6}</p>
                     <p>${t.articleP7}</p>
