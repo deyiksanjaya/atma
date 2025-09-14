@@ -137,7 +137,7 @@
     <div id="app-wrapper">
         <!-- One-time Settings Notification -->
         <div id="settings-toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 w-11/12 max-w-sm bg-[#fdfaf3] text-[#1a1a1a] p-3 rounded-sm shadow-lg z-30 flex items-center justify-between font-lora border-2 border-black">
-            <p>Tip: Two-finger swipe down to open settings.</p>
+            <p>Tip: Usap ke atas dari tepi bawah untuk pengaturan.</p>
             <button id="close-toast-btn" class="text-2xl font-bold leading-none pl-4">&times;</button>
         </div>
 
@@ -262,10 +262,11 @@
         let startX = 0, startY = 0, gestureCount = 0, currentSlideIndex = 0;
         const gestureSequence = [], gestureTextHistory = [];
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
-        let currentLanguage = 'eng', twoFingerTrack = null, multiTouchJustEnded = false;
+        let currentLanguage = 'eng', isSettingsSwipe = false;
         let startArea = null, isDragging = false, initialTranslate = 0;
         const SWIPE_THRESHOLD = 50, TAP_THRESHOLD = 10, DOUBLE_TAP_TIMEOUT = 300;
         const TAP_HOLD_DURATION = 500, TOTAL_SLIDES = 4, SLIDE_GAP = 20;
+        const SETTINGS_AREA_HEIGHT = 60; // NEW: Height from bottom for settings swipe
         const gridToGesture = { 'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E' };
         const gestureToCode = { 'A': 'Fl', 'B': 'uC', 'C': 'zW', 'D': 'Xy', 'E': 'Qr' };
         const gestureToTextKey = { 'A': 'Up', 'B': 'Right', 'C': 'Left', 'D': 'Down', 'E': 'Tap' };
@@ -283,7 +284,7 @@
             }
         };
 
-                const unlockApp = () => {
+        const unlockApp = () => {
             licenseModal.style.display = 'none';
             appWrapper.classList.add('unlocked');
             const savedLang = localStorage.getItem('atmaLanguage') || 'eng';
@@ -379,7 +380,7 @@
                 }
             } catch (error) {
                  console.error("Error re-verifying license:", error);
-                 unlockApp();
+                 unlockApp(); // Fallback to unlock if re-verification fails due to network etc.
             }
         };
         
@@ -410,7 +411,7 @@
         };
         
         // --- APP CORE FUNCTIONS ---
-                function setLanguage(lang) {
+        function setLanguage(lang) {
             localStorage.setItem('atmaLanguage', lang);
             currentLanguage = lang;
             const t = translations[currentLanguage];
@@ -513,12 +514,20 @@
         touchArea.addEventListener('touchstart', (e) => {
             if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
-            if (e.touches.length === 2) {
-                twoFingerTrack = { startY1: e.touches[0].clientY, startY2: e.touches[1].clientY, swiped: false };
-                return; 
+            const touch = e.touches[0];
+
+            // NEW: Check for settings swipe starting from the bottom edge
+            if (touch.clientY > window.innerHeight - SETTINGS_AREA_HEIGHT) {
+                isSettingsSwipe = true;
+                startX = touch.clientX;
+                startY = touch.clientY;
+                return; // Prioritize settings gesture
             }
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
+            isSettingsSwipe = false; // Reset if touch starts elsewhere
+            
+            // --- Existing logic ---
+            startX = touch.clientX;
+            startY = touch.clientY;
             if (isSessionActive) {
                 startArea = getGridArea(startX, startY);
             } else {
@@ -533,15 +542,19 @@
         touchArea.addEventListener('touchmove', (e) => {
             if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
-            if (twoFingerTrack && e.touches.length === 2 && !twoFingerTrack.swiped) {
-                const deltaY1 = e.touches[0].clientY - twoFingerTrack.startY1;
-                const deltaY2 = e.touches[1].clientY - twoFingerTrack.startY2;
-                if (deltaY1 > SWIPE_THRESHOLD && deltaY2 > SWIPE_THRESHOLD) {
+
+            // NEW: Handle settings swipe movement
+            if (isSettingsSwipe) {
+                const currentY = e.touches[0].clientY;
+                const diffY = startY - currentY; // Positive value for upward swipe
+                if (diffY > SWIPE_THRESHOLD) {
                     openSettingsModal();
-                    twoFingerTrack.swiped = true; 
+                    isSettingsSwipe = false; // Prevent re-triggering during the same touch
                 }
-                return;
+                return; // Don't process other movements
             }
+            
+            // --- Existing logic ---
             if (!isSessionActive) {
                 const currentX = e.touches[0].clientX;
                 const diffX = currentX - startX;
@@ -557,13 +570,14 @@
 
         touchArea.addEventListener('touchend', (e) => {
             if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
-            if (twoFingerTrack) {
-                twoFingerTrack = null;
-                multiTouchJustEnded = true;
-                setTimeout(() => { multiTouchJustEnded = false; }, 50);
-                return;
+            
+            // NEW: Finalize settings swipe
+            if (isSettingsSwipe) {
+                isSettingsSwipe = false;
+                return; // End the event here, it was for settings
             }
-            if (multiTouchJustEnded) return;
+
+            // --- Existing logic ---
             if (tapHoldTimeout) clearTimeout(tapHoldTimeout);
             hideHistoryOverlay();
             const endX = e.changedTouches[0].clientX;
