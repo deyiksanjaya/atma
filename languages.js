@@ -15,25 +15,17 @@ export const translations = {
     authorPrefix: "By",
     authorName: "CNN Mystery Team",
     imageFigcaption: "A portrait of the Smith family taken after the death of their fourth daughter",
+    evidenceCaption: "Evidence: The ${alat} found at the scene.",
     articleP1: "America — A 9-year-old girl was found dead under suspicious circumstances at the Smith family residence in ${lokasi} on Thursday night (01/17/1924). The victim, identified as ${namaKorban} Smith. The incident occurred just hours before the family’s scheduled annual photo session on their front porch.",
-
-articleP2: "According to the police report, ${namaKorban}'s body was discovered in a horrific condition. Initial investigations suggest she suffered fatal injuries caused by an attack involving a ${alat}. At the scene, officers recovered an old mask stained with dried blood. Inside the mask were scratch marks resembling ancient symbols or writings that have yet to be deciphered.",
-
-articleP3: "The body was transported to the hospital for an autopsy the following day. However, the procedure was never carried out, as the corpse was reported missing under mysterious circumstances. At 6:30 AM, the medical team found the autopsy table completely empty. CCTV footage from the area showed no activity for a span of seven minutes due to a technical failure. The only clue left behind was a blood trail that abruptly ended in the middle of the hospital corridor.",
-
-articleH2: "Bloody Mask and Suspicions of the Supernatural",
-
-articleP4: "The discovery of the mask and the unexplained disappearance of the body have led to growing speculation about possible supernatural involvement. While the police have not issued an official conclusion, they confirmed that experts in ancient symbols and historical artifacts have been brought in to examine the evidence. So far, no suspects or motives have been identified.",
-
-articleP5: "The Smith family has declined to give detailed comments to the media. In a brief statement, they said they have placed their full trust in the authorities to carry out a thorough investigation.",
-
-articleH3: "A Photo to Remember",
-
-articleP6: "Despite the grief and lingering uncertainty, the Smith family proceeded with their annual photo session as a tribute to the deceased. A small empty space was left in the center of the group—as if ${namaKorban} were still standing among them.",
-
-articleP7: "Days after the photo was developed, reports surfaced that a faint silhouette resembling ${namaKorban}’s face had appeared in the empty space. There has been no official comment regarding the claim. However, a family source stated the photo was not destroyed, despite reportedly causing psychological distress to some family members.",
-
-articleP8: "The case remains under investigation. Police have stated that they will continue to follow every lead to uncover the truth behind the incident, which has since drawn widespread public attention.",
+    articleP2: "According to the police report, ${namaKorban}'s body was discovered in a horrific condition. Initial investigations suggest she suffered fatal injuries caused by an attack involving a ${alat}. At the scene, officers recovered an old mask stained with dried blood. Inside the mask were scratch marks resembling ancient symbols or writings that have yet to be deciphered.",
+    articleP3: "The body was transported to the hospital for an autopsy the following day. However, the procedure was never carried out, as the corpse was reported missing under mysterious circumstances. At 6:30 AM, the medical team found the autopsy table completely empty. CCTV footage from the area showed no activity for a span of seven minutes due to a technical failure. The only clue left behind was a blood trail that abruptly ended in the middle of the hospital corridor.",
+    articleH2: "Bloody Mask and Suspicions of the Supernatural",
+    articleP4: "The discovery of the mask and the unexplained disappearance of the body have led to growing speculation about possible supernatural involvement. While the police have not issued an official conclusion, they confirmed that experts in ancient symbols and historical artifacts have been brought in to examine the evidence. So far, no suspects or motives have been identified.",
+    articleP5: "The Smith family has declined to give detailed comments to the media. In a brief statement, they said they have placed their full trust in the authorities to carry out a thorough investigation.",
+    articleH3: "A Photo to Remember",
+    articleP6: "Despite the grief and lingering uncertainty, the Smith family proceeded with their annual photo session as a tribute to the deceased. A small empty space was left in the center of the group—as if ${namaKorban} were still standing among them.",
+    articleP7: "Days after the photo was developed, reports surfaced that a faint silhouette resembling ${namaKorban}’s face had appeared in the empty space. There has been no official comment regarding the claim. However, a family source stated the photo was not destroyed, despite reportedly causing psychological distress to some family members.",
+    articleP8: "The case remains under investigation. Police have stated that they will continue to follow every lead to uncover the truth behind the incident, which has since drawn widespread public attention.",
     relatedTitle: "Read More",
     relatedLink1: "The Most Mysterious Criminal Cases of the 20th Century",
     relatedLink2: "History of Early 20th Century Criminal Psychology",
@@ -64,25 +56,17 @@ articleP8: "The case remains under investigation. Police have stated that they w
     copyright: "© 2025 Cable News Network. A Warner Bros. Discovery Company. All Rights Reserved.<br>CNN Sans ™ & © 2016 Cable News Network.",
     articleParams: {
         namaKorbanMap: {
-            'a': 'Eleanor',
-            'b': 'Abigail',
-            'c': 'Lillian',
-            'd': 'Margaret',
-            'e': 'Beatrice',
+            'a': 'Eleanor', 'b': 'Abigail', 'c': 'Lillian', 'd': 'Margaret', 'e': 'Beatrice',
         },
         lokasiMap: {
-            'a': 'the second-floor room',
-            'b': 'the attic',
-            'c': 'the back shed',
-            'd': 'the basement',
-            'e': 'the hallway near the kitchen',
+            'a': 'the second-floor room', 'b': 'the attic', 'c': 'the back shed', 'd': 'the basement', 'e': 'the hallway near the kitchen',
         },
         alatMap: {
-            'a': 'a knife',
-            'b': 'a hammer',
-            'c': 'scissors',
-            'd': 'a crowbar',
-            'e': 'an iron rod',
+            'a': { name: 'knife', image: 'knife.png' },
+            'b': { name: 'hammer', image: 'hammer.png' },
+            'c': { name: 'scissors', image: 'scissors.png' },
+            'd': { name: 'crowbar', image: 'crowbar.png' },
+            'e': { name: 'iron rod', image: 'iron-rod.png' },
         }
     }
   },
@@ -100,6 +84,7 @@ articleP8: "The case remains under investigation. Police have stated that they w
     authorPrefix: "Oleh",
     authorName: "Tim Misteri CNN Indonesia",
     imageFigcaption: "Potret keluarga Smith pasca kepergian putri keempatnya.",
+    evidenceCaption: "Barang bukti: ${alat} yang ditemukan di lokasi kejadian.",
     articleP1: "Jakarta, CNN Indonesia -- Seorang remaja perempuan berusia 9 tahun ditemukan tewas secara tidak wajar di kediaman keluarga Smith, tepatnya di ${lokasi}, Kamis malam (17/01/1924). Korban diketahui bernama ${namaKorban} Smith. Insiden terjadi hanya beberapa jam sebelum keluarga tersebut dijadwalkan menjalani sesi foto tahunan mereka di teras rumah.",
     articleP2: "Menurut laporan kepolisian, jasad ${namaKorban} ditemukan dalam kondisi mengenaskan. Dugaan awal menunjukkan korban mengalami luka fatal akibat serangan menggunakan ${alat}. Di lokasi kejadian, petugas menemukan sebuah topeng tua yang berlumuran darah kering. Pada bagian dalam topeng itu, terdapat goresan menyerupai simbol atau tulisan kuno yang belum dapat diidentifikasi.",
     articleP3: "Jasad korban sempat dibawa ke rumah sakit untuk proses otopsi pada keesokan harinya. Namun proses tersebut gagal dilaksanakan setelah jasad dilaporkan menghilang secara misterius. Meja otopsi ditemukan kosong oleh tim medis pada pukul 06.30 pagi. CCTV di sekitar ruangan tidak merekam aktivitas selama tujuh menit akibat gangguan teknis. Satu-satunya petunjuk yang tersisa adalah jejak darah yang berhenti di tengah lorong rumah sakit.",
@@ -140,25 +125,17 @@ articleP8: "The case remains under investigation. Police have stated that they w
     copyright: "© 2025 Cable News Network. Sebuah Perusahaan Warner Bros. Discovery. Semua Hak Dilindungi Undang-Undang.<br>CNN Sans ™ & © 2016 Cable News Network.",
     articleParams: {
         namaKorbanMap: {
-            'a': 'Eleanor',
-            'b': 'Abigail',
-            'c': 'Lillian',
-            'd': 'Margaret',
-            'e': 'Beatrice',
+            'a': 'Eleanor', 'b': 'Abigail', 'c': 'Lillian', 'd': 'Margaret', 'e': 'Beatrice',
         },
         lokasiMap: {
-            'a': 'kamar lantai dua',
-            'b': 'loteng',
-            'c': 'gudang belakang',
-            'd': 'ruang bawah tanah',
-            'e': 'lorong dekat dapur',
+            'a': 'kamar lantai dua', 'b': 'loteng', 'c': 'gudang belakang', 'd': 'ruang bawah tanah', 'e': 'lorong dekat dapur',
         },
         alatMap: {
-            'a': 'pisau',
-            'b': 'palu',
-            'c': 'gunting',
-            'd': 'linggis',
-            'e': 'batang besi',
+            'a': { name: 'pisau', image: 'knife.png' },
+            'b': { name: 'palu', image: 'hammer.png' },
+            'c': { name: 'gunting', image: 'scissors.png' },
+            'd': { name: 'linggis', image: 'crowbar.png' },
+            'e': { name: 'batang besi', image: 'iron-rod.png' },
         }
     }
   }
