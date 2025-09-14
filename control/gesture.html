@@ -137,7 +137,7 @@
     <div id="app-wrapper">
         <!-- One-time Settings Notification -->
         <div id="settings-toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 w-11/12 max-w-sm bg-[#fdfaf3] text-[#1a1a1a] p-3 rounded-sm shadow-lg z-30 flex items-center justify-between font-lora border-2 border-black">
-            <p>Tip: Usap ke atas dari tepi bawah untuk pengaturan.</p>
+            <p>Tip: Ketuk pojok kanan atas untuk pengaturan.</p>
             <button id="close-toast-btn" class="text-2xl font-bold leading-none pl-4">&times;</button>
         </div>
 
@@ -262,11 +262,11 @@
         let startX = 0, startY = 0, gestureCount = 0, currentSlideIndex = 0;
         const gestureSequence = [], gestureTextHistory = [];
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
-        let currentLanguage = 'eng', isSettingsSwipe = false;
+        let currentLanguage = 'eng';
         let startArea = null, isDragging = false, initialTranslate = 0;
         const SWIPE_THRESHOLD = 50, TAP_THRESHOLD = 10, DOUBLE_TAP_TIMEOUT = 300;
         const TAP_HOLD_DURATION = 500, TOTAL_SLIDES = 4, SLIDE_GAP = 20;
-        const SETTINGS_AREA_HEIGHT = 60; // NEW: Height from bottom for settings swipe
+        const SETTINGS_CORNER_SIZE = 60; // Ukuran area pojok dalam pixel
         const gridToGesture = { 'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E' };
         const gestureToCode = { 'A': 'Fl', 'B': 'uC', 'C': 'zW', 'D': 'Xy', 'E': 'Qr' };
         const gestureToTextKey = { 'A': 'Up', 'B': 'Right', 'C': 'Left', 'D': 'Down', 'E': 'Tap' };
@@ -514,20 +514,11 @@
         touchArea.addEventListener('touchstart', (e) => {
             if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
-            const touch = e.touches[0];
-
-            // NEW: Check for settings swipe starting from the bottom edge
-            if (touch.clientY > window.innerHeight - SETTINGS_AREA_HEIGHT) {
-                isSettingsSwipe = true;
-                startX = touch.clientX;
-                startY = touch.clientY;
-                return; // Prioritize settings gesture
-            }
-            isSettingsSwipe = false; // Reset if touch starts elsewhere
             
-            // --- Existing logic ---
+            const touch = e.touches[0];
             startX = touch.clientX;
             startY = touch.clientY;
+
             if (isSessionActive) {
                 startArea = getGridArea(startX, startY);
             } else {
@@ -542,19 +533,7 @@
         touchArea.addEventListener('touchmove', (e) => {
             if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
             e.preventDefault();
-
-            // NEW: Handle settings swipe movement
-            if (isSettingsSwipe) {
-                const currentY = e.touches[0].clientY;
-                const diffY = startY - currentY; // Positive value for upward swipe
-                if (diffY > SWIPE_THRESHOLD) {
-                    openSettingsModal();
-                    isSettingsSwipe = false; // Prevent re-triggering during the same touch
-                }
-                return; // Don't process other movements
-            }
             
-            // --- Existing logic ---
             if (!isSessionActive) {
                 const currentX = e.touches[0].clientX;
                 const diffX = currentX - startX;
@@ -570,23 +549,26 @@
 
         touchArea.addEventListener('touchend', (e) => {
             if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
-            
-            // NEW: Finalize settings swipe
-            if (isSettingsSwipe) {
-                isSettingsSwipe = false;
-                return; // End the event here, it was for settings
-            }
 
-            // --- Existing logic ---
             if (tapHoldTimeout) clearTimeout(tapHoldTimeout);
             hideHistoryOverlay();
+
             const endX = e.changedTouches[0].clientX;
             const endY = e.changedTouches[0].clientY;
             const diffX = endX - startX;
             const absDiffX = Math.abs(diffX);
             const absDiffY = Math.abs(endY - startY);
+            const isTap = absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD;
+
+            // --- NEW LOGIC FOR SETTINGS ---
+            // Check if this is a tap in the top-right corner
+            if (isTap && endX > window.innerWidth - SETTINGS_CORNER_SIZE && endY < SETTINGS_CORNER_SIZE) {
+                openSettingsModal();
+                return; // Stop execution, this was a settings action
+            }
+            // --- END OF NEW LOGIC ---
+
             if (!isSessionActive) {
-                const isTap = absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD;
                 if (isTap) {
                     const currentTime = new Date().getTime();
                     tapCount = (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) ? tapCount + 1 : 1;
@@ -603,12 +585,16 @@
                 isDragging = false;
                 return;
             }
+
             let detectedGesture = '';
-            if (startArea && diffX < -SWIPE_THRESHOLD && absDiffX > absDiffY) {
+            // Ensure input swipes are not confused with taps
+            if (!isTap && startArea && diffX < -SWIPE_THRESHOLD && absDiffX > absDiffY) {
                 detectedGesture = gridToGesture[startArea];
             }
+            
             startArea = null;
             if (!detectedGesture) return;
+
             const gestureCode = gestureToCode[detectedGesture];
             if (gestureCode) {
                 gestureSequence.push(gestureCode);
