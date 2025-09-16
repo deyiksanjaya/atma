@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="manifest" href="manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <!-- Meta tags for PWA -->
     <meta name="theme-color" content="#000000">
@@ -627,5 +628,18 @@
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
     </script>
+        <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/atma/control/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully with scope: ', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed: ', error);
+                    });
+            });
+        }
+        </script>
 </body>
 </html>
