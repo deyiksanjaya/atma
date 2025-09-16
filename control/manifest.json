@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png",
+      "src": "./image192.png",
       "type": "image/png",
       "sizes": "192x192",
       "purpose": "any maskable"
     },
     {
-      "src": "https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png",
+      "src": "./image512.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
