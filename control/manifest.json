@@ -1,8 +1,8 @@
 {
   "name": "Atma by Heri Sanjaya",
   "short_name": "Photos",
-  "description": "A gesture-based control application for a magic effect.",
-  "start_url": "/atma/control/gesture.html",
+  "description": "A gesture-based control application for Atma by Heri Sanjaya.",
+  "start_url": "./gesture.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
