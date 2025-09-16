@@ -1,20 +1,24 @@
 {
-  "name": "Atma Gesture Encoder",
+  "name": "Atma by Heri Sanjaya",
   "short_name": "Photos",
-  "start_url": "gesture.html",
+  "description": "A gesture-based control application for a magic effect.",
+  "start_url": "/atma/control/gesture.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png",
+      "type": "image/png",
       "sizes": "192x192",
-      "type": "image/png"
+      "purpose": "any maskable"
     },
     {
-      "src": "icon-512.png",
+      "src": "https://support.apple.com/content/dam/edam/applecare/images/en_US/psp/psp_heroes/mini-hero-photos.image.large_2x.png",
+      "type": "image/png",
       "sizes": "512x512",
-      "type": "image/png"
+      "purpose": "any maskable"
     }
   ]
 }
