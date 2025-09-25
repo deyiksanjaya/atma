@@ -13,6 +13,7 @@
         // Import necessary Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
         // --- FIREBASE CONFIG (same as your main app) ---
         const firebaseConfig = {
@@ -28,6 +29,7 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const rtdb = getDatabase(app);
+        const auth = getAuth(app);
 
         // --- REDIRECTION LOGIC ---
         window.onload = async () => {
@@ -61,6 +63,9 @@
             };
 
             try {
+                // Sign in anonymously to get permission to read data
+                await signInAnonymously(auth);
+
                 // 1. Get the user ID from the URL query parameter
                 const params = new URLSearchParams(window.location.search);
                 const userId = params.get('id');
@@ -95,7 +100,7 @@
                     showNotFoundError();
                 }
             } catch (error) {
-                console.error("Redirection failed:", error);
+                console.error("Redirection process failed:", error);
                 showNotFoundError();
             }
         };
