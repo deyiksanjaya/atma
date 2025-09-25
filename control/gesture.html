@@ -417,11 +417,10 @@
             const currentMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
             const currentLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
             
-            // For printed mode, also check the ID input field
             let idChanged = false;
-            if (initialSettings.mode === 'printed') {
-                 // Handles both creation (initial ID is '') and changing (initial ID is the locked ID)
-                idChanged = customIdInput.value !== initialSettings.id;
+            // Only consider ID changed if the input is unlocked for creation or changing
+            if (!customIdInput.readOnly) {
+                idChanged = customIdInput.value !== customId;
             }
 
             if (currentMode !== initialSettings.mode || currentLang !== initialSettings.lang || idChanged) {
@@ -528,84 +527,87 @@
         }
 
         async function saveSettings() {
-            // If no changes were made, just close the modal
+            // 1. Handle 'Exit' case (no changes)
             if (saveSettingsBtn.textContent === 'Exit') {
                 closeSettingsModal();
                 return;
             }
-            
+
             resetDeleteButtonState();
-            const selectedMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
-            const selectedLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
+            
+            // 2. Read final state from UI
+            const finalMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
+            const finalLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
+            const finalIdInput = customIdInput.value;
 
-            // Handle non-printed mode first for clarity
-            if (selectedMode !== 'printed') {
-                appMode = 'digital';
-                currentLanguage = selectedLang;
-                customId = ''; // Always clear customId in digital mode
-                localStorage.setItem('atmaSettings', JSON.stringify({ mode: appMode, id: customId, lang: currentLanguage }));
-                closeSettingsModal();
-                resetApp();
-                return;
-            }
+            // 3. Check if a reset is needed by comparing initial state with final state
+            const needsReset = finalMode !== appMode || 
+                             finalLang !== currentLanguage || 
+                             (finalMode === 'printed' && finalIdInput !== customId && finalIdInput) || // ID changed to something new
+                             (finalMode === 'digital' && appMode === 'printed');
 
-            // --- Logic for Printed QR Mode ---
-            const newIdValue = customIdInput.value;
-            if (!/^[0-9]{6}$/.test(newIdValue)) {
-                customIdError.textContent = 'ID must be exactly 6 digits.';
-                return;
-            }
 
-            // CASE 1: REPLACING AN EXISTING ID
-            if (oldIdToReplace) {
-                if (newIdValue === oldIdToReplace) {
-                    closeSettingsModal(); // No change, just close.
-                    return;
-                }
-                try {
-                    const newDocRef = doc(db, 'printedQR', newIdValue);
-                    const docSnap = await getDoc(newDocRef);
-                    if (docSnap.exists()) {
-                        customIdError.textContent = 'This new ID is already taken.';
+            // 4. Handle Printed QR Mode Firestore Logic
+            if (finalMode === 'printed') {
+                const idChanged = finalIdInput !== customId;
+                const isCreating = !customId && finalIdInput;
+                const isReplacing = customId && idChanged;
+
+                if (isCreating || isReplacing) {
+                    // Validate the new ID
+                    if (!/^[0-9]{6}$/.test(finalIdInput)) {
+                        customIdError.textContent = 'ID must be exactly 6 digits.';
                         return;
                     }
 
-                    // Perform replacement: delete old, create new
-                    const oldDocRef = doc(db, 'printedQR', oldIdToReplace);
-                    await deleteDoc(oldDocRef);
-                    await setDoc(newDocRef, { id: '', lang: selectedLang, updatedAt: serverTimestamp() });
-                    customId = newIdValue;
+                    try {
+                        // Check if new ID is available
+                        const newDocRef = doc(db, 'printedQR', finalIdInput);
+                        const docSnap = await getDoc(newDocRef);
+                        if (docSnap.exists()) {
+                            customIdError.textContent = 'This ID is already taken.';
+                            return;
+                        }
 
-                } catch (error) {
-                    console.error("Error replacing ID:", error);
-                    customIdError.textContent = 'Failed to replace ID. Check connection.';
-                    return;
-                }
-            } 
-            // CASE 2: CREATING A NEW ID
-            else {
-                try {
-                    const docRef = doc(db, 'printedQR', newIdValue);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        customIdError.textContent = 'This ID is already taken.';
+                        // If replacing, delete the old document
+                        if (isReplacing) {
+                            const oldDocRef = doc(db, 'printedQR', customId);
+                            await deleteDoc(oldDocRef);
+                        }
+
+                        // Create the new document
+                        await setDoc(newDocRef, { id: '', lang: finalLang, updatedAt: serverTimestamp() });
+                        // If successful, update the app's customId state variable
+                        customId = finalIdInput;
+
+                    } catch (error) {
+                        console.error("Error creating/replacing ID:", error);
+                        customIdError.textContent = 'Failed to update ID. Check connection.';
                         return;
                     }
-                    await setDoc(docRef, { id: '', lang: selectedLang, updatedAt: serverTimestamp() });
-                    customId = newIdValue;
-                } catch (error) {
-                    console.error("Error creating ID:", error);
-                    customIdError.textContent = 'Failed to create ID. Check connection.';
-                    return;
+                }
+                // Handle case where only language changed for an existing ID
+                else if (finalLang !== currentLanguage && customId) {
+                     try {
+                        const docRef = doc(db, 'printedQR', customId);
+                        await setDoc(docRef, { lang: finalLang }, { merge: true });
+                    } catch (error) {
+                        console.error("Error updating language in Firestore:", error);
+                    }
                 }
             }
 
-            // --- Finalize and Save ---
-            appMode = 'printed';
-            currentLanguage = selectedLang;
+            // 5. Commit final state
+            appMode = finalMode;
+            currentLanguage = finalLang;
+
             localStorage.setItem('atmaSettings', JSON.stringify({ mode: appMode, id: customId, lang: currentLanguage }));
+            
             closeSettingsModal();
-            resetApp();
+
+            if (needsReset) {
+                resetApp();
+            }
         }
         
         function loadSettings() {
