@@ -229,7 +229,7 @@
             storageBucket: "atmamagicbyheri.appspot.com",
             messagingSenderId: "672288947327",
             appId: "1:672288947327:web:4ee5d222045bfaf6ed934a",
-            databaseURL: "https://atmamagicbyheri-default-rtdb.asia-southeast1.firebasedatabase.app"
+            databaseURL: "https://atmamagicbyheri-default-rtdb.us-central1.firebasedatabase.app"
         };
 
         // --- Initialize Firebase ---
@@ -380,9 +380,7 @@
         function closeSettingsModal() { settingsModal.classList.add('hidden'); }
 
         function updateModeUI(mode) {
-            // This is a temporary state for the UI inside the modal
-            const selectedMode = mode;
-            if (selectedMode === 'digital') {
+            if (mode === 'digital') {
                 modeDigitalBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
                 modePrintedBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
                 customIdSection.classList.add('hidden');
@@ -394,14 +392,12 @@
         }
 
         function updateLanguageUI(lang) {
-            // This is a temporary state for the UI inside the modal
-            const selectedLang = lang;
-             const t = translations[selectedLang];
+             const t = translations[lang];
             settingsTitle.textContent = t.settingsTitle;
             languageLabel.textContent = t.languageLabel;
             langIdButton.textContent = t.langId;
             langEngButton.textContent = t.langEng;
-            if (selectedLang === 'id') {
+            if (lang === 'id') {
                 langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
                 langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
             } else {
@@ -411,7 +407,7 @@
         }
 
         async function saveSettings() {
-            // Determine selected mode and lang from UI state within the modal
+            // Determine selected mode and lang from the buttons' state
             const selectedMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
             const selectedLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
 
@@ -419,10 +415,9 @@
                 const idValue = customIdInput.value;
                 if (!/^[0-9]{6}$/.test(idValue)) {
                     customIdError.textContent = 'ID must be exactly 6 digits.';
-                    return; // Prevent saving and closing
+                    return;
                 }
 
-                // Check if ID is already taken, but only if it's a new ID
                 if (idValue !== customId) {
                     try {
                         const dataPath = ref(rtdb, 'users/' + idValue);
@@ -450,7 +445,7 @@
                 lang: currentLanguage
             }));
             closeSettingsModal();
-            resetApp(); // Reset to apply new settings
+            resetApp();
         }
         
         function loadSettings() {
@@ -486,12 +481,10 @@
             }, 100);
         }
 
-        let tempMode = 'digital';
-        let tempLang = 'eng';
-        modeDigitalBtn.addEventListener('click', () => { tempMode = 'digital'; updateModeUI(tempMode); });
-        modePrintedBtn.addEventListener('click', () => { tempMode = 'printed'; updateModeUI(tempMode); });
-        langIdButton.addEventListener('click', () => { tempLang = 'id'; updateLanguageUI(tempLang); });
-        langEngButton.addEventListener('click', () => { tempLang = 'eng'; updateLanguageUI(tempLang); });
+        modeDigitalBtn.addEventListener('click', () => updateModeUI('digital'));
+        modePrintedBtn.addEventListener('click', () => updateModeUI('printed'));
+        langIdButton.addEventListener('click', () => updateLanguageUI('id'));
+        langEngButton.addEventListener('click', () => updateLanguageUI('eng'));
         saveSettingsBtn.addEventListener('click', saveSettings);
         downloadQrBtn.addEventListener('click', downloadQrCode);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
@@ -513,10 +506,9 @@
                     </div>`;
             } else { // Last slide logic
                 if (appMode === 'printed') {
-                    // Placeholder for image1.jpg
-                     slideContent.innerHTML = `<img src="https://placehold.co/600x600/ffffff/000000?text=Image+1" alt="Initial image">`;
+                    slideContent.innerHTML = `<img src="https://placehold.co/600x600/ffffff/000000?text=Image+1" alt="Initial image">`;
                 } else {
-                    slideContent.innerHTML = ''; // Will be populated with QR code later
+                    slideContent.innerHTML = ''; 
                 }
             }
             slide.appendChild(slideContent);
@@ -531,7 +523,6 @@
             slideContainer.style.transform = `translateX(-${totalTranslation}px)`;
             currentSlideIndex = slideIndex;
             
-            // Image swap logic for printed mode
             if (appMode === 'printed' && previousSlideIndex === 3 && currentSlideIndex !== 3) {
                  const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
                  lastSlideContent.innerHTML = `<img src="https://placehold.co/600x600/ffffff/000000?text=Image+2" alt="Revealed image">`;
@@ -555,15 +546,13 @@
             tapCount = 0;
             lastTapTime = 0;
             
-            // Apply language translations to UI text in settings
             const t = translations[currentLanguage];
             settingsTitle.textContent = t.settingsTitle;
             languageLabel.textContent = t.languageLabel;
             readInstructionsButton.textContent = t.readInstructions;
-            saveSettingsBtn.textContent = t.closeButton;
+            saveSettingsBtn.textContent = 'Save & Close'; // Keep this consistent
 
             setupInitialView();
-            // Clear Firebase data for printed mode on reset
             if (appMode === 'printed' && customId) {
                 updateDataInFirebase();
             }
@@ -710,7 +699,6 @@
                 if (textToShow) gestureTextHistory.push(textToShow);
                 gestureCount++;
                 
-                // Update Firebase if in printed mode
                 if (appMode === 'printed') {
                     updateDataInFirebase();
                 }
@@ -719,7 +707,6 @@
 
                 if (gestureCount >= 3) {
                     isSessionActive = false;
-                    // Final action depends on the mode
                     if (appMode === 'digital') {
                         const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
                         lastSlideContent.innerHTML = '';
