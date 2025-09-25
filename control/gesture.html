@@ -264,6 +264,7 @@
         const gestureSequence = [], gestureTextHistory = [];
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
         let startArea = null, isDragging = false, initialTranslate = 0;
+        let isImageRevealed = false; // Tracks if the secret image has been shown
         
         // App settings state
         let appMode = 'digital'; // 'digital' or 'printed'
@@ -544,6 +545,8 @@
                     </div>`;
             } else { // Last slide logic
                 if (appMode === 'printed') {
+                    // Remove padding for the image slide to fill the container
+                    slideContent.style.padding = '0';
                     slideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image1.jpg" alt="Initial image">`;
                 } else {
                     slideContent.innerHTML = ''; 
@@ -561,9 +564,13 @@
             slideContainer.style.transform = `translateX(-${totalTranslation}px)`;
             currentSlideIndex = slideIndex;
             
-            if (appMode === 'printed' && previousSlideIndex === 3 && currentSlideIndex !== 3) {
+            // Secretly change image when swiping away from it after the trick is done
+            if (appMode === 'printed' && !isSessionActive && !isImageRevealed && previousSlideIndex === 3 && currentSlideIndex !== 3) {
                  const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
-                 lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
+                 if(lastSlideContent) {
+                    lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
+                    isImageRevealed = true; // Mark as revealed to prevent re-changing
+                 }
             }
         }
 
@@ -583,6 +590,7 @@
             isSessionActive = true;
             tapCount = 0;
             lastTapTime = 0;
+            isImageRevealed = false; // Reset the image reveal state
             
             const t = translations[currentLanguage];
             settingsTitle.textContent = t.settingsTitle;
@@ -702,10 +710,13 @@
                     lastTapTime = currentTime;
                     if (tapCount === 3) resetApp();
                 } else if (absDiffX > SWIPE_THRESHOLD) {
-                    if (diffX < 0 && currentSlideIndex < TOTAL_SLIDES - 1) currentSlideIndex++;
-                    else if (diffX > 0 && currentSlideIndex > 0) currentSlideIndex--;
+                    let newSlideIndex = currentSlideIndex;
+                    if (diffX < 0 && currentSlideIndex < TOTAL_SLIDES - 1) newSlideIndex++;
+                    else if (diffX > 0 && currentSlideIndex > 0) newSlideIndex--;
+                    animateToSlide(newSlideIndex); // Pass the new index to the animation function
+                } else {
+                    animateToSlide(currentSlideIndex); // Snap back if not a full swipe
                 }
-                animateToSlide(currentSlideIndex);
                 isDragging = false;
                 return;
             }
@@ -745,6 +756,7 @@
                     
                     if (appMode === 'printed') {
                         updateDataInFirebase();
+                        // The image reveal logic is now handled by animateToSlide
                     }
                     
                     if (appMode === 'digital') {
