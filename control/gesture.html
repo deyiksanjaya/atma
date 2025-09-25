@@ -237,8 +237,7 @@
             projectId: "atmamagicbyheri",
             storageBucket: "atmamagicbyheri.appspot.com",
             messagingSenderId: "672288947327",
-            appId: "1:672288947327:web:4ee5d222045bfaf6ed934a",
-            databaseURL: "https://atmamagicbyheri-default-rtdb.us-central1.firebasedatabase.app"
+            appId: "1:672288947327:web:4ee5d222045bfaf6ed934a"
         };
 
         // --- Initialize Firebase ---
@@ -271,6 +270,7 @@
         let isImageRevealed = false; // Tracks if the secret image has been shown
         let deleteConfirmationTimeout = null;
         let oldIdToReplace = null;
+        let initialSettings = {}; // For tracking changes in settings
         
         // App settings state
         let appMode = 'digital'; // 'digital' or 'printed'
@@ -361,27 +361,23 @@
             }
         };
 
-        // --- INITIALIZATION (PERBAIKAN LOGIKA LOGIN) ---
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // Pengguna sudah login (sesi sebelumnya ada atau baru saja login).
-                // UID anonim akan persisten di sini selama data browser tidak dihapus.
-                console.log("User is signed in with persistent UID:", user.uid);
-                await checkLicenseOnLoad();
-            } else {
-                // Tidak ada pengguna. Lakukan login anonim untuk sesi ini.
-                console.log("No user found, signing in anonymously for the first time...");
-                try {
-                    await signInAnonymously(auth);
-                    // Listener onAuthStateChanged akan otomatis terpanggil lagi setelah ini,
-                    // yang kemudian akan menjalankan checkLicenseOnLoad.
-                } catch (error) {
-                    console.error("Anonymous sign-in failed:", error);
-                    showLicenseModal();
-                    licenseError.textContent = "Could not connect to authentication service.";
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    // User is signed in (persistently).
+                    checkLicenseOnLoad();
+                } else {
+                    // No user is signed in, sign in anonymously.
+                    signInAnonymously(auth).catch((error) => {
+                         console.error("Anonymous auth failed:", error);
+                         showLicenseModal();
+                         licenseError.textContent = "Could not connect to authentication service.";
+                    });
                 }
-            }
-        });
+            });
+        };
+
 
         // --- EVENT LISTENERS ---
         verifyLicenseBtn.addEventListener('click', verifyLicense);
@@ -395,7 +391,6 @@
             customIdInput.readOnly = true;
             customIdInput.classList.add('bg-gray-200', 'cursor-not-allowed');
             changeIdBtn.classList.remove('hidden');
-            saveSettingsBtn.classList.add('hidden');
             idActionsContainer.style.display = 'flex';
             oldIdToReplace = null; 
         }
@@ -405,7 +400,6 @@
             customIdInput.readOnly = false;
             customIdInput.classList.remove('bg-gray-200', 'cursor-not-allowed');
             changeIdBtn.classList.add('hidden');
-            saveSettingsBtn.classList.remove('hidden');
             idActionsContainer.style.display = 'none';
             oldIdToReplace = null;
         }
@@ -416,8 +410,25 @@
             customIdInput.classList.remove('bg-gray-200', 'cursor-not-allowed');
             customIdInput.focus();
             changeIdBtn.classList.add('hidden');
-            saveSettingsBtn.classList.remove('hidden');
-            idActionsContainer.style.display = 'none';
+            idActionsContainer.style.display = 'flex'; // Actions should still be visible
+        }
+        
+        function updateSaveButtonState() {
+            const currentMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
+            const currentLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
+            
+            // For printed mode, also check the ID input field
+            let idChanged = false;
+            if (initialSettings.mode === 'printed') {
+                 // Handles both creation (initial ID is '') and changing (initial ID is the locked ID)
+                idChanged = customIdInput.value !== initialSettings.id;
+            }
+
+            if (currentMode !== initialSettings.mode || currentLang !== initialSettings.lang || idChanged) {
+                saveSettingsBtn.textContent = 'Save & Exit';
+            } else {
+                saveSettingsBtn.textContent = 'Exit';
+            }
         }
 
         function resetDeleteButtonState() {
@@ -431,8 +442,17 @@
         }
 
         async function openSettingsModal() {
+            // Store initial state for change detection
+            initialSettings = {
+                mode: appMode,
+                lang: currentLanguage,
+                id: customId 
+            };
+            
             updateLanguageUI(currentLanguage);
             updateModeUI(appMode);
+            updateSaveButtonState(); // Set initial button text
+
             customIdError.textContent = '';
             resetDeleteButtonState();
 
@@ -447,9 +467,11 @@
                         } else {
                             // FALLBACK: ID deleted from server
                             customIdError.textContent = `ID ${customId} no longer exists. Please create a new one.`;
+                            initialSettings.id = ''; // Update initial state for correct button text
                             customId = '';
                             localStorage.setItem('atmaSettings', JSON.stringify({ mode: appMode, id: '', lang: currentLanguage }));
                             unlockIdInputUIForCreation();
+                            updateSaveButtonState(); // Re-check button state after reset
                         }
                     } catch (error) {
                          console.error("Error verifying ID:", error);
@@ -479,7 +501,14 @@
                 modePrintedBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
                 modeDigitalBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
                 customIdSection.classList.remove('hidden');
+                 // Refresh the ID section state based on current data when switching to printed mode
+                if (customId) {
+                    lockIdInputUI();
+                } else {
+                    unlockIdInputUIForCreation();
+                }
             }
+            updateSaveButtonState();
         }
 
         function updateLanguageUI(lang) {
@@ -495,9 +524,16 @@
                 langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
                 langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
             }
+            updateSaveButtonState();
         }
 
         async function saveSettings() {
+            // If no changes were made, just close the modal
+            if (saveSettingsBtn.textContent === 'Exit') {
+                closeSettingsModal();
+                return;
+            }
+            
             resetDeleteButtonState();
             const selectedMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
             const selectedLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
@@ -607,20 +643,13 @@
         
         async function deleteId() {
              const idToDelete = customIdInput.value;
-             if (!/^[0-9]{6}$/.test(idToDelete)) {
-                 customIdError.textContent = 'Enter the ID you wish to delete.';
+             if (!/^[0-9]{6}$/.test(idToDelete) || idToDelete !== customId) {
+                 customIdError.textContent = 'Error: ID mismatch or invalid.';
                  resetDeleteButtonState();
                  return;
              }
              
-             // Pastikan ID yang akan dihapus adalah ID yang aktif tersimpan di lokal
-             if (idToDelete !== customId) {
-                customIdError.textContent = 'You can only delete your currently active ID.';
-                resetDeleteButtonState();
-                return;
-             }
-
-             // Jika konfirmasi belum berjalan, atur untuk 3 detik
+             // If confirmation not running, set for 3 seconds
              if (!deleteConfirmationTimeout) {
                  deleteIdBtn.classList.remove('bg-red-700');
                  deleteIdBtn.classList.add('bg-red-900');
@@ -629,17 +658,17 @@
                  return;
              }
 
-             // Jika sampai sini, berarti tombol konfirmasi sudah diklik
+             // If here, confirmation button was clicked
              clearTimeout(deleteConfirmationTimeout);
             
              try {
                  const docRef = doc(db, 'printedQR', idToDelete);
                  
-                 // Langsung hapus tanpa memeriksa kepemilikan di server
+                 // Directly delete without server-side ownership check
                  await deleteDoc(docRef);
                  customIdError.textContent = `ID ${idToDelete} has been deleted.`;
                  
-                 // Hapus dari state lokal
+                 // Clear from local state
                  const currentLang = currentLanguage;
                  customId = '';
                  localStorage.setItem('atmaSettings', JSON.stringify({
@@ -650,6 +679,7 @@
 
                  // Reset UI to creation state after successful deletion
                  unlockIdInputUIForCreation();
+                 updateSaveButtonState();
 
              } catch (error) {
                  console.error('Error deleting ID:', error);
@@ -667,6 +697,7 @@
         saveSettingsBtn.addEventListener('click', saveSettings);
         downloadQrBtn.addEventListener('click', downloadQrCode);
         deleteIdBtn.addEventListener('click', deleteId);
+        customIdInput.addEventListener('input', updateSaveButtonState);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
         // --- APP CORE FUNCTIONS ---
@@ -741,7 +772,6 @@
             settingsTitle.textContent = t.settingsTitle;
             languageLabel.textContent = t.languageLabel;
             readInstructionsButton.textContent = t.readInstructions;
-            saveSettingsBtn.textContent = 'Save & Close'; // Keep this consistent
 
             setupInitialView();
             if (appMode === 'printed' && customId) {
@@ -749,6 +779,24 @@
             }
         }
         
+        async function updateDataInFirestore() {
+            // Stop if not in printed mode, no customId, or not logged in
+            if (appMode !== 'printed' || !customId || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'printedQR', customId);
+                const dataToSave = {
+                    id: gestureSequence.join(''),
+                    lang: currentLanguage,
+                    updatedAt: serverTimestamp()
+                };
+                // Use setDoc to overwrite old data with new data
+                await setDoc(docRef, dataToSave, { merge: true }); 
+                console.log('Data updated in Firestore for ID:', customId);
+            } catch (error) {
+                console.error('Failed to update data in Firestore:', error);
+            }
+        }
+
         function showHistoryOverlay() {
             if (gestureTextHistory.length === 0) {
                 historyOverlayElement.innerHTML = `<ul><li>${translations[currentLanguage].noHistory}</li></ul>`;
@@ -775,25 +823,6 @@
             if (localX < midX && localY >= midY) return 'c';
             if (localX >= midX && localY >= midY) return 'd';
             return null;
-        }
-
-        async function updateDataInFirestore() {
-            // Berhenti jika tidak di mode printed, tidak ada customId, atau belum login
-            if (appMode !== 'printed' || !customId || !auth.currentUser) return;
-            try {
-                const docRef = doc(db, 'printedQR', customId);
-                const dataToSave = {
-                    id: gestureSequence.join(''),
-                    lang: currentLanguage,
-                    // UID tidak lagi disimpan karena tidak digunakan untuk verifikasi
-                    updatedAt: serverTimestamp()
-                };
-                // Gunakan setDoc (bukan merge) untuk menimpa data lama dengan yang baru
-                await setDoc(docRef, dataToSave); 
-                console.log('Data updated in Firestore for ID:', customId);
-            } catch (error) {
-                console.error('Failed to update data in Firestore:', error);
-            }
         }
 
         touchArea.addEventListener('touchstart', (e) => {
