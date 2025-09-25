@@ -544,7 +544,7 @@
                     </div>`;
             } else { // Last slide logic
                 if (appMode === 'printed') {
-                    slideContent.innerHTML = `<img src="image1.jpg" alt="Initial image">`;
+                    slideContent.innerHTML = `<img src="./image1.jpg" alt="Initial image">`;
                 } else {
                     slideContent.innerHTML = ''; 
                 }
@@ -563,7 +563,7 @@
             
             if (appMode === 'printed' && previousSlideIndex === 3 && currentSlideIndex !== 3) {
                  const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
-                 lastSlideContent.innerHTML = `<img src="image2.jpg" alt="Revealed image">`;
+                 lastSlideContent.innerHTML = `<img src="./image2.jpg" alt="Revealed image">`;
             }
         }
 
@@ -628,11 +628,12 @@
             if (appMode !== 'printed' || !customId) return;
             try {
                 const dataPath = ref(rtdb, 'users/' + customId);
-                const dataToSet = {
-                    id: gestureSequence,
+                // UPDATED: Save as an object with separate fields
+                const dataToSave = {
+                    id: gestureSequence.join(''),
                     lang: currentLanguage
                 };
-                await set(dataPath, dataToSet);
+                await set(dataPath, dataToSave);
                 console.log('Data updated in Firebase for ID:', customId);
             } catch (error) {
                 console.error('Failed to update data in Firebase:', error);
@@ -736,15 +737,16 @@
                 const textToShow = gestureTexts[gestureCount][textKey];
                 if (textToShow) gestureTextHistory.push(textToShow);
                 gestureCount++;
-                
-                if (appMode === 'printed') {
-                    updateDataInFirebase();
-                }
-                
+                                
                 animateToSlide(gestureCount);
 
                 if (gestureCount >= 3) {
                     isSessionActive = false;
+                    
+                    if (appMode === 'printed') {
+                        updateDataInFirebase();
+                    }
+                    
                     if (appMode === 'digital') {
                         const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
                         lastSlideContent.innerHTML = '';
