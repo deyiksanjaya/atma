@@ -167,7 +167,10 @@
                     <label for="custom-id-input" class="font-playfair block mb-2 font-bold">Custom ID:</label>
                     <input type="number" id="custom-id-input" placeholder="6-digit number" class="w-full p-3 text-center border-2 border-black rounded-sm bg-white text-lg tracking-widest" oninput="this.value=this.value.slice(0,6)">
                     <p id="custom-id-error" class="text-red-600 mt-2 text-sm h-5"></p>
-                    <button id="download-qr-btn" class="font-playfair w-full block bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-4">Download QR</button>
+                    <div class="flex space-x-2 mt-4">
+                        <button id="download-qr-btn" class="font-playfair w-full block bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300">Download QR</button>
+                        <button id="delete-id-btn" class="font-playfair w-full block bg-red-700 hover:bg-red-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300">Delete ID</button>
+                    </div>
                 </div>
 
                 <!-- Language Selection -->
@@ -191,7 +194,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+        import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
         // --- DOM ELEMENT REFERENCES ---
         const licenseModal = document.getElementById('license-modal');
@@ -218,6 +221,7 @@
         const customIdInput = document.getElementById('custom-id-input');
         const customIdError = document.getElementById('custom-id-error');
         const downloadQrBtn = document.getElementById('download-qr-btn');
+        const deleteIdBtn = document.getElementById('delete-id-btn');
         const saveSettingsBtn = document.getElementById('save-settings-btn');
 
 
@@ -480,6 +484,39 @@
                  qrContainer.remove();
             }, 100);
         }
+        
+        async function deleteId() {
+            const idToDelete = customIdInput.value;
+            if (!/^[0-9]{6}$/.test(idToDelete)) {
+                customIdError.textContent = 'Please enter a valid 6-digit ID to delete.';
+                return;
+            }
+
+            // Simple confirmation dialog
+            const isConfirmed = confirm(`Are you sure you want to delete ID ${idToDelete}? This action cannot be undone.`);
+            if (!isConfirmed) {
+                return;
+            }
+            
+            try {
+                const dataPath = ref(rtdb, 'users/' + idToDelete);
+                await remove(dataPath);
+                customIdError.textContent = `ID ${idToDelete} has been deleted.`;
+                // If the deleted ID was the currently active one, clear it from the app state
+                if (idToDelete === customId) {
+                    customId = '';
+                    customIdInput.value = '';
+                    localStorage.setItem('atmaSettings', JSON.stringify({
+                        mode: appMode,
+                        id: customId,
+                        lang: currentLanguage
+                    }));
+                }
+            } catch (error) {
+                console.error('Error deleting ID:', error);
+                customIdError.textContent = 'Failed to delete ID. Check connection.';
+            }
+        }
 
         modeDigitalBtn.addEventListener('click', () => updateModeUI('digital'));
         modePrintedBtn.addEventListener('click', () => updateModeUI('printed'));
@@ -487,6 +524,7 @@
         langEngButton.addEventListener('click', () => updateLanguageUI('eng'));
         saveSettingsBtn.addEventListener('click', saveSettings);
         downloadQrBtn.addEventListener('click', downloadQrCode);
+        deleteIdBtn.addEventListener('click', deleteId);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
         // --- APP CORE FUNCTIONS ---
@@ -506,7 +544,7 @@
                     </div>`;
             } else { // Last slide logic
                 if (appMode === 'printed') {
-                    slideContent.innerHTML = `<img src="https://placehold.co/600x600/ffffff/000000?text=Image+1" alt="Initial image">`;
+                    slideContent.innerHTML = `<img src="image1.jpg" alt="Initial image">`;
                 } else {
                     slideContent.innerHTML = ''; 
                 }
@@ -525,7 +563,7 @@
             
             if (appMode === 'printed' && previousSlideIndex === 3 && currentSlideIndex !== 3) {
                  const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
-                 lastSlideContent.innerHTML = `<img src="https://placehold.co/600x600/ffffff/000000?text=Image+2" alt="Revealed image">`;
+                 lastSlideContent.innerHTML = `<img src="image2.jpg" alt="Revealed image">`;
             }
         }
 
