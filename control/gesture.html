@@ -157,8 +157,8 @@
                 <div class="my-6">
                     <label class="font-playfair block mb-2 font-bold">Mode:</label>
                     <div class="flex space-x-4">
-                        <button id="mode-digital" class="flex-1 p-2 rounded-sm border-2">Digital QR</button>
-                        <button id="mode-printed" class="flex-1 p-2 rounded-sm border-2">Printed QR</button>
+                        <button id="mode-digital" class="font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider">Digital QR</button>
+                        <button id="mode-printed" class="font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider">Printed QR</button>
                     </div>
                 </div>
 
@@ -167,19 +167,19 @@
                     <label for="custom-id-input" class="font-playfair block mb-2 font-bold">Custom ID:</label>
                     <input type="number" id="custom-id-input" placeholder="6-digit number" class="w-full p-3 text-center border-2 border-black rounded-sm bg-white text-lg tracking-widest" oninput="this.value=this.value.slice(0,6)">
                     <p id="custom-id-error" class="text-red-600 mt-2 text-sm h-5"></p>
-                    <button id="download-qr-btn" class="font-playfair w-full block bg-blue-700 hover:bg-blue-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-4">Download QR</button>
+                    <button id="download-qr-btn" class="font-playfair w-full block bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-4">Download QR</button>
                 </div>
 
                 <!-- Language Selection -->
                 <div class="my-6">
                     <label id="language-label" class="font-playfair block mb-2 font-bold">Language:</label>
                     <div class="flex space-x-4">
-                        <button id="lang-id" class="flex-1 p-2 rounded-sm border-2">Indonesia</button>
-                        <button id="lang-eng" class="flex-1 p-2 rounded-sm border-2">English</button>
+                        <button id="lang-id" class="font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider">Indonesia</button>
+                        <button id="lang-eng" class="font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider">English</button>
                     </div>
                 </div>
                 
-                <a href="user-guide.html" id="read-instructions-btn" class="font-playfair w-full block bg-gray-700 hover:bg-gray-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-6">Read Instructions</a>
+                <a href="user-guide.html" id="read-instructions-btn" class="font-playfair w-full block bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-6">Read Instructions</a>
                 
                 <button id="save-settings-btn" class="font-playfair w-full bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm uppercase tracking-wider transition-colors duration-300 mt-2">Save & Close</button>
             </div>
@@ -191,7 +191,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
         // --- DOM ELEMENT REFERENCES ---
         const licenseModal = document.getElementById('license-modal');
@@ -380,45 +380,70 @@
         function closeSettingsModal() { settingsModal.classList.add('hidden'); }
 
         function updateModeUI(mode) {
-            appMode = mode;
-            if (mode === 'digital') {
-                modeDigitalBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
-                modePrintedBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
+            // This is a temporary state for the UI inside the modal
+            const selectedMode = mode;
+            if (selectedMode === 'digital') {
+                modeDigitalBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
+                modePrintedBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
                 customIdSection.classList.add('hidden');
             } else {
-                modePrintedBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
-                modeDigitalBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
+                modePrintedBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
+                modeDigitalBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
                 customIdSection.classList.remove('hidden');
             }
         }
 
         function updateLanguageUI(lang) {
-            currentLanguage = lang;
-             const t = translations[currentLanguage];
+            // This is a temporary state for the UI inside the modal
+            const selectedLang = lang;
+             const t = translations[selectedLang];
             settingsTitle.textContent = t.settingsTitle;
             languageLabel.textContent = t.languageLabel;
-            readInstructionsButton.textContent = t.readInstructions;
             langIdButton.textContent = t.langId;
             langEngButton.textContent = t.langEng;
-            if (lang === 'id') {
-                langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
-                langEngButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
+            if (selectedLang === 'id') {
+                langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
+                langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
             } else {
-                langEngButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
-                langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
+                langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
+                langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
             }
         }
 
-        function saveSettings() {
-            if (appMode === 'printed') {
+        async function saveSettings() {
+            // Determine selected mode and lang from UI state within the modal
+            const selectedMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
+            const selectedLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
+
+            if (selectedMode === 'printed') {
                 const idValue = customIdInput.value;
                 if (!/^[0-9]{6}$/.test(idValue)) {
                     customIdError.textContent = 'ID must be exactly 6 digits.';
                     return; // Prevent saving and closing
                 }
+
+                // Check if ID is already taken, but only if it's a new ID
+                if (idValue !== customId) {
+                    try {
+                        const dataPath = ref(rtdb, 'users/' + idValue);
+                        const snapshot = await get(dataPath);
+                        if (snapshot.exists()) {
+                            customIdError.textContent = 'This ID is already taken.';
+                            return;
+                        }
+                    } catch (error) {
+                        console.error("Error checking ID:", error);
+                        customIdError.textContent = 'Could not verify ID. Check connection.';
+                        return;
+                    }
+                }
                 customId = idValue;
                 customIdError.textContent = '';
             }
+            
+            appMode = selectedMode;
+            currentLanguage = selectedLang;
+
             localStorage.setItem('atmaSettings', JSON.stringify({
                 mode: appMode,
                 id: customId,
@@ -451,17 +476,22 @@
             });
             setTimeout(() => {
                 const qrCanvas = qrContainer.querySelector('canvas');
-                const link = document.createElement('a');
-                link.download = `atma_qr_${customId}.png`;
-                link.href = qrCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-                link.click();
+                if (qrCanvas) {
+                    const link = document.createElement('a');
+                    link.download = `atma_qr_${customId}.png`;
+                    link.href = qrCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+                    link.click();
+                }
+                 qrContainer.remove();
             }, 100);
         }
 
-        modeDigitalBtn.addEventListener('click', () => updateModeUI('digital'));
-        modePrintedBtn.addEventListener('click', () => updateModeUI('printed'));
-        langIdButton.addEventListener('click', () => updateLanguageUI('id'));
-        langEngButton.addEventListener('click', () => updateLanguageUI('eng'));
+        let tempMode = 'digital';
+        let tempLang = 'eng';
+        modeDigitalBtn.addEventListener('click', () => { tempMode = 'digital'; updateModeUI(tempMode); });
+        modePrintedBtn.addEventListener('click', () => { tempMode = 'printed'; updateModeUI(tempMode); });
+        langIdButton.addEventListener('click', () => { tempLang = 'id'; updateLanguageUI(tempLang); });
+        langEngButton.addEventListener('click', () => { tempLang = 'eng'; updateLanguageUI(tempLang); });
         saveSettingsBtn.addEventListener('click', saveSettings);
         downloadQrBtn.addEventListener('click', downloadQrCode);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
@@ -524,7 +554,14 @@
             isSessionActive = true;
             tapCount = 0;
             lastTapTime = 0;
-            updateLanguageUI(currentLanguage); // Apply language translations to UI text
+            
+            // Apply language translations to UI text in settings
+            const t = translations[currentLanguage];
+            settingsTitle.textContent = t.settingsTitle;
+            languageLabel.textContent = t.languageLabel;
+            readInstructionsButton.textContent = t.readInstructions;
+            saveSettingsBtn.textContent = t.closeButton;
+
             setupInitialView();
             // Clear Firebase data for printed mode on reset
             if (appMode === 'printed' && customId) {
@@ -642,6 +679,18 @@
                 }
                 animateToSlide(currentSlideIndex);
                 isDragging = false;
+                return;
+            }
+
+            // Block gestures if in printed mode without a valid ID
+            if (appMode === 'printed' && !customId) {
+                const originalText = settingsToast.querySelector('p').textContent;
+                settingsToast.querySelector('p').textContent = 'Please set a Custom ID in settings first.';
+                settingsToast.classList.remove('hidden');
+                setTimeout(() => {
+                    settingsToast.classList.add('hidden');
+                    settingsToast.querySelector('p').textContent = originalText;
+                }, 3000);
                 return;
             }
 
