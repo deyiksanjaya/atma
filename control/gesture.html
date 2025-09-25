@@ -435,14 +435,18 @@
                     return;
                 }
 
+                // Hanya periksa ke Firestore jika ID di input berbeda dari yang aktif saat ini.
                 if (idValue !== customId) {
                     try {
                         const docRef = doc(db, 'printedQR', idValue);
                         const docSnap = await getDoc(docRef);
-                        if (docSnap.exists()) {
-                            customIdError.textContent = 'This ID is already taken.';
+                        
+                        // Jika ID sudah ada DAN bukan milik pengguna saat ini, tampilkan error.
+                        if (docSnap.exists() && docSnap.data().uid !== auth.currentUser.uid) {
+                            customIdError.textContent = 'This ID is already taken by another user.';
                             return;
                         }
+                        // Jika ID belum ada, atau sudah ada dan milik pengguna ini, maka proses bisa lanjut.
                     } catch (error) {
                         console.error("Error checking ID:", error);
                         customIdError.textContent = 'Could not verify ID. Check connection.';
@@ -506,7 +510,7 @@
                  return;
              }
 
-             // If confirmation is not pending, set it up for 3 seconds
+             // Jika konfirmasi belum berjalan, atur untuk 3 detik
              if (!deleteConfirmationTimeout) {
                  deleteIdBtn.classList.remove('bg-red-700');
                  deleteIdBtn.classList.add('bg-red-900');
@@ -515,13 +519,31 @@
                  return;
              }
 
-             // If here, it's a confirmed click
+             // Jika sampai sini, berarti tombol konfirmasi sudah diklik
              clearTimeout(deleteConfirmationTimeout);
             
              try {
                  const docRef = doc(db, 'printedQR', idToDelete);
+                 const docSnap = await getDoc(docRef);
+
+                 // Periksa apakah dokumen ada
+                 if (!docSnap.exists()) {
+                    customIdError.textContent = `ID ${idToDelete} does not exist.`;
+                    resetDeleteButtonState();
+                    return;
+                 }
+                
+                 // Periksa kepemilikan sebelum mencoba menghapus
+                 if (docSnap.data().uid !== auth.currentUser.uid) {
+                    customIdError.textContent = 'Permission denied. You can only delete your own ID.';
+                    resetDeleteButtonState();
+                    return;
+                 }
+
+                 // Jika semua pemeriksaan lolos, hapus dokumen
                  await deleteDoc(docRef);
                  customIdError.textContent = `ID ${idToDelete} has been deleted.`;
+                 
                  if (idToDelete === customId) {
                      customId = '';
                      customIdInput.value = '';
