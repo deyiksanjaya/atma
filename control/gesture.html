@@ -558,7 +558,8 @@
         
         function animateToSlide(slideIndex, isInstant = false) {
             const previousSlideIndex = currentSlideIndex;
-            slideContainer.style.transition = isInstant ? 'none' : 'transform 0.4s ease-in-out';
+            const transitionDuration = isInstant ? 0 : 400; // in ms
+            slideContainer.style.transition = isInstant ? 'none' : `transform ${transitionDuration / 1000}s ease-in-out`;
             const slideWidth = displayArea.getBoundingClientRect().width;
             const totalTranslation = (slideWidth * slideIndex) + (SLIDE_GAP * slideIndex);
             slideContainer.style.transform = `translateX(-${totalTranslation}px)`;
@@ -568,8 +569,11 @@
             if (appMode === 'printed' && !isSessionActive && !isImageRevealed && previousSlideIndex === 3 && currentSlideIndex !== 3) {
                  const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
                  if(lastSlideContent) {
-                    lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
-                    isImageRevealed = true; // Mark as revealed to prevent re-changing
+                    // Wait for the transition to finish before changing the image
+                    setTimeout(function() {
+                        lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
+                        isImageRevealed = true; // Mark as revealed to prevent re-changing
+                    }, transitionDuration);
                  }
             }
         }
