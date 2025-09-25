@@ -5,8 +5,8 @@ const CACHE_NAME = 'atma-control-v3';
 const ASSETS_TO_CACHE = [
     './gesture.html',
     './user-guide.html',
-    'image1.html',
-    'image2.html',// Tambahkan ini agar halaman panduan juga offline
+    'https://deyiksanjaya.github.io/atma/image1.jpg',
+    'https://deyiksanjaya.github.io/atma/image2.jpg',// Tambahkan ini agar halaman panduan juga offline
     'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600&display=swap',
     'https://cdn.tailwindcss.com',
     'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
