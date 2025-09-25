@@ -12,7 +12,7 @@
     <script type="module">
         // Import necessary Firebase functions
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 
         // --- FIREBASE CONFIG (same as your main app) ---
@@ -28,7 +28,7 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const rtdb = getDatabase(app);
+        const db = getFirestore(app);
         const auth = getAuth(app);
 
         // --- REDIRECTION LOGIC ---
@@ -75,15 +75,15 @@
                     return;
                 }
 
-                // 2. Create a reference to the user's data in Firebase RTDB
-                const userRef = ref(rtdb, 'users/' + userId);
+                // 2. Create a reference to the user's data in Firestore
+                const docRef = doc(db, 'printedQR', userId);
 
-                // 3. Fetch the data from Firebase
-                const snapshot = await get(userRef);
+                // 3. Fetch the data from Firestore
+                const docSnap = await getDoc(docRef);
 
-                if (snapshot.exists()) {
+                if (docSnap.exists()) {
                     // 4. Extract data if it exists
-                    const data = snapshot.val();
+                    const data = docSnap.data();
                     const finalId = data.id;
                     const finalLang = data.lang;
 
