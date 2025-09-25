@@ -169,7 +169,7 @@
                     <p id="custom-id-error" class="text-red-600 mt-2 text-sm h-5"></p>
                     <div class="flex space-x-2 mt-4">
                         <button id="download-qr-btn" class="font-playfair w-full block bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300">Download QR</button>
-                        <button id="delete-id-btn" class="font-playfair w-full block bg-red-700 hover:bg-red-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300">Delete ID</button>
+                        <button id="delete-id-btn" class="font-playfair w-full block bg-red-700 hover:bg-red-800 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300">Delete ID</button>
                     </div>
                 </div>
 
@@ -194,7 +194,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-        import { getDatabase, ref, set, get, remove } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
         // --- DOM ELEMENT REFERENCES ---
         const licenseModal = document.getElementById('license-modal');
@@ -240,7 +239,6 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const rtdb = getDatabase(app);
 
         // --- LANGUAGE & TRANSLATIONS ---
         const translations = {
@@ -265,6 +263,7 @@
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
         let startArea = null, isDragging = false, initialTranslate = 0;
         let isImageRevealed = false; // Tracks if the secret image has been shown
+        let deleteConfirmationTimeout = null;
         
         // App settings state
         let appMode = 'digital'; // 'digital' or 'printed'
@@ -374,6 +373,16 @@
         window.onresize = () => { if (appWrapper.classList.contains('unlocked')) animateToSlide(currentSlideIndex); };
         
         // --- SETTINGS MODAL LOGIC ---
+        function resetDeleteButtonState() {
+            if (deleteConfirmationTimeout) {
+                clearTimeout(deleteConfirmationTimeout);
+                deleteConfirmationTimeout = null;
+            }
+            deleteIdBtn.classList.remove('bg-red-900');
+            deleteIdBtn.classList.add('bg-red-700');
+            deleteIdBtn.textContent = 'Delete ID';
+        }
+
         function openSettingsModal() {
             // Load current settings into the modal UI
             customIdInput.value = customId;
@@ -382,7 +391,10 @@
             settingsModal.classList.remove('hidden');
         }
 
-        function closeSettingsModal() { settingsModal.classList.add('hidden'); }
+        function closeSettingsModal() { 
+            resetDeleteButtonState();
+            settingsModal.classList.add('hidden'); 
+        }
 
         function updateModeUI(mode) {
             if (mode === 'digital') {
@@ -412,7 +424,7 @@
         }
 
         async function saveSettings() {
-            // Determine selected mode and lang from the buttons' state
+            resetDeleteButtonState();
             const selectedMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
             const selectedLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
 
@@ -425,9 +437,9 @@
 
                 if (idValue !== customId) {
                     try {
-                        const dataPath = ref(rtdb, 'users/' + idValue);
-                        const snapshot = await get(dataPath);
-                        if (snapshot.exists()) {
+                        const docRef = doc(db, 'printedQR', idValue);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
                             customIdError.textContent = 'This ID is already taken.';
                             return;
                         }
@@ -487,36 +499,44 @@
         }
         
         async function deleteId() {
-            const idToDelete = customIdInput.value;
-            if (!/^[0-9]{6}$/.test(idToDelete)) {
-                customIdError.textContent = 'Please enter a valid 6-digit ID to delete.';
-                return;
-            }
+             const idToDelete = customIdInput.value;
+             if (!/^[0-9]{6}$/.test(idToDelete)) {
+                 customIdError.textContent = 'Please enter a valid 6-digit ID to delete.';
+                 resetDeleteButtonState();
+                 return;
+             }
 
-            // Simple confirmation dialog
-            const isConfirmed = confirm(`Are you sure you want to delete ID ${idToDelete}? This action cannot be undone.`);
-            if (!isConfirmed) {
-                return;
-            }
+             // If confirmation is not pending, set it up for 3 seconds
+             if (!deleteConfirmationTimeout) {
+                 deleteIdBtn.classList.remove('bg-red-700');
+                 deleteIdBtn.classList.add('bg-red-900');
+                 deleteIdBtn.textContent = 'Confirm Delete?';
+                 deleteConfirmationTimeout = setTimeout(resetDeleteButtonState, 3000);
+                 return;
+             }
+
+             // If here, it's a confirmed click
+             clearTimeout(deleteConfirmationTimeout);
             
-            try {
-                const dataPath = ref(rtdb, 'users/' + idToDelete);
-                await remove(dataPath);
-                customIdError.textContent = `ID ${idToDelete} has been deleted.`;
-                // If the deleted ID was the currently active one, clear it from the app state
-                if (idToDelete === customId) {
-                    customId = '';
-                    customIdInput.value = '';
-                    localStorage.setItem('atmaSettings', JSON.stringify({
-                        mode: appMode,
-                        id: customId,
-                        lang: currentLanguage
-                    }));
-                }
-            } catch (error) {
-                console.error('Error deleting ID:', error);
-                customIdError.textContent = 'Failed to delete ID. Check connection.';
-            }
+             try {
+                 const docRef = doc(db, 'printedQR', idToDelete);
+                 await deleteDoc(docRef);
+                 customIdError.textContent = `ID ${idToDelete} has been deleted.`;
+                 if (idToDelete === customId) {
+                     customId = '';
+                     customIdInput.value = '';
+                     localStorage.setItem('atmaSettings', JSON.stringify({
+                         mode: appMode,
+                         id: customId,
+                         lang: currentLanguage
+                     }));
+                 }
+             } catch (error) {
+                 console.error('Error deleting ID:', error);
+                 customIdError.textContent = 'Failed to delete ID. Check connection.';
+             } finally {
+                 resetDeleteButtonState();
+             }
         }
 
         modeDigitalBtn.addEventListener('click', () => updateModeUI('digital'));
@@ -569,11 +589,11 @@
             if (appMode === 'printed' && !isSessionActive && !isImageRevealed && previousSlideIndex === 3 && currentSlideIndex !== 3) {
                  const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
                  if(lastSlideContent) {
-                    // Wait for the transition to finish before changing the image
-                    setTimeout(function() {
-                        lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
-                        isImageRevealed = true; // Mark as revealed to prevent re-changing
-                    }, transitionDuration);
+                     // Wait for the transition to finish before changing the image
+                     setTimeout(function() {
+                         lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
+                         isImageRevealed = true; // Mark as revealed to prevent re-changing
+                     }, transitionDuration);
                  }
             }
         }
@@ -604,7 +624,7 @@
 
             setupInitialView();
             if (appMode === 'printed' && customId) {
-                updateDataInFirebase();
+                updateDataInFirestore();
             }
         }
         
@@ -636,19 +656,19 @@
             return null;
         }
 
-        async function updateDataInFirebase() {
+        async function updateDataInFirestore() {
             if (appMode !== 'printed' || !customId) return;
             try {
-                const dataPath = ref(rtdb, 'users/' + customId);
-                // UPDATED: Save as an object with separate fields
+                const docRef = doc(db, 'printedQR', customId);
                 const dataToSave = {
                     id: gestureSequence.join(''),
-                    lang: currentLanguage
+                    lang: currentLanguage,
+                    updatedAt: serverTimestamp()
                 };
-                await set(dataPath, dataToSave);
-                console.log('Data updated in Firebase for ID:', customId);
+                await setDoc(docRef, dataToSave);
+                console.log('Data updated in Firestore for ID:', customId);
             } catch (error) {
-                console.error('Failed to update data in Firebase:', error);
+                console.error('Failed to update data in Firestore:', error);
             }
         }
 
@@ -752,14 +772,14 @@
                 const textToShow = gestureTexts[gestureCount][textKey];
                 if (textToShow) gestureTextHistory.push(textToShow);
                 gestureCount++;
-                                
+                                        
                 animateToSlide(gestureCount);
 
                 if (gestureCount >= 3) {
                     isSessionActive = false;
                     
                     if (appMode === 'printed') {
-                        updateDataInFirebase();
+                        updateDataInFirestore();
                         // The image reveal logic is now handled by animateToSlide
                     }
                     
