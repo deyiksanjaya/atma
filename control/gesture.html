@@ -13,7 +13,7 @@
     <link rel="icon" href="/control/icons/image512.png" onerror="this.onerror=null;this.src='https://placehold.co/32x32/000000/FFFFFF?text=Icon';">
 
     <title>Atma by Heri Sanjaya</title>
-    <!-- Google Fonts untuk nuansa koran antik -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600&display=swap" rel="stylesheet">
@@ -25,21 +25,19 @@
         /* Custom styles for the app */
         body {
             font-family: "Inter", sans-serif;
-            color: #000; /* Default text color */
-            overflow: hidden; /* Prevent scrolling */
-            position: fixed; /* Prevent pull-to-refresh */
+            color: #000;
+            overflow: hidden;
+            position: fixed;
             width: 100%;
             height: 100%;
             margin: 0;
         }
-        /* Hide app wrapper initially to prevent flash of content */
         #app-wrapper {
             display: none;
         }
         #app-wrapper.unlocked {
             display: block;
         }
-        /* Main container for the solid black background */
         #app-container {
             width: 100vw;
             height: 100vh;
@@ -48,31 +46,28 @@
             justify-content: center;
             align-items: center;
         }
-        /* The gallery frame, an overlay on the black background */
         #display-area {
             position: relative;
             width: 100vw;
             height: 100vw;
             max-height: 100vh;
             box-sizing: border-box;
-            overflow: hidden; /* Crucial for gallery effect */
+            overflow: hidden;
         }
         #slide-container {
             height: 100%;
             display: flex;
             gap: 20px;
         }
-        /* The transparent container for each photo */
         .slide {
             height: 100%;
             width: 100vw;
-            flex-shrink: 0; /* Prevent slides from shrinking */
+            flex-shrink: 0;
             box-sizing: border-box;
             display: flex;
             justify-content: center;
             align-items: center;
         }
-        /* The actual white "photo" content */
         .slide-content {
             width: 100%;
             height: 100%;
@@ -80,10 +75,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 25px; /* Inner padding for text */
+            padding: 25px;
             box-sizing: border-box;
         }
-        /* Style for the history overlay */
+        .slide-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         #history-overlay {
             position: fixed;
             bottom: 20px;
@@ -100,11 +99,8 @@
         #history-overlay.show {
             display: block;
         }
-        /* Utilitas font kustom untuk modal */
         .font-playfair { font-family: 'Playfair Display', serif; }
         .font-lora { font-family: 'Lora', serif; }
-        
-        /* Spinner for loading state */
         .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -138,11 +134,11 @@
     <div id="app-wrapper">
         <!-- One-time Settings Notification -->
         <div id="settings-toast" class="hidden fixed top-4 left-1/2 -translate-x-1/2 w-11/12 max-w-sm bg-[#fdfaf3] text-[#1a1a1a] p-3 rounded-sm shadow-lg z-30 flex items-center justify-between font-lora border-2 border-black">
-            <p>Tip: Ketuk pojok kanan atas untuk pengaturan.</p>
+            <p>Tip: Tap the top-right corner for settings.</p>
             <button id="close-toast-btn" class="text-2xl font-bold leading-none pl-4">&times;</button>
         </div>
 
-        <!-- Main container with solid black background -->
+        <!-- Main container -->
         <div id="app-container">
             <div id="display-area">
                 <div id="slide-container"></div>
@@ -155,18 +151,37 @@
         <!-- Settings Modal -->
         <div id="settings-modal" class="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center hidden z-50 p-4">
             <div class="font-lora bg-[#fdfaf3] rounded-sm p-6 w-11/12 max-w-sm text-[#1a1a1a] border-2 border-black shadow-2xl">
-                <h2 id="settings-title" class="font-playfair text-2xl mb-4 border-b-2 border-gray-400 pb-2 uppercase"></h2>
+                <h2 id="settings-title" class="font-playfair text-2xl mb-4 border-b-2 border-gray-400 pb-2 uppercase">Settings</h2>
+                
+                <!-- Mode Selection -->
                 <div class="my-6">
-                    <label id="language-label" class="font-playfair block mb-2 font-bold"></label>
+                    <label class="font-playfair block mb-2 font-bold">Mode:</label>
                     <div class="flex space-x-4">
-                        <button id="lang-id" class="flex-1 p-2 rounded-sm border-2"></button>
-                        <button id="lang-eng" class="flex-1 p-2 rounded-sm border-2"></button>
+                        <button id="mode-digital" class="flex-1 p-2 rounded-sm border-2">Digital QR</button>
+                        <button id="mode-printed" class="flex-1 p-2 rounded-sm border-2">Printed QR</button>
+                    </div>
+                </div>
+
+                <!-- Custom ID Input (for Printed QR mode) -->
+                <div id="custom-id-section" class="my-6 hidden">
+                    <label for="custom-id-input" class="font-playfair block mb-2 font-bold">Custom ID:</label>
+                    <input type="number" id="custom-id-input" placeholder="6-digit number" class="w-full p-3 text-center border-2 border-black rounded-sm bg-white text-lg tracking-widest" oninput="this.value=this.value.slice(0,6)">
+                    <p id="custom-id-error" class="text-red-600 mt-2 text-sm h-5"></p>
+                    <button id="download-qr-btn" class="font-playfair w-full block bg-blue-700 hover:bg-blue-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-4">Download QR</button>
+                </div>
+
+                <!-- Language Selection -->
+                <div class="my-6">
+                    <label id="language-label" class="font-playfair block mb-2 font-bold">Language:</label>
+                    <div class="flex space-x-4">
+                        <button id="lang-id" class="flex-1 p-2 rounded-sm border-2">Indonesia</button>
+                        <button id="lang-eng" class="flex-1 p-2 rounded-sm border-2">English</button>
                     </div>
                 </div>
                 
-                <a href="user-guide.html" id="read-instructions-btn" class="font-playfair w-full block bg-gray-700 hover:bg-gray-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-6"></a>
+                <a href="user-guide.html" id="read-instructions-btn" class="font-playfair w-full block bg-gray-700 hover:bg-gray-900 text-[#fdfaf3] p-2 rounded-sm text-center uppercase tracking-wider transition-colors duration-300 mt-6">Read Instructions</a>
                 
-                <button id="close-settings" class="font-playfair w-full bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm uppercase tracking-wider transition-colors duration-300 mt-2"></button>
+                <button id="save-settings-btn" class="font-playfair w-full bg-black hover:bg-gray-800 text-[#fdfaf3] p-2 rounded-sm uppercase tracking-wider transition-colors duration-300 mt-2">Save & Close</button>
             </div>
         </div>
     </div>
@@ -176,6 +191,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
         // --- DOM ELEMENT REFERENCES ---
         const licenseModal = document.getElementById('license-modal');
@@ -194,64 +210,44 @@
         const languageLabel = document.getElementById('language-label');
         const langIdButton = document.getElementById('lang-id');
         const langEngButton = document.getElementById('lang-eng');
-        const closeSettingsButton = document.getElementById('close-settings');
         const readInstructionsButton = document.getElementById('read-instructions-btn');
+        // New settings elements
+        const modeDigitalBtn = document.getElementById('mode-digital');
+        const modePrintedBtn = document.getElementById('mode-printed');
+        const customIdSection = document.getElementById('custom-id-section');
+        const customIdInput = document.getElementById('custom-id-input');
+        const customIdError = document.getElementById('custom-id-error');
+        const downloadQrBtn = document.getElementById('download-qr-btn');
+        const saveSettingsBtn = document.getElementById('save-settings-btn');
+
 
         // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyCFDxFe2PnyxaLRb7VctQSHhQh7ZKoSDaU",
             authDomain: "atmamagicbyheri.firebaseapp.com",
             projectId: "atmamagicbyheri",
-            storageBucket: "atmamagicbyheri.firebasestorage.app",
+            storageBucket: "atmamagicbyheri.appspot.com",
             messagingSenderId: "672288947327",
-            appId: "1:672288947327:web:4ee5d222045bfaf6ed934a"
+            appId: "1:672288947327:web:4ee5d222045bfaf6ed934a",
+            databaseURL: "https://atmamagicbyheri-default-rtdb.asia-southeast1.firebasedatabase.app"
         };
 
         // --- Initialize Firebase ---
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const rtdb = getDatabase(app);
 
         // --- LANGUAGE & TRANSLATIONS ---
         const translations = {
-            id: {
-                victimName: 'Nama Korban:',
-                crimeScene: 'Lokasi Kejadian:',
-                weapon: 'Alat yang Dipakai:',
-                noHistory: 'Tidak ada riwayat gerakan.',
-                settingsTitle: 'Pengaturan',
-                languageLabel: 'Bahasa:',
-                closeButton: 'Tutup',
-                readInstructions: 'Baca Instruksi',
-                langId: 'Indonesia',
-                langEng: 'English'
-            },
-            eng: {
-                victimName: "Victim's Name:",
-                crimeScene: 'Crime Scene:',
-                weapon: 'Weapon Used:',
-                noHistory: 'No gesture history.',
-                settingsTitle: 'Settings',
-                languageLabel: 'Language:',
-                closeButton: 'Close',
-                readInstructions: 'Read Instructions',
-                langId: 'Indonesia',
-                langEng: 'English'
-            }
+            id: { victimName: 'Nama Korban:', crimeScene: 'Lokasi Kejadian:', weapon: 'Alat yang Dipakai:', noHistory: 'Tidak ada riwayat gerakan.', settingsTitle: 'Pengaturan', languageLabel: 'Bahasa:', closeButton: 'Tutup', readInstructions: 'Baca Instruksi', langId: 'Indonesia', langEng: 'English' },
+            eng: { victimName: "Victim's Name:", crimeScene: 'Crime Scene:', weapon: 'Weapon Used:', noHistory: 'No gesture history.', settingsTitle: 'Settings', languageLabel: 'Language:', closeButton: 'Close', readInstructions: 'Read Instructions', langId: 'Indonesia', langEng: 'English' }
         };
 
         // --- APP CONTENT ---
         const displayContent = {
-            id: [
-                { title: translations.id.victimName, items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] },
-                { title: translations.id.crimeScene, items: ['Kamar lantai dua', 'Loteng', 'Gudang belakang', 'Ruang bawah tanah', 'Lorong dekat dapur'] },
-                { title: translations.id.weapon, items: ['Pisau', 'Palu', 'Gunting', 'Linggis', 'Batang besi'] }
-            ],
-            eng: [
-                { title: translations.eng.victimName, items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] },
-                { title: translations.eng.crimeScene, items: ['Second floor room', 'Attic', 'Back warehouse', 'Basement', 'Hallway near kitchen'] },
-                { title: translations.eng.weapon, items: ['Knife', 'Hammer', 'Scissors', 'Crowbar', 'Iron rod'] }
-            ]
+            id: [ { title: translations.id.victimName, items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] }, { title: translations.id.crimeScene, items: ['Kamar lantai dua', 'Loteng', 'Gudang belakang', 'Ruang bawah tanah', 'Lorong dekat dapur'] }, { title: translations.id.weapon, items: ['Pisau', 'Palu', 'Gunting', 'Linggis', 'Batang besi'] } ],
+            eng: [ { title: translations.eng.victimName, items: ['Eleanor', 'Abigail', 'Lillian', 'Margaret', 'Beatrice'] }, { title: translations.eng.crimeScene, items: ['Second floor room', 'Attic', 'Back warehouse', 'Basement', 'Hallway near kitchen'] }, { title: translations.eng.weapon, items: ['Knife', 'Hammer', 'Scissors', 'Crowbar', 'Iron rod'] } ]
         };
         const gestureTexts = [
             { 'Up': 'Eleanor', 'Right': 'Abigail', 'Down': 'Lillian', 'Left': 'Margaret', 'Tap': 'Beatrice' },
@@ -263,61 +259,50 @@
         let startX = 0, startY = 0, gestureCount = 0, currentSlideIndex = 0;
         const gestureSequence = [], gestureTextHistory = [];
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
-        let currentLanguage = 'eng';
         let startArea = null, isDragging = false, initialTranslate = 0;
+        
+        // App settings state
+        let appMode = 'digital'; // 'digital' or 'printed'
+        let customId = '';
+        let currentLanguage = 'eng';
+
         const SWIPE_THRESHOLD = 50, TAP_THRESHOLD = 10, DOUBLE_TAP_TIMEOUT = 300;
         const TAP_HOLD_DURATION = 500, TOTAL_SLIDES = 4, SLIDE_GAP = 20;
-        const SETTINGS_CORNER_SIZE = 60; // Ukuran area pojok dalam pixel
+        const SETTINGS_CORNER_SIZE = 60;
         const gridToGesture = { 'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E' };
         const gestureToCode = { 'A': 'Fl', 'B': 'uC', 'C': 'zW', 'D': 'Xy', 'E': 'Qr' };
         const gestureToTextKey = { 'A': 'Up', 'B': 'Right', 'C': 'Left', 'D': 'Down', 'E': 'Tap' };
 
-        // --- LICENSE LOGIC ---
-        const showLicenseModal = () => {
-            licenseModal.style.display = 'flex';
-            appWrapper.classList.remove('unlocked');
-        };
-
-        const showSettingsToastIfNeeded = () => {
-            if (!localStorage.getItem('atmaSettingsToastShown')) {
-                settingsToast.classList.remove('hidden');
-                localStorage.setItem('atmaSettingsToastShown', 'true');
-            }
-        };
-
+        // --- LICENSE LOGIC (using Firestore) ---
+        const showLicenseModal = () => { licenseModal.style.display = 'flex'; appWrapper.classList.remove('unlocked'); };
+        const showSettingsToastIfNeeded = () => { if (!localStorage.getItem('atmaSettingsToastShown')) { settingsToast.classList.remove('hidden'); localStorage.setItem('atmaSettingsToastShown', 'true'); } };
+        
         const unlockApp = () => {
             licenseModal.style.display = 'none';
             appWrapper.classList.add('unlocked');
-            const savedLang = localStorage.getItem('atmaLanguage') || 'eng';
-            setLanguage(savedLang);
+            loadSettings(); // Load settings after unlock
             showSettingsToastIfNeeded();
         };
 
-        
         const setButtonLoading = (isLoading) => {
             const buttonContent = verifyLicenseBtn.querySelector('span');
+            const spinner = verifyLicenseBtn.querySelector('.spinner');
             if (isLoading) {
                 buttonContent.style.display = 'none';
-                if (!verifyLicenseBtn.querySelector('.spinner')) {
-                    const spinner = document.createElement('div');
-                    spinner.className = 'spinner';
-                    verifyLicenseBtn.appendChild(spinner);
+                if (!spinner) {
+                    const newSpinner = document.createElement('div');
+                    newSpinner.className = 'spinner';
+                    verifyLicenseBtn.appendChild(newSpinner);
                 }
             } else {
                 buttonContent.style.display = 'inline';
-                const spinner = verifyLicenseBtn.querySelector('.spinner');
-                if (spinner) {
-                    spinner.remove();
-                }
+                if (spinner) spinner.remove();
             }
         };
 
         const verifyLicense = async () => {
             const key = licenseKeyInput.value.trim().toUpperCase();
-            if (!key) {
-                licenseError.textContent = 'Please enter a license key.';
-                return;
-            }
+            if (!key) { licenseError.textContent = 'Please enter a license key.'; return; }
             setButtonLoading(true);
             licenseError.textContent = '';
             try {
@@ -326,18 +311,9 @@
                 if (licenseSnap.exists() && licenseSnap.data().status === 'available') {
                     const originalData = licenseSnap.data();
                     const activatedLicenseRef = doc(db, 'activatedLicenses', key);
-                    await setDoc(activatedLicenseRef, {
-                        ...originalData,
-                        status: 'used',
-                        uid: auth.currentUser.uid,
-                        claimedAt: serverTimestamp()
-                    });
+                    await setDoc(activatedLicenseRef, { ...originalData, status: 'used', uid: auth.currentUser.uid, claimedAt: serverTimestamp() });
                     await deleteDoc(availableLicenseRef);
-                    const licenseData = {
-                        key: key,
-                        lastValidated: new Date().getTime()
-                    };
-                    localStorage.setItem('atmaLicense', JSON.stringify(licenseData));
+                    localStorage.setItem('atmaLicense', JSON.stringify({ key: key, lastValidated: new Date().getTime() }));
                     unlockApp();
                 } else {
                     licenseError.textContent = 'Invalid or already used license key.';
@@ -349,24 +325,13 @@
                 setButtonLoading(false);
             }
         };
-
+        
         const checkLicenseOnLoad = async () => {
             const licenseDataString = localStorage.getItem('atmaLicense');
-            if (!licenseDataString) {
-                showLicenseModal();
-                return;
-            }
-
+            if (!licenseDataString) { showLicenseModal(); return; }
             const licenseData = JSON.parse(licenseDataString);
             const sevenDaysInMillis = 7 * 24 * 60 * 60 * 1000;
-            const isExpired = (new Date().getTime() - licenseData.lastValidated) > sevenDaysInMillis;
-
-            if (!isExpired) {
-                unlockApp();
-                return;
-            }
-            
-            // Re-verify if older than 7 days
+            if ((new Date().getTime() - licenseData.lastValidated) < sevenDaysInMillis) { unlockApp(); return; }
             try {
                 const licenseRef = doc(db, 'activatedLicenses', licenseData.key);
                 const licenseSnap = await getDoc(licenseRef);
@@ -380,11 +345,11 @@
                     licenseError.textContent = 'License re-validation failed. Please enter again.';
                 }
             } catch (error) {
-                 console.error("Error re-verifying license:", error);
-                 unlockApp(); // Fallback to unlock if re-verification fails due to network etc.
+                console.error("Error re-verifying license:", error);
+                unlockApp(); // Fallback
             }
         };
-        
+
         // --- INITIALIZATION ---
         window.onload = async () => {
             try {
@@ -399,26 +364,39 @@
 
         // --- EVENT LISTENERS ---
         verifyLicenseBtn.addEventListener('click', verifyLicense);
-        licenseKeyInput.addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') verifyLicense();
-        });
-        closeToastBtn.addEventListener('click', () => {
-            settingsToast.classList.add('hidden');
-        });
-        window.onresize = () => {
-            if (appWrapper.classList.contains('unlocked')) {
-                animateToSlide(currentSlideIndex);
-            }
-        };
+        licenseKeyInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') verifyLicense(); });
+        closeToastBtn.addEventListener('click', () => settingsToast.classList.add('hidden'));
+        window.onresize = () => { if (appWrapper.classList.contains('unlocked')) animateToSlide(currentSlideIndex); };
         
-        // --- APP CORE FUNCTIONS ---
-        function setLanguage(lang) {
-            localStorage.setItem('atmaLanguage', lang);
+        // --- SETTINGS MODAL LOGIC ---
+        function openSettingsModal() {
+            // Load current settings into the modal UI
+            customIdInput.value = customId;
+            updateLanguageUI(currentLanguage);
+            updateModeUI(appMode);
+            settingsModal.classList.remove('hidden');
+        }
+
+        function closeSettingsModal() { settingsModal.classList.add('hidden'); }
+
+        function updateModeUI(mode) {
+            appMode = mode;
+            if (mode === 'digital') {
+                modeDigitalBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
+                modePrintedBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
+                customIdSection.classList.add('hidden');
+            } else {
+                modePrintedBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
+                modeDigitalBtn.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
+                customIdSection.classList.remove('hidden');
+            }
+        }
+
+        function updateLanguageUI(lang) {
             currentLanguage = lang;
-            const t = translations[currentLanguage];
+             const t = translations[currentLanguage];
             settingsTitle.textContent = t.settingsTitle;
             languageLabel.textContent = t.languageLabel;
-            closeSettingsButton.textContent = t.closeButton;
             readInstructionsButton.textContent = t.readInstructions;
             langIdButton.textContent = t.langId;
             langEngButton.textContent = t.langEng;
@@ -429,14 +407,72 @@
                 langEngButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-black text-[#fdfaf3]';
                 langIdButton.className = 'flex-1 p-2 rounded-sm border-2 border-black bg-transparent text-black';
             }
+        }
+
+        function saveSettings() {
+            if (appMode === 'printed') {
+                const idValue = customIdInput.value;
+                if (!/^[0-9]{6}$/.test(idValue)) {
+                    customIdError.textContent = 'ID must be exactly 6 digits.';
+                    return; // Prevent saving and closing
+                }
+                customId = idValue;
+                customIdError.textContent = '';
+            }
+            localStorage.setItem('atmaSettings', JSON.stringify({
+                mode: appMode,
+                id: customId,
+                lang: currentLanguage
+            }));
+            closeSettingsModal();
+            resetApp(); // Reset to apply new settings
+        }
+        
+        function loadSettings() {
+            const savedSettings = JSON.parse(localStorage.getItem('atmaSettings')) || {};
+            appMode = savedSettings.mode || 'digital';
+            customId = savedSettings.id || '';
+            currentLanguage = savedSettings.lang || 'eng';
             resetApp();
         }
 
+        function downloadQrCode() {
+            if (!customId) {
+                customIdError.textContent = 'Please set and save a 6-digit ID first.';
+                return;
+            }
+            const url = `https://cnid.my.id/redirects.html?id=${customId}`;
+            const qrContainer = document.createElement('div');
+            new QRCode(qrContainer, {
+                text: url,
+                width: 512,
+                height: 512,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            setTimeout(() => {
+                const qrCanvas = qrContainer.querySelector('canvas');
+                const link = document.createElement('a');
+                link.download = `atma_qr_${customId}.png`;
+                link.href = qrCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+                link.click();
+            }, 100);
+        }
+
+        modeDigitalBtn.addEventListener('click', () => updateModeUI('digital'));
+        modePrintedBtn.addEventListener('click', () => updateModeUI('printed'));
+        langIdButton.addEventListener('click', () => updateLanguageUI('id'));
+        langEngButton.addEventListener('click', () => updateLanguageUI('eng'));
+        saveSettingsBtn.addEventListener('click', saveSettings);
+        downloadQrBtn.addEventListener('click', downloadQrCode);
+        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
+
+        // --- APP CORE FUNCTIONS ---
         function createSlide(slideIndex) {
             const slide = document.createElement('div');
             slide.className = 'slide';
             const slideContent = document.createElement('div');
             slideContent.className = 'slide-content';
+
             if (slideIndex < 3) {
                 const contentData = displayContent[currentLanguage][slideIndex];
                 const listItems = contentData.items.map(item => `<li class="ml-4 text-xl">• ${item}</li>`).join('');
@@ -445,19 +481,31 @@
                         <h2 class="text-3xl font-bold mb-4">${contentData.title}</h2>
                         <ul class="list-none space-y-2">${listItems}</ul>
                     </div>`;
-            } else {
-                slideContent.innerHTML = '';
+            } else { // Last slide logic
+                if (appMode === 'printed') {
+                    // Placeholder for image1.jpg
+                     slideContent.innerHTML = `<img src="https://placehold.co/600x600/ffffff/000000?text=Image+1" alt="Initial image">`;
+                } else {
+                    slideContent.innerHTML = ''; // Will be populated with QR code later
+                }
             }
             slide.appendChild(slideContent);
             return slide;
         }
         
-        function animateToSlide(slideIndex) {
-            slideContainer.style.transition = 'transform 0.4s ease-in-out';
+        function animateToSlide(slideIndex, isInstant = false) {
+            const previousSlideIndex = currentSlideIndex;
+            slideContainer.style.transition = isInstant ? 'none' : 'transform 0.4s ease-in-out';
             const slideWidth = displayArea.getBoundingClientRect().width;
             const totalTranslation = (slideWidth * slideIndex) + (SLIDE_GAP * slideIndex);
             slideContainer.style.transform = `translateX(-${totalTranslation}px)`;
             currentSlideIndex = slideIndex;
+            
+            // Image swap logic for printed mode
+            if (appMode === 'printed' && previousSlideIndex === 3 && currentSlideIndex !== 3) {
+                 const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
+                 lastSlideContent.innerHTML = `<img src="https://placehold.co/600x600/ffffff/000000?text=Image+2" alt="Revealed image">`;
+            }
         }
 
         function setupInitialView() {
@@ -465,7 +513,7 @@
             for(let i = 0; i < TOTAL_SLIDES; i++) {
                 slideContainer.appendChild(createSlide(i));
             }
-            animateToSlide(0);
+            animateToSlide(0, true);
         }
         
         function resetApp() {
@@ -476,7 +524,12 @@
             isSessionActive = true;
             tapCount = 0;
             lastTapTime = 0;
+            updateLanguageUI(currentLanguage); // Apply language translations to UI text
             setupInitialView();
+            // Clear Firebase data for printed mode on reset
+            if (appMode === 'printed' && customId) {
+                updateDataInFirebase();
+            }
         }
         
         function showHistoryOverlay() {
@@ -489,9 +542,7 @@
             historyOverlayElement.classList.add('show');
         }
 
-        function hideHistoryOverlay() {
-            historyOverlayElement.classList.remove('show');
-        }
+        function hideHistoryOverlay() { historyOverlayElement.classList.remove('show'); }
 
         function getGridArea(clientX, clientY) {
             const rect = displayArea.getBoundingClientRect();
@@ -509,8 +560,20 @@
             return null;
         }
 
-        function openSettingsModal() { settingsModal.classList.remove('hidden'); }
-        function closeSettingsModal() { settingsModal.classList.add('hidden'); }
+        async function updateDataInFirebase() {
+            if (appMode !== 'printed' || !customId) return;
+            try {
+                const dataPath = ref(rtdb, 'users/' + customId);
+                const dataToSet = {
+                    id: gestureSequence,
+                    lang: currentLanguage
+                };
+                await set(dataPath, dataToSet);
+                console.log('Data updated in Firebase for ID:', customId);
+            } catch (error) {
+                console.error('Failed to update data in Firebase:', error);
+            }
+        }
 
         touchArea.addEventListener('touchstart', (e) => {
             if (!appWrapper.classList.contains('unlocked') || e.target.closest('#settings-modal')) return;
@@ -561,13 +624,11 @@
             const absDiffY = Math.abs(endY - startY);
             const isTap = absDiffX < TAP_THRESHOLD && absDiffY < TAP_THRESHOLD;
 
-            // --- NEW LOGIC FOR SETTINGS ---
-            // Check if this is a tap in the top-right corner
+            // Settings corner tap
             if (isTap && endX > window.innerWidth - SETTINGS_CORNER_SIZE && endY < SETTINGS_CORNER_SIZE) {
                 openSettingsModal();
-                return; // Stop execution, this was a settings action
+                return;
             }
-            // --- END OF NEW LOGIC ---
 
             if (!isSessionActive) {
                 if (isTap) {
@@ -576,11 +637,8 @@
                     lastTapTime = currentTime;
                     if (tapCount === 3) resetApp();
                 } else if (absDiffX > SWIPE_THRESHOLD) {
-                    if (diffX < 0 && currentSlideIndex < TOTAL_SLIDES - 1) {
-                        currentSlideIndex++;
-                    } else if (diffX > 0 && currentSlideIndex > 0) {
-                        currentSlideIndex--;
-                    }
+                    if (diffX < 0 && currentSlideIndex < TOTAL_SLIDES - 1) currentSlideIndex++;
+                    else if (diffX > 0 && currentSlideIndex > 0) currentSlideIndex--;
                 }
                 animateToSlide(currentSlideIndex);
                 isDragging = false;
@@ -588,7 +646,6 @@
             }
 
             let detectedGesture = '';
-            // Ensure input swipes are not confused with taps
             if (!isTap && startArea && diffX < -SWIPE_THRESHOLD && absDiffX > absDiffY) {
                 detectedGesture = gridToGesture[startArea];
             }
@@ -603,29 +660,34 @@
                 const textToShow = gestureTexts[gestureCount][textKey];
                 if (textToShow) gestureTextHistory.push(textToShow);
                 gestureCount++;
+                
+                // Update Firebase if in printed mode
+                if (appMode === 'printed') {
+                    updateDataInFirebase();
+                }
+                
                 animateToSlide(gestureCount);
+
                 if (gestureCount >= 3) {
                     isSessionActive = false;
-                    const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
-                    lastSlideContent.innerHTML = '';
-                    const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${gestureSequence.join('')}&lang=${currentLanguage}`;
-                    const qrCodeSize = Math.min(lastSlideContent.offsetWidth, lastSlideContent.offsetHeight) * 0.9;
-                     new QRCode(lastSlideContent, {
-                        text: finalUrl,
-                        width: qrCodeSize,
-                        height: qrCodeSize,
-                        colorDark: "#000000",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.H
-                    });
+                    // Final action depends on the mode
+                    if (appMode === 'digital') {
+                        const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
+                        lastSlideContent.innerHTML = '';
+                        const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${gestureSequence.join('')}&lang=${currentLanguage}`;
+                        const qrCodeSize = Math.min(lastSlideContent.offsetWidth, lastSlideContent.offsetHeight) * 0.9;
+                        new QRCode(lastSlideContent, {
+                            text: finalUrl,
+                            width: qrCodeSize,
+                            height: qrCodeSize,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    }
                 }
             }
         });
-
-        langIdButton.addEventListener('click', () => setLanguage('id'));
-        langEngButton.addEventListener('click', () => setLanguage('eng'));
-        closeSettingsButton.addEventListener('click', closeSettingsModal);
-        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
     </script>
         <script>
