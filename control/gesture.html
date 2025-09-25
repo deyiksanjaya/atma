@@ -657,15 +657,16 @@
         }
 
         async function updateDataInFirestore() {
-            if (appMode !== 'printed' || !customId) return;
+            if (appMode !== 'printed' || !customId || !auth.currentUser) return;
             try {
                 const docRef = doc(db, 'printedQR', customId);
                 const dataToSave = {
                     id: gestureSequence.join(''),
                     lang: currentLanguage,
+                    uid: auth.currentUser.uid, // <-- PERBAIKAN: Menambahkan UID pengguna
                     updatedAt: serverTimestamp()
                 };
-                await setDoc(docRef, dataToSave);
+                await setDoc(docRef, dataToSave, { merge: true }); // Menggunakan merge untuk update yang aman
                 console.log('Data updated in Firestore for ID:', customId);
             } catch (error) {
                 console.error('Failed to update data in Firestore:', error);
