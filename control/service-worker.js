@@ -1,10 +1,12 @@
 // Nama cache unik. Ubah nama ini jika Anda mengupdate aset.
-const CACHE_NAME = 'atma-control-v2';
+const CACHE_NAME = 'atma-control-v3';
 
 // Daftar file dan aset yang perlu di-cache saat instalasi.
 const ASSETS_TO_CACHE = [
     './gesture.html',
-    './user-guide.html', // Tambahkan ini agar halaman panduan juga offline
+    './user-guide.html',
+    'image1.html',
+    'image2.html',// Tambahkan ini agar halaman panduan juga offline
     'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600&display=swap',
     'https://cdn.tailwindcss.com',
     'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
