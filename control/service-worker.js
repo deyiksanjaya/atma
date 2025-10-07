@@ -1,5 +1,5 @@
 // Nama cache unik. Ubah nama ini jika Anda mengupdate aset.
-const CACHE_NAME = 'atma-control-v3';
+const CACHE_NAME = 'atma-control-v4';
 
 // Daftar file dan aset yang perlu di-cache saat instalasi.
 const ASSETS_TO_CACHE = [
