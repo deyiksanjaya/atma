@@ -1,12 +1,12 @@
 // Nama cache unik. Ubah nama ini jika Anda mengupdate aset.
-const CACHE_NAME = 'atma-control-v4';
+const CACHE_NAME = 'atma-control-v5'; // Versi cache diubah untuk memastikan pembaruan
 
 // Daftar file dan aset yang perlu di-cache saat instalasi.
 const ASSETS_TO_CACHE = [
-    './gesture.html',
+    './gesture.html', 
     './user-guide.html',
     'https://deyiksanjaya.github.io/atma/image1.jpg',
-    'https://deyiksanjaya.github.io/atma/image2.jpg',// Tambahkan ini agar halaman panduan juga offline
+    'https://deyiksanjaya.github.io/atma/image2.jpg',
     'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600&display=swap',
     'https://cdn.tailwindcss.com',
     'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
@@ -48,25 +48,30 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Event 'fetch': Dijalankan setiap kali aplikasi membuat permintaan jaringan (mis. mengambil gambar, CSS, dll.).
+// Event 'fetch': Dijalankan setiap kali aplikasi membuat permintaan jaringan.
 self.addEventListener('fetch', (event) => {
-    // Kita hanya menangani permintaan GET, karena permintaan lain (POST ke Firebase) harus selalu online.
+    // Kita hanya menangani permintaan GET.
     if (event.request.method !== 'GET') {
         return;
     }
 
-    // Strategi: Cache-First. Coba ambil dari cache dulu, jika tidak ada, baru ambil dari jaringan.
+    // Strategi: Network First. Coba ambil dari jaringan dulu.
+    // Jika gagal (offline), baru ambil dari cache sebagai fallback.
     event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // Jika ditemukan di cache, kembalikan dari cache.
-                if (response) {
-                    // console.log(`Fetching from cache: ${event.request.url}`);
-                    return response;
-                }
-                // Jika tidak ada di cache, ambil dari jaringan.
-                // console.log(`Fetching from network: ${event.request.url}`);
-                return fetch(event.request);
+        fetch(event.request)
+            .then((networkResponse) => {
+                // Jika berhasil, kita simpan respons ke cache untuk penggunaan di masa depan.
+                return caches.open(CACHE_NAME).then((cache) => {
+                    // Kita harus mengkloning respons karena respons hanya bisa dibaca sekali.
+                    cache.put(event.request, networkResponse.clone());
+                    // Kembalikan respons asli dari jaringan ke aplikasi.
+                    return networkResponse;
+                });
+            })
+            .catch(() => {
+                // Jika permintaan jaringan gagal (misalnya, offline), coba cari di cache.
+                console.log(`Network request for ${event.request.url} failed, trying cache.`);
+                return caches.match(event.request);
             })
     );
 });
