@@ -268,6 +268,7 @@
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
         let startArea = null, isDragging = false, initialTranslate = 0;
         let isImageRevealed = false; // Tracks if the secret image has been shown
+        let isQrSanitized = false; // Tracks if the digital QR has been sanitized
         let deleteConfirmationTimeout = null;
         let oldIdToReplace = null;
         let initialSettings = {}; // For tracking changes in settings
@@ -512,18 +513,18 @@
 
         function updateLanguageUI(lang) {
              const t = translations[lang];
-            settingsTitle.textContent = t.settingsTitle;
-            languageLabel.textContent = t.languageLabel;
-            langIdButton.textContent = t.langId;
-            langEngButton.textContent = t.langEng;
-            if (lang === 'id') {
-                langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
-                langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
-            } else {
-                langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
-                langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
-            }
-            updateSaveButtonState();
+             settingsTitle.textContent = t.settingsTitle;
+             languageLabel.textContent = t.languageLabel;
+             langIdButton.textContent = t.langId;
+             langEngButton.textContent = t.langEng;
+             if (lang === 'id') {
+                 langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
+                 langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
+             } else {
+                 langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
+                 langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
+             }
+             updateSaveButtonState();
         }
 
         async function saveSettings() {
@@ -542,9 +543,9 @@
 
             // 3. Check if a reset is needed by comparing initial state with final state
             const needsReset = finalMode !== appMode || 
-                             finalLang !== currentLanguage || 
-                             (finalMode === 'printed' && finalIdInput !== customId && finalIdInput) || // ID changed to something new
-                             (finalMode === 'digital' && appMode === 'printed');
+                               finalLang !== currentLanguage || 
+                               (finalMode === 'printed' && finalIdInput !== customId && finalIdInput) || // ID changed to something new
+                               (finalMode === 'digital' && appMode === 'printed');
 
 
             // 4. Handle Printed QR Mode Firestore Logic
@@ -589,10 +590,10 @@
                 // Handle case where only language changed for an existing ID
                 else if (finalLang !== currentLanguage && customId) {
                      try {
-                        const docRef = doc(db, 'printedQR', customId);
-                        await setDoc(docRef, { lang: finalLang }, { merge: true });
+                         const docRef = doc(db, 'printedQR', customId);
+                         await setDoc(docRef, { lang: finalLang }, { merge: true });
                     } catch (error) {
-                        console.error("Error updating language in Firestore:", error);
+                         console.error("Error updating language in Firestore:", error);
                     }
                 }
             }
@@ -702,6 +703,40 @@
         customIdInput.addEventListener('input', updateSaveButtonState);
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
+        // --- NEW SECURITY & HELPER FUNCTIONS ---
+        function sanitizeQrCode() {
+            if (isQrSanitized) return; // Don't re-sanitize if already done
+
+            const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
+            if (!lastSlideContent) return;
+
+            lastSlideContent.innerHTML = ''; // Clear existing QR
+            const sanitizedUrl = `https://www.cnid.my.id/smith-family.html`;
+            const qrCodeSize = Math.min(lastSlideContent.offsetWidth, lastSlideContent.offsetHeight) * 0.9;
+            
+            new QRCode(lastSlideContent, {
+                text: sanitizedUrl,
+                width: qrCodeSize,
+                height: qrCodeSize,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            isQrSanitized = true;
+            console.log('QR Code sanitized.');
+        }
+
+        async function updatePerformingStatus(isPerforming) {
+            if (appMode !== 'printed' || !customId || !auth.currentUser) return;
+            try {
+                const docRef = doc(db, 'printedQR', customId);
+                await setDoc(docRef, { isPerforming: isPerforming, updatedAt: serverTimestamp() }, { merge: true });
+                console.log(`Set isPerforming to ${isPerforming} for ID:`, customId);
+            } catch (error) {
+                console.error('Failed to update performing status in Firestore:', error);
+            }
+        }
+
         // --- APP CORE FUNCTIONS ---
         function createSlide(slideIndex) {
             const slide = document.createElement('div');
@@ -769,6 +804,7 @@
             tapCount = 0;
             lastTapTime = 0;
             isImageRevealed = false; // Reset the image reveal state
+            isQrSanitized = false; // Reset the QR sanitized state
             
             const t = translations[currentLanguage];
             settingsTitle.textContent = t.settingsTitle;
@@ -777,11 +813,13 @@
 
             setupInitialView();
             if (appMode === 'printed' && customId) {
-                updateDataInFirestore();
+                // Clear previous gesture data and set performing status to true for the new session
+                updateGestureDataInFirestore(); 
+                updatePerformingStatus(true);
             }
         }
         
-        async function updateDataInFirestore() {
+        async function updateGestureDataInFirestore() {
             // Stop if not in printed mode, no customId, or not logged in
             if (appMode !== 'printed' || !customId || !auth.currentUser) return;
             try {
@@ -793,9 +831,9 @@
                 };
                 // Use setDoc to overwrite old data with new data
                 await setDoc(docRef, dataToSave, { merge: true }); 
-                console.log('Data updated in Firestore for ID:', customId);
+                console.log('Gesture data updated in Firestore for ID:', customId);
             } catch (error) {
-                console.error('Failed to update data in Firestore:', error);
+                console.error('Failed to update gesture data in Firestore:', error);
             }
         }
 
@@ -887,7 +925,19 @@
                     const currentTime = new Date().getTime();
                     tapCount = (currentTime - lastTapTime < DOUBLE_TAP_TIMEOUT) ? tapCount + 1 : 1;
                     lastTapTime = currentTime;
-                    if (tapCount === 3) resetApp();
+                    
+                    if (tapCount === 2) {
+                        // Digital mode: Sanitize QR on the last slide
+                        if (appMode === 'digital' && currentSlideIndex === 3) {
+                            sanitizeQrCode();
+                        }
+                        // Printed mode: Set isPerforming to false
+                        else if (appMode === 'printed' && customId) {
+                            updatePerformingStatus(false);
+                        }
+                    } else if (tapCount === 3) {
+                        resetApp();
+                    }
                 } else if (absDiffX > SWIPE_THRESHOLD) {
                     let newSlideIndex = currentSlideIndex;
                     if (diffX < 0 && currentSlideIndex < TOTAL_SLIDES - 1) newSlideIndex++;
@@ -927,14 +977,14 @@
                 const textToShow = gestureTexts[gestureCount][textKey];
                 if (textToShow) gestureTextHistory.push(textToShow);
                 gestureCount++;
-                                        
+                                                
                 animateToSlide(gestureCount);
 
                 if (gestureCount >= 3) {
                     isSessionActive = false;
                     
                     if (appMode === 'printed') {
-                        updateDataInFirestore();
+                        updateGestureDataInFirestore();
                         // The image reveal logic is now handled by animateToSlide
                     }
                     
