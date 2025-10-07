@@ -275,7 +275,7 @@
             </p>
 
             <figure class="relative w-screen h-0 pb-[75%] bg-gray-300 overflow-hidden mb-8
-                            ml-[calc(50%-50vw)] article-image-block" id="articleImageContainer">
+                           ml-[calc(50%-50vw)] article-image-block" id="articleImageContainer">
                 <img id="image2" src="image2.jpg" alt="Potret keluarga vintage 2" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
                 <img id="image1" src="image1.jpg" alt="Potret keluarga vintage 1" class="absolute inset-0 w-full h-full object-cover" style="object-position: top;" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
                 <figcaption id="imageFigcaption" class="absolute bottom-0 left-0 w-full bg-white bg-opacity-80 p-2 text-xs text-gray-600">
@@ -381,218 +381,180 @@
     </div>
 
     <script type="module">
+        // Firebase Imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+        
         // Import translations from the external file
         import { translations } from './languages.js';
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // --- LANGUAGE AND CONTENT SETUP ---
-            
-            // 1. Determine the language from URL parameter (?lang=eng)
-            function getLanguage() {
-                const params = new URLSearchParams(window.location.search);
-                const lang = params.get('lang');
-                return (lang === 'eng') ? 'eng' : 'id';
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFDxFe2PnyxaLRb7VctQSHhQh7ZKoSDaU",
+            authDomain: "atmamagicbyheri.firebaseapp.com",
+            projectId: "atmamagicbyheri",
+            storageBucket: "atmamagicbyheri.appspot.com",
+            messagingSenderId: "672288947327",
+            appId: "1:672288947327:web:4ee5d222045bfaf6ed934a"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // --- DOM ELEMENTS & CONSTANTS ---
+        const mainHeader = document.getElementById('mainHeader');
+        const articleImageContainer = document.getElementById('articleImageContainer');
+        const image1 = document.getElementById('image1');
+        const image2 = document.getElementById('image2');
+        const galleryOverlay = document.getElementById('galleryOverlay');
+        const galleryImage1 = document.getElementById('galleryImage1');
+        const galleryImage2 = document.getElementById('galleryImage2');
+        const closeButton = document.querySelector('.gallery-overlay .close-button');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainContent = document.querySelector('main');
+        const IMAGE_STATE_KEY = 'smithFamilyImageState';
+
+        // --- HELPER FUNCTIONS ---
+        const getUrlParams = () => new URLSearchParams(window.location.search);
+        const getLanguage = () => (getUrlParams().get('lang') === 'eng' ? 'eng' : 'id');
+        const capitalizeFirstLetter = (string) => string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
+
+        // --- TRANSLATION & CONTENT FUNCTIONS ---
+        function applyTranslations(lang) {
+            const t = translations[lang];
+            if (!t) {
+                console.error(`Translations for language "${lang}" not found.`);
+                return;
             }
+            const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+            const setHTML = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+            const setPlaceholder = (id, text) => { const el = document.getElementById(id); if (el) el.placeholder = text; };
+            document.documentElement.lang = t.htmlLang;
+            setText('pageTitle', t.title);
+            setText('headerWorld', t.headerWorld);
+            setText('breadcrumbWorld', t.breadcrumbWorld);
+            setText('breadcrumbAmerica', t.breadcrumbAmerica);
+            setText('readTime', t.readTime);
+            setText('articleTitle', t.articleTitle);
+            setText('publishedLabel', t.publishedLabel);
+            setText('publishedTime', t.publishedTime);
+            setText('authorPrefix', t.authorPrefix);
+            setText('authorName', t.authorName);
+            setText('imageFigcaption', t.imageFigcaption);
+            setText('relatedTitle', t.relatedTitle);
+            setText('relatedLink1', t.relatedLink1);
+            setText('relatedLink2', t.relatedLink2);
+            setText('relatedLink3', t.relatedLink3);
+            setPlaceholder('searchPlaceholder', t.searchPlaceholder);
+            setText('signIn', t.signIn);
+            setText('liveTv', t.liveTv);
+            setText('listen', t.listen);
+            setText('watch', t.watch);
+            setText('world', t.world);
+            setText('usPolitics', t.usPolitics);
+            setText('business', t.business);
+            setText('markets', t.markets);
+            setText('health', t.health);
+            setText('entertainment', t.entertainment);
+            setText('tech', t.tech);
+            setText('style', t.style);
+            setText('travel', t.travel);
+            setText('followCnn', t.followCnn);
+            setText('termsOfUse', t.termsOfUse);
+            setText('privacyPolicy', t.privacyPolicy);
+            setText('cookieSettings', t.cookieSettings);
+            setText('adChoices', t.adChoices);
+            setText('accessibility', t.accessibility);
+            setText('about', t.about);
+            setText('newsletters', t.newsletters);
+            setText('transcripts', t.transcripts);
+            setHTML('copyright', t.copyright);
+        }
 
-            // 2. Apply all static translations to the page
-            function applyTranslations(lang) {
-                const t = translations[lang];
-                if (!t) {
-                    console.error(`Translations for language "${lang}" not found.`);
-                    return;
-                }
-
-                const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
-                const setHTML = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
-                const setPlaceholder = (id, text) => { const el = document.getElementById(id); if (el) el.placeholder = text; };
-
-                document.documentElement.lang = t.htmlLang;
-                setText('pageTitle', t.title);
-                setText('headerWorld', t.headerWorld);
-                setText('breadcrumbWorld', t.breadcrumbWorld);
-                setText('breadcrumbAmerica', t.breadcrumbAmerica);
-                setText('readTime', t.readTime);
-                setText('articleTitle', t.articleTitle);
-                setText('publishedLabel', t.publishedLabel);
-                setText('publishedTime', t.publishedTime);
-                setText('authorPrefix', t.authorPrefix);
-                setText('authorName', t.authorName);
-                setText('imageFigcaption', t.imageFigcaption);
-                setText('relatedTitle', t.relatedTitle);
-                setText('relatedLink1', t.relatedLink1);
-                setText('relatedLink2', t.relatedLink2);
-                setText('relatedLink3', t.relatedLink3);
-                setPlaceholder('searchPlaceholder', t.searchPlaceholder);
-                setText('signIn', t.signIn);
-                setText('liveTv', t.liveTv);
-                setText('listen', t.listen);
-                setText('watch', t.watch);
-                setText('world', t.world);
-                setText('usPolitics', t.usPolitics);
-                setText('business', t.business);
-                setText('markets', t.markets);
-                setText('health', t.health);
-                setText('entertainment', t.entertainment);
-                setText('tech', t.tech);
-                setText('style', t.style);
-                setText('travel', t.travel);
-                setText('followCnn', t.followCnn);
-                setText('termsOfUse', t.termsOfUse);
-                setText('privacyPolicy', t.privacyPolicy);
-                setText('cookieSettings', t.cookieSettings);
-                setText('adChoices', t.adChoices);
-                setText('accessibility', t.accessibility);
-                setText('about', t.about);
-                setText('newsletters', t.newsletters);
-                setText('transcripts', t.transcripts);
-                setHTML('copyright', t.copyright);
+        function getArticleParams(secretCode, lang) {
+            const idParam = secretCode || 'FlFlFl';
+            const decodingMap = { 'Fl': 'a', 'uC': 'b', 'Xy': 'c', 'zW': 'd', 'Qr': 'e' };
+            let decodedChars = [];
+            for (let i = 0; i < idParam.length; i += 2) {
+                const encodedSegment = idParam.substring(i, i + 2);
+                decodedChars.push(decodingMap[encodedSegment] || 'a');
             }
-            
-            // 3. Get decoded parameters from URL using the correct language maps
-            function getArticleParams(lang) {
-                const params = new URLSearchParams(window.location.search);
-                const idParam = params.get('id') || 'FlFlFl';
+            while (decodedChars.length < 3) decodedChars.push('a');
+            decodedChars = decodedChars.slice(0, 3);
+            const [namaKorbanChar, lokasiChar, alatChar] = decodedChars;
+            const { namaKorbanMap, lokasiMap, alatMap } = translations[lang].articleParams;
+            const alatObject = alatMap[alatChar] || { name: 'a sharp object', image: '' };
+            return {
+                namaKorban: namaKorbanMap[namaKorbanChar] || 'Jane Eleanor',
+                lokasi: lokasiMap[lokasiChar] || 'a room in the house',
+                alat: alatObject.name,
+                alatImage: alatObject.image
+            };
+        }
 
-                const decodingMap = { 'Fl': 'a', 'uC': 'b', 'Xy': 'c', 'zW': 'd', 'Qr': 'e' };
-                let decodedChars = [];
-                for (let i = 0; i < idParam.length; i += 2) {
-                    const encodedSegment = idParam.substring(i, i + 2);
-                    decodedChars.push(decodingMap[encodedSegment] || 'a');
-                }
-                while (decodedChars.length < 3) decodedChars.push('a');
-                decodedChars = decodedChars.slice(0, 3);
-
-                const [namaKorbanChar, lokasiChar, alatChar] = decodedChars;
-                
-                const { namaKorbanMap, lokasiMap, alatMap } = translations[lang].articleParams;
-                
-                const alatObject = alatMap[alatChar] || { name: 'a sharp object', image: '' };
-
-                return {
-                    namaKorban: namaKorbanMap[namaKorbanChar] || 'Jane Eleanor',
-                    lokasi: lokasiMap[lokasiChar] || 'a room in the house',
-                    alat: alatObject.name,
-                    alatImage: alatObject.image
-                };
+        function populateArticleContent(lang, articleParams) {
+            const t = translations[lang];
+            const { namaKorban, lokasi, alat, alatImage } = articleParams;
+            const evidenceFigureHTML = alatImage ? `
+                <figure class="evidence-figure">
+                    <img src="./evidences/${alatImage}" alt="${t.evidenceCaption.replace('${alat}', alat)}" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
+                    <figcaption>${t.evidenceCaption.replace('${alat}', alat)}</figcaption>
+                </figure>
+            ` : '';
+            const articleHTML = `
+                <p>${t.articleP1}</p>
+                <p>${t.articleP2}</p>
+                <p>${t.articleP3}</p>
+                ${evidenceFigureHTML}
+                <h2 class="text-xl font-bold mb-4 mt-6">${t.articleH2}</h2>
+                <p>${t.articleP4}</p>
+                <p>${t.articleP5}</p>
+                <h3 class="text-lg font-bold mb-4 mt-6">${t.articleH3}</h3>
+                <p>${t.articleP6}</p>
+                <p>${t.articleP7}</p>
+                <p>${t.articleP8}</p>
+            `;
+            let finalArticleHtml = articleHTML
+                .replace(/\$\{namaKorban\}/g, capitalizeFirstLetter(namaKorban))
+                .replace(/\$\{lokasi\}/g, lokasi)
+                .replace(/\$\{alat\}/g, alat);
+            document.getElementById('articleContent').innerHTML = finalArticleHtml;
+        }
+        
+        // --- UI & INTERACTIVITY FUNCTIONS ---
+        function updateImageVisibility(isImage2Active) {
+            if (image1 && galleryImage1 && image2 && galleryImage2) {
+                image1.style.opacity = isImage2Active ? '0' : '1';
+                galleryImage1.style.opacity = isImage2Active ? '0' : '1';
+                image2.style.opacity = '1';
+                galleryImage2.style.opacity = '1';
             }
+        }
 
-            // 4. Populate dynamic article content using translated text and parameters
-            function populateArticleContent(lang, articleParams) {
-                const t = translations[lang];
-                const { namaKorban, lokasi, alat, alatImage } = articleParams;
-
-                const evidenceFigureHTML = alatImage ? `
-                    <figure class="evidence-figure">
-                        <img src="./evidences/${alatImage}" alt="${t.evidenceCaption.replace('${alat}', alat)}" oncontextmenu="return false;" ondragstart="return false;" draggable="false">
-                        <figcaption>${t.evidenceCaption.replace('${alat}', alat)}</figcaption>
-                    </figure>
-                ` : '';
-
-                const articleHTML = `
-                    <p>${t.articleP1}</p>
-                    <p>${t.articleP2}</p>
-                    <p>${t.articleP3}</p>
-                    ${evidenceFigureHTML}
-                    <h2 class="text-xl font-bold mb-4 mt-6">${t.articleH2}</h2>
-                    <p>${t.articleP4}</p>
-                    <p>${t.articleP5}</p>
-                    <h3 class="text-lg font-bold mb-4 mt-6">${t.articleH3}</h3>
-                    <p>${t.articleP6}</p>
-                    <p>${t.articleP7}</p>
-                    <p>${t.articleP8}</p>
-                `;
-
-                let finalArticleHtml = articleHTML;
-                finalArticleHtml = finalArticleHtml.replace(/\$\{namaKorban\}/g, capitalizeFirstLetter(namaKorban));
-                finalArticleHtml = finalArticleHtml.replace(/\$\{lokasi\}/g, lokasi);
-                finalArticleHtml = finalArticleHtml.replace(/\$\{alat\}/g, alat);
-
-                const articleContentDiv = document.getElementById('articleContent');
-                if (articleContentDiv) {
-                    articleContentDiv.innerHTML = finalArticleHtml;
-                }
-            }
-
-            // --- HELPER FUNCTIONS ---
-            function capitalizeFirstLetter(string) {
-                if (!string) return '';
-                return string.charAt(0).toUpperCase() + string.slice(1);
-            }
-
-            // --- INITIALIZATION ---
-            
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const mainContent = document.querySelector('main');
-            
-            // Run the setup
-            const currentLang = getLanguage();
-            const articleParams = getArticleParams(currentLang);
-            applyTranslations(currentLang);
-            populateArticleContent(currentLang, articleParams);
-
-            // Hide loading overlay and show content
+        function showContent() {
             if (loadingOverlay && mainContent) {
                 loadingOverlay.style.opacity = '0';
                 loadingOverlay.style.visibility = 'hidden';
                 mainContent.style.visibility = 'visible';
                 mainContent.style.opacity = '1';
             }
+        }
 
-            // --- INTERACTIVITY LOGIC ---
-
-            const articleImageContainer = document.getElementById('articleImageContainer');
-            const image1 = document.getElementById('image1');
-            const image2 = document.getElementById('image2');
-            const galleryOverlay = document.getElementById('galleryOverlay');
-            const galleryImage1 = document.getElementById('galleryImage1');
-            const galleryImage2 = document.getElementById('galleryImage2');
-            const closeButton = document.querySelector('.gallery-overlay .close-button');
-            const mainHeader = document.getElementById('mainHeader');
-            const IMAGE_STATE_KEY = 'smithFamilyImageState';
-            let isImage2Active = localStorage.getItem(IMAGE_STATE_KEY) === 'true';
-
-            function updateImageVisibility() {
-                if (image1 && galleryImage1 && image2 && galleryImage2) {
-                    image1.style.opacity = isImage2Active ? '0' : '1';
-                    galleryImage1.style.opacity = isImage2Active ? '0' : '1';
-                    image2.style.opacity = '1';
-                    galleryImage2.style.opacity = '1';
-                }
-            }
-            
-            updateImageVisibility();
-
+        function setupCommonInteractivity() {
             if (articleImageContainer) {
                 articleImageContainer.addEventListener('click', () => {
                     if (galleryOverlay) galleryOverlay.classList.add('active');
                 });
             }
-
             if (galleryOverlay) {
                 galleryOverlay.addEventListener('click', (event) => {
                     if (event.target === galleryOverlay) galleryOverlay.classList.remove('active');
                 });
             }
-            
             if (closeButton) {
                 closeButton.addEventListener('click', () => {
                     if (galleryOverlay) galleryOverlay.classList.remove('active');
                 });
             }
-
-            window.addEventListener('scroll', () => {
-                const article = document.getElementById('articleContent');
-                if (article && image1 && galleryImage1) {
-                    const articleRect = article.getBoundingClientRect();
-                    const scrollMidPoint = window.innerHeight / 2;
-                    if (articleRect.top + articleRect.height / 2 <= scrollMidPoint && !isImage2Active) {
-                        image1.style.opacity = '0';
-                        galleryImage1.style.opacity = '0';
-                        localStorage.setItem(IMAGE_STATE_KEY, 'true');
-                        isImage2Active = true;
-                    }
-                }
-            });
             
             let lastTap = 0;
             let tapCount = 0;
@@ -607,13 +569,13 @@
                     lastTap = currentTime;
                     if (tapCount === 3) {
                         localStorage.removeItem(IMAGE_STATE_KEY);
-                        isImage2Active = false;
-                        updateImageVisibility();
+                        // Instead of reloading, just update the state and UI
+                        updateImageVisibility(false);
                         tapCount = 0;
                     }
                 });
             }
-
+            
             let inactivityRedirectTimer;
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
@@ -624,7 +586,91 @@
                     clearTimeout(inactivityRedirectTimer);
                 }
             });
-        });
+        }
+        
+        // --- PAGE SETUP LOGIC ---
+        function setupNormalPage(secretCode, lang) {
+            let isImage2Active = localStorage.getItem(IMAGE_STATE_KEY) === 'true';
+            
+            const articleParams = getArticleParams(secretCode, lang);
+            applyTranslations(lang);
+            populateArticleContent(lang, articleParams);
+            updateImageVisibility(isImage2Active);
+
+            window.addEventListener('scroll', function revealImageOnScroll() {
+                const article = document.getElementById('articleContent');
+                if (article && image1 && galleryImage1) {
+                    const articleRect = article.getBoundingClientRect();
+                    const scrollMidPoint = window.innerHeight / 2;
+                    if (articleRect.top + articleRect.height / 2 <= scrollMidPoint && !isImage2Active) {
+                        image1.style.opacity = '0';
+                        galleryImage1.style.opacity = '0';
+                        localStorage.setItem(IMAGE_STATE_KEY, 'true');
+                        isImage2Active = true;
+                        // Optional: remove listener after it has run once
+                        // window.removeEventListener('scroll', revealImageOnScroll);
+                    }
+                }
+            });
+        }
+        
+        function setupLockedPage(secretCode, lang) {
+            const articleParams = getArticleParams(secretCode, lang);
+            applyTranslations(lang);
+            populateArticleContent(lang, articleParams);
+            
+            // Lock to image2
+            localStorage.setItem(IMAGE_STATE_KEY, 'true');
+            updateImageVisibility(true);
+            
+            // Scroll reveal is intentionally not activated.
+        }
+
+        // --- MAIN INITIALIZATION ---
+        async function initializePage() {
+            const params = getUrlParams();
+            const urlId = params.get('id');
+            const lang = getLanguage();
+            const isCustomId = /^\d{6}$/.test(urlId);
+            
+            setupCommonInteractivity();
+
+            if (!urlId) {
+                // Case 1: No parameter -> Locked Mode with default content
+                console.log("Mode: Locked (No ID)");
+                setupLockedPage(null, lang);
+            } else if (isCustomId) {
+                // Case 2: Custom ID -> Check Firestore
+                console.log(`Mode: Checking Custom ID ${urlId}`);
+                try {
+                    const docRef = doc(db, "printedQR", urlId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists() && docSnap.data().isPerforming === true) {
+                        // Case 2a: Performing -> Normal Mode
+                        console.log("Mode: Normal (Performing)");
+                        setupNormalPage(docSnap.data().id, lang);
+                    } else {
+                        // Case 2b: Not performing or not found -> Locked Mode
+                        console.log("Mode: Locked (Not Performing or Not Found)");
+                        const secretCodeFromDB = docSnap.exists() ? docSnap.data().id : null;
+                        setupLockedPage(secretCodeFromDB, lang);
+                    }
+                } catch (error) {
+                    console.error("Error fetching Firestore document:", error);
+                    // Fallback to locked mode on error
+                    setupLockedPage(null, lang);
+                }
+            } else {
+                // Case 3: Secret Code -> Normal Mode
+                console.log("Mode: Normal (Secret Code)");
+                setupNormalPage(urlId, lang);
+            }
+            
+            showContent();
+        }
+
+        document.addEventListener('DOMContentLoaded', initializePage);
+
     </script>
 </body>
 </html>
