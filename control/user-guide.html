@@ -5,19 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATMA by Heri Sanjaya - User Guide</title>
     
-    <!-- Tailwind CSS untuk styling -->
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts untuk nuansa koran antik -->
+    <!-- Google Fonts for antique newspaper feel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
-        /* Gaya kustom untuk menyamai tema halaman penjualan */
+        /* Custom styles to match the sales page theme */
         body {
             font-family: 'Lora', serif;
-            background-color: #fdfaf3; /* Warna kertas tua */
+            background-color: #fdfaf3; /* Old paper color */
             color: #1a1a1a;
         }
         h1, h2, h3 {
@@ -32,7 +32,7 @@
             border-bottom: 4px double #1a1a1a;
             border-top: 1px solid #1a1a1a;
             padding: 1rem 0;
-            margin-bottom: 1rem; /* Mengurangi margin bawah untuk memberi ruang pada tombol */
+            margin-bottom: 1rem;
         }
         @media (max-width: 768px) {
             .main-title {
@@ -45,7 +45,7 @@
             margin-bottom: 2.5rem;
         }
         .key-term {
-            font-family: 'Roboto', sans-serif; /* Font yang lebih jelas untuk istilah teknis */
+            font-family: 'Roboto', sans-serif; /* A clearer font for technical terms */
             font-weight: 700;
             background-color: #eaddc7;
             padding: 2px 6px;
@@ -82,108 +82,134 @@
 
     <div class="max-w-4xl mx-auto">
         
-        <!-- Judul Utama -->
+        <!-- Main Title -->
         <header>
             <h1 class="main-title">ATMA: User Guide</h1>
             <div class="text-center mb-8">
-                <a href="/control/gesture.html" class="inline-block bg-[#1a1a1a] text-[#fdfaf3] font-sans font-bold py-2 px-6 rounded-sm uppercase tracking-wider hover:bg-[#333] transition-colors duration-300">
+                <a href="index.html" class="inline-block bg-[#1a1a1a] text-[#fdfaf3] font-sans font-bold py-2 px-6 rounded-sm uppercase tracking-wider hover:bg-[#333] transition-colors duration-300">
                     &larr; Back to App
                 </a>
             </div>
         </header>
 
         <main>
-            <!-- Bagian Pendahuluan -->
+            <!-- Introduction Section -->
             <section>
                 <h2 class="text-3xl mb-4">Introduction</h2>
-                <p class="text-lg text-gray-700 mb-6">This guide explains the complete method, performance flow, and hidden features for the ATMA web application. Please review this document carefully to ensure a smooth and effective performance.</p>
+                <p class="text-lg text-gray-700 mb-6">This guide explains the complete method, performance modes, and hidden features for the ATMA web application. Please review this document carefully to ensure a smooth and effective performance.</p>
             </section>
 
             <div class="section-divider"></div>
 
-            <!-- Bagian Metode Rahasia -->
+            <!-- Performance Modes Section -->
             <section>
-                <h2 class="text-3xl mb-4">The Input Method</h2>
-                <p class="mb-4">ATMA uses a gesture-based system to covertly register the spectator's choices. The method relies on the <span class="key-term">STARTING AREA</span> of a single <span class="key-term">SWIPE LEFT</span> gesture for all five options.</p>
-                <p class="mb-4">The screen is divided into five invisible zones. Where you begin your swipe determines the selection. The grid below provides a visual representation of these zones and their corresponding choices.</p>
-                
-                <!-- Grid baru yang memenuhi ruang -->
-                <div class="relative border-2 border-gray-800 bg-gray-200 my-6" style="aspect-ratio: 1/1;">
-                    <!-- Latar belakang 2x2 untuk zona geser -->
-                    <div class="grid grid-cols-2 grid-rows-2 h-full w-full">
-                        <div class="gesture-cell bg-green-100/60">
-                            <strong>CHOICE 1</strong>
-                            <span>(Start Swipe Left Here)</span>
-                        </div>
-                        <div class="gesture-cell bg-green-100/60">
-                            <strong>CHOICE 2</strong>
-                            <span>(Start Swipe Left Here)</span>
-                        </div>
-                        <div class="gesture-cell bg-green-100/60">
-                            <strong>CHOICE 4</strong>
-                            <span>(Start Swipe Left Here)</span>
-                        </div>
-                        <div class="gesture-cell bg-green-100/60">
-                            <strong>CHOICE 3</strong>
-                            <span>(Start Swipe Left Here)</span>
-                        </div>
+                <h2 class="text-3xl mb-4">Performance Modes</h2>
+                <p class="mb-4">ATMA features two distinct operational modes, selectable from the settings menu. Understanding the difference is crucial for your performance.</p>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-2xl mb-2">1. Digital QR Mode (Default)</h3>
+                        <p>This is a self-contained method. The app collects the spectator's choices and encodes them into a unique URL. This URL is then used to generate a QR code on the final slide of the app. The trick's data is transmitted <span class="key-term">through the QR code itself</span>. This mode does not require an active internet connection during the performance.</p>
                     </div>
-                    <!-- Hamparan untuk zona ketuk tengah -->
-                    <div class="absolute top-[30%] left-[30%] w-[40%] h-[40%] p-1">
-                         <div class="gesture-cell bg-green-100/90 border-2 border-black border-solid h-full w-full shadow-lg">
-                            <strong>CHOICE 5</strong>
-                            <span>(Start Swipe Left Here)</span>
-                        </div>
+                    <div>
+                        <h3 class="text-2xl mb-2">2. Printed QR Mode</h3>
+                        <p>This method turns the app into a remote control. It is designed for situations where you want to use a <span class="key-term">pre-printed QR code</span> (e.g., on a business card). In this mode, the app sends the spectator's choices to a secure database in real-time. The printed QR code links to a webpage that reads this data to display the revelation. This mode requires an active internet connection.</p>
                     </div>
                 </div>
-
-
-                <ul class="list-none space-y-4 text-lg mt-6">
-                    <li><strong class="w-48 inline-block">To select Choice 1:</strong> Start your <span class="key-term">SWIPE LEFT</span> from the <strong class="font-bold">Top-Left</strong> quadrant.</li>
-                    <li><strong class="w-48 inline-block">To select Choice 2:</strong> Start your <span class="key-term">SWIPE LEFT</span> from the <strong class="font-bold">Top-Right</strong> quadrant.</li>
-                    <li><strong class="w-48 inline-block">To select Choice 3:</strong> Start your <span class="key-term">SWIPE LEFT</span> from the <strong class="font-bold">Bottom-Right</strong> quadrant.</li>
-                    <li><strong class="w-48 inline-block">To select Choice 4:</strong> Start your <span class="key-term">SWIPE LEFT</span> from the <strong class="font-bold">Bottom-Left</strong> quadrant.</li>
-                    <li><strong class="w-48 inline-block">To select Choice 5:</strong> Start your <span class="key-term">SWIPE LEFT</span> from the <strong class="font-bold">Center</strong> area of the screen.</li>
-                </ul>
-                <p class="mt-6 italic text-gray-600">Note: A single, decisive swipe left is all that is required. After a valid gesture is registered, the app will automatically advance to the next screen.</p>
             </section>
-
+            
             <div class="section-divider"></div>
 
-            <!-- Bagian Alur Pertunjukan -->
+            <!-- Settings Menu Section -->
             <section>
-                <h2 class="text-3xl mb-4">Performance Flow</h2>
-                <ol class="list-decimal list-inside space-y-4 text-lg">
-                    <li><strong>Introduce the Premise:</strong> Explain the nature of the experiment. On your phone, you will present three separate lists to the spectator, each containing five choices. The app will start on the first list screen (Victim).</li>
-                    <li><strong>First Choice (Victim):</strong> Present the list of names. When the spectator chooses, perform a single <span class="key-term">SWIPE LEFT</span> starting from the zone corresponding to their choice. This action registers their selection and automatically slides to the next list (Location).</li>
-                    <li><strong>Second Choice (Location):</strong> The spectator chooses a location from the new list. Again, perform a single <span class="key-term">SWIPE LEFT</span> from the correct starting zone. The app advances to the final list (Weapon).</li>
-                    <li><strong>Third Choice (Weapon):</strong> The spectator chooses a weapon. Perform the final <span class="key-term">SWIPE LEFT</span> from the appropriate zone.</li>
-                    <li><strong>QR Code Reveal:</strong> After the third input, the app displays the final QR code. Instruct the spectator to scan it with their phone.</li>
-                    <li><strong>The Revelation:</strong> The spectator's phone will open the news article. Allow them to read and discover that the details match their choices, then guide their attention to the photograph for the final effect.</li>
-                </ol>
-            </section>
-
-            <div class="section-divider"></div>
-
-            <!-- Bagian Fitur Tersembunyi -->
-            <section>
-                <h2 class="text-3xl mb-4">System Controls & Features</h2>
+                <h2 class="text-3xl mb-4">The Settings Menu</h2>
+                <p class="mb-4">To access the settings menu, simply <span class="key-term">tap the top-right corner</span> of the screen at any time. Inside, you will find the following options:</p>
                 <ul class="list-disc list-inside space-y-3 text-lg">
-                    <li><strong>Language Selection:</strong> To open the settings menu and switch the article's language, perform a <span class="key-term">two-finger swipe down</span> on any of the list screens.</li>
-                    <li><strong>Reset App:</strong> To reset the app for a new performance, perform a <span class="key-term">quick triple-tap</span> on the final QR code screen. The app will return to the first list.</li>
-                    <li><strong>View Input History:</strong> To confirm your inputs, <span class="key-term">press and hold</span> your finger on the QR code screen. An overlay showing your registered choices will appear and will vanish when you lift your finger.</li>
+                    <li><strong>Mode Selection:</strong> Switch between <span class="key-term">Digital QR</span> and <span class="key-term">Printed QR</span> modes.</li>
+                    <li><strong>Custom ID (Printed QR Mode only):</strong>
+                        <ul class="list-['-_'] list-inside ml-6 mt-2 space-y-2">
+                            <li>Set a unique, secret <span class="key-term">6-digit number</span>. This ID links your app to the database, creating your personal "channel".</li>
+                            <li><strong>Download QR:</strong> Once an ID is saved, this button generates a QR code linked to your channel, ready to be printed.</li>
+                            <li><strong>Delete ID:</strong> This button permanently removes the currently entered ID and its data from the database. Use with caution.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Language Selection:</strong> Choose between English and Indonesian for the revelation article.</li>
                 </ul>
             </section>
             
             <div class="section-divider"></div>
 
-            <!-- Bagian Tips Pertunjukan -->
+            <!-- Input Method Section -->
+            <section>
+                <h2 class="text-3xl mb-4">The Input Method</h2>
+                <p class="mb-4">Regardless of the mode, ATMA uses a consistent gesture-based system to covertly register choices. The method relies on the <span class="key-term">STARTING AREA</span> of a single <span class="key-term">SWIPE LEFT</span> gesture.</p>
+                <p class="mb-4">The screen is divided into five invisible zones. Where you begin your swipe determines the selection.</p>
+                
+                <div class="relative border-2 border-gray-800 bg-gray-200 my-6" style="aspect-ratio: 1/1;">
+                    <!-- 2x2 grid background for swipe zones -->
+                    <div class="grid grid-cols-2 grid-rows-2 h-full w-full">
+                        <div class="gesture-cell bg-green-100/60"><strong>CHOICE 1</strong><span>(Start Swipe Left Here)</span></div>
+                        <div class="gesture-cell bg-green-100/60"><strong>CHOICE 2</strong><span>(Start Swipe Left Here)</span></div>
+                        <div class="gesture-cell bg-green-100/60"><strong>CHOICE 4</strong><span>(Start Swipe Left Here)</span></div>
+                        <div class="gesture-cell bg-green-100/60"><strong>CHOICE 3</strong><span>(Start Swipe Left Here)</span></div>
+                    </div>
+                    <!-- Overlay for center tap zone -->
+                    <div class="absolute top-[30%] left-[30%] w-[40%] h-[40%] p-1">
+                         <div class="gesture-cell bg-green-100/90 border-2 border-black border-solid h-full w-full shadow-lg"><strong>CHOICE 5</strong><span>(Start Swipe Left Here)</span></div>
+                    </div>
+                </div>
+
+                <p class="mt-6 italic text-gray-600">Note: A single, decisive swipe left is all that is required. After a valid gesture is registered, the app will automatically advance to the next screen.</p>
+            </section>
+
+            <div class="section-divider"></div>
+
+            <!-- Performance Flow Section -->
+            <section>
+                <h2 class="text-3xl mb-4">Performance Flow</h2>
+                <h3 class="text-2xl mb-2">For Digital QR Mode:</h3>
+                <ol class="list-decimal list-inside space-y-4 text-lg mb-8">
+                    <li><strong>Introduce the Premise:</strong> Explain the experiment. Present the first list of choices (Victim).</li>
+                    <li><strong>Input Choices:</strong> For each of the three lists (Victim, Location, Weapon), perform a single <span class="key-term">SWIPE LEFT</span> from the zone corresponding to the spectator's choice. The app will advance automatically after each swipe.</li>
+                    <li><strong>QR Code Reveal:</strong> After the third input, the app displays the final, dynamically generated QR code. Instruct the spectator to scan it.</li>
+                    <li><strong>The Revelation:</strong> The spectator's phone opens the news article containing their freely chosen details.</li>
+                </ol>
+
+                <h3 class="text-2xl mb-2">For Printed QR Mode:</h3>
+                <ol class="list-decimal list-inside space-y-4 text-lg">
+                    <li><strong>Pre-Show Setup:</strong> Before the performance, go to Settings, select <span class="key-term">Printed QR</span> mode, set your 6-digit ID, and use the <span class="key-term">Download QR</span> button. Print this QR code on a business card or other object.</li>
+                    <li><strong>Introduce the Premise:</strong> Hand the printed QR code to the spectator and instruct them to scan it. Their phone will open the prediction page.</li>
+                    <li><strong>Input Choices:</strong> As the spectator makes their choices, secretly input them using the same <span class="key-term">SWIPE LEFT</span> method as the digital mode.</li>
+                    <li><strong>The Climax:</strong> After the third and final swipe, the app will update the database. The article on the spectator's phone will instantly change to reflect their choices. The final screen on your phone will show an image, not a QR code, which can be used for misdirection.</li>
+                </ol>
+            </section>
+
+            <div class="section-divider"></div>
+
+            <!-- System Controls Section -->
+            <section>
+                <h2 class="text-3xl mb-4">System Controls & Features</h2>
+                <ul class="list-disc list-inside space-y-3 text-lg">
+                    <li><strong>Open Settings:</strong> <span class="key-term">Tap the top-right corner</span> of the screen.</li>
+                    <li><strong>Reset App:</strong> To reset for a new performance, perform a <span class="key-term">quick triple-tap</span> on the final screen (either the QR code or the image). This action prepares the app for a new set of inputs.</li>
+                    <li><strong>View Input History:</strong> To confirm your inputs, <span class="key-term">press and hold</span> your finger on the final screen. An overlay showing your registered choices will appear and will vanish when you lift your finger.</li>
+                </ul>
+
+                <h3 class="text-2xl mt-8 mb-4">Security & Plausibility</h3>
+                <p class="mb-4">This feature is designed to protect the method if a spectator becomes suspicious.</p>
+                <p class="text-lg">
+                    At the start of a performance, the app automatically sets your channel's status to "Performing". After the climax, perform a <span class="key-term">quick double-tap</span> on the final image screen. This sets your channel status back to "Not Performing". If the spectator re-scans the printed QR code later, the article will appear in a locked, static state where the cover photo is permanently the one with the empty seat, thus protecting the secret of the real-time update.
+                </p>
+            </section>
+            
+            <div class="section-divider"></div>
+
+            <!-- Performance Tips Section -->
              <section>
                 <h2 class="text-3xl mb-4">Operational Tips</h2>
                 <ul class="list-disc list-inside space-y-3 text-lg">
-                    <li><strong>Lock Screen Rotation:</strong> Before performing, ensure your phone's screen rotation is locked. This prevents the layout from shifting unexpectedly if the device is tilted.</li>
-                    <li><strong>Natural Handling:</strong> Hold the phone naturally in one hand. Using the thumb of the same hand to perform the swipe gestures often looks the most casual and disarming.</li>
-                    <li><strong>Practice:</strong> Rehearse the gesture sequences until they become automatic. Your actions should appear casual and natural.</li>
+                    <li><strong>Lock Screen Rotation:</strong> Before performing, ensure your phone's screen rotation is locked to prevent layout shifts.</li>
+                    <li><strong>Natural Handling:</strong> Hold the phone naturally. Using your thumb to perform the swipes often looks the most casual.</li>
+                    <li><strong>Practice:</strong> Rehearse the gesture sequences until they become automatic. Your actions should appear as if you are simply sliding through photos.</li>
                 </ul>
             </section>
 
