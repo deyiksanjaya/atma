@@ -153,18 +153,10 @@
             <div class="font-lora bg-[#fdfaf3] rounded-sm p-6 w-11/12 max-w-sm text-[#1a1a1a] border-2 border-black shadow-2xl">
                 <h2 id="settings-title" class="font-playfair text-2xl mb-4 border-b-2 border-gray-400 pb-2 uppercase">Settings</h2>
                 
-                <!-- Mode Selection -->
-                <div class="my-6">
-                    <label class="font-playfair block mb-2 font-bold">Mode:</label>
-                    <div class="flex space-x-4">
-                        <button id="mode-digital" class="font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider">Digital QR</button>
-                        <button id="mode-printed" class="font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider">Printed QR</button>
-                    </div>
-                </div>
-
                 <!-- Custom ID Input (for Printed QR mode) -->
-                <div id="custom-id-section" class="my-6 hidden">
+                <div id="custom-id-section" class="my-6">
                     <label for="custom-id-input" class="font-playfair block mb-2 font-bold">Custom ID:</label>
+                    <p class="text-sm mb-2">Set a 6-digit ID to link with your printed QR code.</p>
                     <input type="number" id="custom-id-input" placeholder="6-digit number" class="w-full p-3 text-center border-2 border-black rounded-sm bg-white text-lg tracking-widest transition-colors duration-200" oninput="this.value=this.value.slice(0,6)">
                     
                     <button id="change-id-btn" class="hidden font-playfair w-full mt-2 p-2 rounded-sm border-2 border-black uppercase tracking-wider hover:bg-gray-200">Change ID</button>
@@ -217,9 +209,7 @@
         const langIdButton = document.getElementById('lang-id');
         const langEngButton = document.getElementById('lang-eng');
         const readInstructionsButton = document.getElementById('read-instructions-btn');
-        // New settings elements
-        const modeDigitalBtn = document.getElementById('mode-digital');
-        const modePrintedBtn = document.getElementById('mode-printed');
+        // Settings elements
         const customIdSection = document.getElementById('custom-id-section');
         const customIdInput = document.getElementById('custom-id-input');
         const customIdError = document.getElementById('custom-id-error');
@@ -247,8 +237,70 @@
 
         // --- LANGUAGE & TRANSLATIONS ---
         const translations = {
-            id: { victimName: 'Nama Korban:', crimeScene: 'Lokasi Kejadian:', weapon: 'Alat yang Dipakai:', noHistory: 'Tidak ada riwayat gerakan.', settingsTitle: 'Pengaturan', languageLabel: 'Bahasa:', closeButton: 'Tutup', readInstructions: 'Baca Instruksi', langId: 'Indonesia', langEng: 'English' },
-            eng: { victimName: "Victim's Name:", crimeScene: 'Crime Scene:', weapon: 'Weapon Used:', noHistory: 'No gesture history.', settingsTitle: 'Settings', languageLabel: 'Language:', closeButton: 'Close', readInstructions: 'Read Instructions', langId: 'Indonesia', langEng: 'English' }
+            id: {
+                victimName: 'Nama Korban:',
+                crimeScene: 'Lokasi Kejadian:',
+                weapon: 'Alat yang Dipakai:',
+                noHistory: 'Tidak ada riwayat gerakan.',
+                settingsTitle: 'Pengaturan',
+                languageLabel: 'Bahasa:',
+                readInstructions: 'Baca Instruksi',
+                langId: 'Indonesia',
+                langEng: 'English',
+                mustSetId: 'ID kustom harus diisi sebelum keluar.',
+                licenseActivation: 'Aktivasi Lisensi',
+                licensePrompt: 'Silakan masukkan kunci lisensi Anda untuk membuka aplikasi.',
+                activateBtn: 'Aktifkan',
+                settingsTip: 'Kiat: Ketuk sudut kanan atas untuk pengaturan.',
+                customIdLabel: 'ID Kustom:',
+                customIdPrompt: 'Atur 6-digit ID untuk dihubungkan dengan kode QR cetak Anda.',
+                customIdPlaceholder: '6-digit angka',
+                changeIdBtn: 'Ganti ID',
+                downloadQrBtn: 'Unduh QR',
+                deleteIdBtn: 'Hapus ID',
+                confirmDeleteBtn: 'Konfirmasi Hapus?',
+                saveAndCloseBtn: 'Simpan & Tutup',
+                closeBtn: 'Tutup',
+                errorIdDigits: 'ID harus terdiri dari 6 digit.',
+                errorIdTaken: 'ID ini sudah digunakan.',
+                errorIdUpdateFailed: 'Gagal memperbarui ID. Periksa koneksi.',
+                errorIdMismatch: 'Kesalahan: ID tidak cocok atau tidak valid.',
+                idDeletedSuccess: 'ID {id} telah dihapus.',
+                errorIdDeleteFailed: 'Gagal menghapus ID. Periksa koneksi.',
+                errorSetIdFirstDownload: 'Harap atur dan simpan 6-digit ID terlebih dahulu.'
+            },
+            eng: {
+                victimName: "Victim's Name:",
+                crimeScene: 'Crime Scene:',
+                weapon: 'Weapon Used:',
+                noHistory: 'No gesture history.',
+                settingsTitle: 'Settings',
+                languageLabel: 'Language:',
+                readInstructions: 'Read Instructions',
+                langId: 'Indonesia',
+                langEng: 'English',
+                mustSetId: 'Custom ID must be set before exiting.',
+                licenseActivation: 'License Activation',
+                licensePrompt: 'Please enter your license key to unlock the app.',
+                activateBtn: 'Activate',
+                settingsTip: 'Tip: Tap the top-right corner for settings.',
+                customIdLabel: 'Custom ID:',
+                customIdPrompt: 'Set a 6-digit ID to link with your printed QR code.',
+                customIdPlaceholder: '6-digit number',
+                changeIdBtn: 'Change ID',
+                downloadQrBtn: 'Download QR',
+                deleteIdBtn: 'Delete ID',
+                confirmDeleteBtn: 'Confirm Delete?',
+                saveAndCloseBtn: 'Save & Close',
+                closeBtn: 'Close',
+                errorIdDigits: 'ID must be exactly 6 digits.',
+                errorIdTaken: 'This ID is already taken.',
+                errorIdUpdateFailed: 'Failed to update ID. Check connection.',
+                errorIdMismatch: 'Error: ID mismatch or invalid.',
+                idDeletedSuccess: 'ID {id} has been deleted.',
+                errorIdDeleteFailed: 'Failed to delete ID. Check connection.',
+                errorSetIdFirstDownload: 'Please set and save a 6-digit ID first.'
+            }
         };
 
         // --- APP CONTENT ---
@@ -268,13 +320,12 @@
         let isSessionActive = true, tapCount = 0, lastTapTime = 0, tapHoldTimeout = null;
         let startArea = null, isDragging = false, initialTranslate = 0;
         let isImageRevealed = false; // Tracks if the secret image has been shown
-        let isQrSanitized = false; // Tracks if the digital QR has been sanitized
         let deleteConfirmationTimeout = null;
         let oldIdToReplace = null;
         let initialSettings = {}; // For tracking changes in settings
         
         // App settings state
-        let appMode = 'digital'; // 'digital' or 'printed'
+        const appMode = 'printed'; // Mode is now fixed to 'printed'
         let customId = '';
         let currentLanguage = 'eng';
 
@@ -371,9 +422,9 @@
                 } else {
                     // No user is signed in, sign in anonymously.
                     signInAnonymously(auth).catch((error) => {
-                          console.error("Anonymous auth failed:", error);
-                          showLicenseModal();
-                          licenseError.textContent = "Could not connect to authentication service.";
+                        console.error("Anonymous auth failed:", error);
+                        showLicenseModal();
+                        licenseError.textContent = "Could not connect to authentication service.";
                     });
                 }
             });
@@ -415,19 +466,18 @@
         }
         
         function updateSaveButtonState() {
-            const currentMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
-            const currentLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
+            const t = translations[currentLanguage];
+            const selectedLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
             
             let idChanged = false;
-            // Only consider ID changed if the input is unlocked for creation or changing
             if (!customIdInput.readOnly) {
                 idChanged = customIdInput.value !== customId;
             }
 
-            if (currentMode !== initialSettings.mode || currentLang !== initialSettings.lang || idChanged) {
-                saveSettingsBtn.textContent = 'Save & Exit';
+            if (selectedLang !== initialSettings.lang || idChanged) {
+                saveSettingsBtn.textContent = t.saveAndCloseBtn;
             } else {
-                saveSettingsBtn.textContent = 'Exit';
+                saveSettingsBtn.textContent = t.closeBtn;
             }
         }
 
@@ -438,171 +488,132 @@
             }
             deleteIdBtn.classList.remove('bg-red-900');
             deleteIdBtn.classList.add('bg-red-700');
-            deleteIdBtn.textContent = 'Delete ID';
+            deleteIdBtn.textContent = translations[currentLanguage].deleteIdBtn;
         }
 
         async function openSettingsModal() {
-            // Store initial state for change detection
             initialSettings = {
-                mode: appMode,
                 lang: currentLanguage,
                 id: customId 
             };
             
             updateLanguageUI(currentLanguage);
-            updateModeUI(appMode);
-            updateSaveButtonState(); // Set initial button text
+            
+            if (customId) {
+                lockIdInputUI();
+            } else {
+                unlockIdInputUIForCreation();
+            }
 
             customIdError.textContent = '';
             resetDeleteButtonState();
-
-            if (appMode === 'printed') {
-                if (customId) {
-                    // An ID exists locally, verify it on the server (Fallback check)
-                    try {
-                        const docRef = doc(db, 'printedQR', customId);
-                        const docSnap = await getDoc(docRef);
-                        if (docSnap.exists()) {
-                            lockIdInputUI(); // ID is valid, lock the form
-                        } else {
-                            // FALLBACK: ID deleted from server
-                            customIdError.textContent = `ID ${customId} no longer exists. Please create a new one.`;
-                            initialSettings.id = ''; // Update initial state for correct button text
-                            customId = '';
-                            localStorage.setItem('atmaSettings', JSON.stringify({ mode: appMode, id: '', lang: currentLanguage }));
-                            unlockIdInputUIForCreation();
-                            updateSaveButtonState(); // Re-check button state after reset
-                        }
-                    } catch (error) {
-                          console.error("Error verifying ID:", error);
-                          customIdError.textContent = 'Could not verify ID. Check connection.';
-                    }
-                } else {
-                    // No local ID, prepare for creation
-                    unlockIdInputUIForCreation();
-                }
-            }
             
             settingsModal.classList.remove('hidden');
         }
 
         function closeSettingsModal() { 
-            resetDeleteButtonState();
-            oldIdToReplace = null; // Ensure state is reset on close
-            settingsModal.classList.add('hidden'); 
-        }
-
-        function updateModeUI(mode) {
-            if (mode === 'digital') {
-                modeDigitalBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
-                modePrintedBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
-                customIdSection.classList.add('hidden');
-            } else {
-                modePrintedBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
-                modeDigitalBtn.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
-                customIdSection.classList.remove('hidden');
-                 // Refresh the ID section state based on current data when switching to printed mode
-                if (customId) {
-                    lockIdInputUI();
-                } else {
-                    unlockIdInputUIForCreation();
-                }
+            if (!customId) {
+                customIdError.textContent = translations[currentLanguage].mustSetId;
+                return;
             }
-            updateSaveButtonState();
+
+            resetDeleteButtonState();
+            oldIdToReplace = null;
+            settingsModal.classList.add('hidden'); 
+            customIdError.textContent = '';
         }
 
         function updateLanguageUI(lang) {
-             const t = translations[lang];
-             settingsTitle.textContent = t.settingsTitle;
-             languageLabel.textContent = t.languageLabel;
-             langIdButton.textContent = t.langId;
-             langEngButton.textContent = t.langEng;
-             if (lang === 'id') {
+            currentLanguage = lang;
+            const t = translations[lang];
+
+            // Update all UI text
+            licenseModal.querySelector('h2').textContent = t.licenseActivation;
+            licenseModal.querySelector('p').textContent = t.licensePrompt;
+            verifyLicenseBtn.querySelector('span').textContent = t.activateBtn;
+            settingsToast.querySelector('p').textContent = t.settingsTip;
+            settingsTitle.textContent = t.settingsTitle;
+            customIdSection.querySelector('label').textContent = t.customIdLabel;
+            customIdSection.querySelector('p.text-sm').textContent = t.customIdPrompt;
+            customIdInput.placeholder = t.customIdPlaceholder;
+            changeIdBtn.textContent = t.changeIdBtn;
+            downloadQrBtn.textContent = t.downloadQrBtn;
+            languageLabel.textContent = t.languageLabel;
+            readInstructionsButton.textContent = t.readInstructions;
+            langIdButton.textContent = t.langId;
+            langEngButton.textContent = t.langEng;
+            
+            // Update button classes
+            if (lang === 'id') {
                  langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
                  langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
-             } else {
+            } else {
                  langEngButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-black text-[#fdfaf3]';
                  langIdButton.className = 'font-playfair flex-1 p-2 rounded-sm border-2 uppercase tracking-wider border-black bg-transparent text-black';
-             }
-             updateSaveButtonState();
+            }
+             
+            // Update buttons that depend on other states
+            updateSaveButtonState();
+            resetDeleteButtonState();
         }
 
         async function saveSettings() {
-            // 1. Handle 'Exit' case (no changes)
-            if (saveSettingsBtn.textContent === 'Exit') {
+            const t = translations[currentLanguage];
+            if (saveSettingsBtn.textContent === t.closeBtn) {
                 closeSettingsModal();
                 return;
             }
 
             resetDeleteButtonState();
             
-            // 2. Read final state from UI
-            const finalMode = modeDigitalBtn.classList.contains('bg-black') ? 'digital' : 'printed';
             const finalLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
             const finalIdInput = customIdInput.value;
 
-            // 3. Check if a reset is needed by comparing initial state with final state
-            const needsReset = finalMode !== appMode || 
-                                 finalLang !== currentLanguage || 
-                                 (finalMode === 'printed' && finalIdInput !== customId && finalIdInput) || // ID changed to something new
-                                 (finalMode === 'digital' && appMode === 'printed');
+            const needsReset = finalLang !== currentLanguage || (finalIdInput !== customId && finalIdInput);
 
+            const idChanged = finalIdInput !== customId;
+            const isCreating = !customId && finalIdInput;
+            const isReplacing = customId && idChanged;
 
-            // 4. Handle Printed QR Mode Firestore Logic
-            if (finalMode === 'printed') {
-                const idChanged = finalIdInput !== customId;
-                const isCreating = !customId && finalIdInput;
-                const isReplacing = customId && idChanged;
-
-                if (isCreating || isReplacing) {
-                    // Validate the new ID
-                    if (!/^[0-9]{6}$/.test(finalIdInput)) {
-                        customIdError.textContent = 'ID must be exactly 6 digits.';
-                        return;
-                    }
-
-                    try {
-                        // Check if new ID is available
-                        const newDocRef = doc(db, 'printedQR', finalIdInput);
-                        const docSnap = await getDoc(newDocRef);
-                        if (docSnap.exists()) {
-                            customIdError.textContent = 'This ID is already taken.';
-                            return;
-                        }
-
-                        // If replacing, delete the old document
-                        if (isReplacing) {
-                            const oldDocRef = doc(db, 'printedQR', customId);
-                            await deleteDoc(oldDocRef);
-                        }
-
-                        // Create the new document
-                        await setDoc(newDocRef, { id: '', lang: finalLang, updatedAt: serverTimestamp() });
-                        // If successful, update the app's customId state variable
-                        customId = finalIdInput;
-
-                    } catch (error) {
-                        console.error("Error creating/replacing ID:", error);
-                        customIdError.textContent = 'Failed to update ID. Check connection.';
-                        return;
-                    }
+            if (isCreating || isReplacing) {
+                if (!/^[0-9]{6}$/.test(finalIdInput)) {
+                    customIdError.textContent = t.errorIdDigits;
+                    return;
                 }
-                // Handle case where only language changed for an existing ID
-                else if (finalLang !== currentLanguage && customId) {
-                     try {
-                         const docRef = doc(db, 'printedQR', customId);
-                         await setDoc(docRef, { lang: finalLang }, { merge: true });
-                    } catch (error) {
-                         console.error("Error updating language in Firestore:", error);
+
+                try {
+                    const newDocRef = doc(db, 'printedQR', finalIdInput);
+                    const docSnap = await getDoc(newDocRef);
+                    if (docSnap.exists()) {
+                        customIdError.textContent = t.errorIdTaken;
+                        return;
                     }
+
+                    if (isReplacing) {
+                        const oldDocRef = doc(db, 'printedQR', customId);
+                        await deleteDoc(oldDocRef);
+                    }
+
+                    await setDoc(newDocRef, { id: '', lang: finalLang, updatedAt: serverTimestamp() });
+                    customId = finalIdInput;
+
+                } catch (error) {
+                    console.error("Error creating/replacing ID:", error);
+                    customIdError.textContent = t.errorIdUpdateFailed;
+                    return;
                 }
             }
+            else if (finalLang !== currentLanguage && customId) {
+                 try {
+                     const docRef = doc(db, 'printedQR', customId);
+                     await setDoc(docRef, { lang: finalLang }, { merge: true });
+                 } catch (error) {
+                     console.error("Error updating language in Firestore:", error);
+                 }
+            }
 
-            // 5. Commit final state
-            appMode = finalMode;
             currentLanguage = finalLang;
-
-            localStorage.setItem('atmaSettings', JSON.stringify({ mode: appMode, id: customId, lang: currentLanguage }));
+            localStorage.setItem('atmaSettings', JSON.stringify({ id: customId, lang: currentLanguage }));
             
             closeSettingsModal();
 
@@ -613,71 +624,65 @@
         
         function loadSettings() {
             const savedSettings = JSON.parse(localStorage.getItem('atmaSettings')) || {};
-            appMode = savedSettings.mode || 'digital';
             customId = savedSettings.id || '';
             currentLanguage = savedSettings.lang || 'eng';
             resetApp();
+
+            if (!customId) {
+                openSettingsModal();
+            }
         }
 
         function downloadQrCode() {
             if (!customId) {
-                customIdError.textContent = 'Please set and save a 6-digit ID first.';
+                customIdError.textContent = translations[currentLanguage].errorSetIdFirstDownload;
                 return;
             }
-            // Opens generateqr.html in a new tab with the custom ID
             window.open(`generateqr.html?id=${customId}`, '_blank');
         }
         
         async function deleteId() {
-             const idToDelete = customIdInput.value;
-             if (!/^[0-9]{6}$/.test(idToDelete) || idToDelete !== customId) {
-                 customIdError.textContent = 'Error: ID mismatch or invalid.';
-                 resetDeleteButtonState();
-                 return;
-             }
+            const t = translations[currentLanguage];
+            const idToDelete = customIdInput.value;
+            if (!/^[0-9]{6}$/.test(idToDelete) || idToDelete !== customId) {
+                customIdError.textContent = t.errorIdMismatch;
+                resetDeleteButtonState();
+                return;
+            }
              
-             // If confirmation not running, set for 3 seconds
-             if (!deleteConfirmationTimeout) {
-                 deleteIdBtn.classList.remove('bg-red-700');
-                 deleteIdBtn.classList.add('bg-red-900');
-                 deleteIdBtn.textContent = 'Confirm Delete?';
-                 deleteConfirmationTimeout = setTimeout(resetDeleteButtonState, 3000);
-                 return;
-             }
+            if (!deleteConfirmationTimeout) {
+                deleteIdBtn.classList.remove('bg-red-700');
+                deleteIdBtn.classList.add('bg-red-900');
+                deleteIdBtn.textContent = t.confirmDeleteBtn;
+                deleteConfirmationTimeout = setTimeout(resetDeleteButtonState, 3000);
+                return;
+            }
 
-             // If here, confirmation button was clicked
-             clearTimeout(deleteConfirmationTimeout);
+            clearTimeout(deleteConfirmationTimeout);
             
-             try {
-                 const docRef = doc(db, 'printedQR', idToDelete);
-                 
-                 // Directly delete without server-side ownership check
-                 await deleteDoc(docRef);
-                 customIdError.textContent = `ID ${idToDelete} has been deleted.`;
-                 
-                 // Clear from local state
-                 const currentLang = currentLanguage;
-                 customId = '';
-                 localStorage.setItem('atmaSettings', JSON.stringify({
-                     mode: appMode,
-                     id: '',
-                     lang: currentLang
-                 }));
+            try {
+                const docRef = doc(db, 'printedQR', idToDelete);
+                await deleteDoc(docRef);
+                customIdError.textContent = t.idDeletedSuccess.replace('{id}', idToDelete);
+                
+                const currentLang = currentLanguage;
+                customId = '';
+                localStorage.setItem('atmaSettings', JSON.stringify({
+                    id: '',
+                    lang: currentLang
+                }));
 
-                 // Reset UI to creation state after successful deletion
-                 unlockIdInputUIForCreation();
-                 updateSaveButtonState();
+                unlockIdInputUIForCreation();
+                updateSaveButtonState();
 
-             } catch (error) {
-                 console.error('Error deleting ID:', error);
-                 customIdError.textContent = 'Failed to delete ID. Check connection.';
-             } finally {
-                 resetDeleteButtonState();
-             }
+            } catch (error) {
+                console.error('Error deleting ID:', error);
+                customIdError.textContent = t.errorIdDeleteFailed;
+            } finally {
+                resetDeleteButtonState();
+            }
         }
 
-        modeDigitalBtn.addEventListener('click', () => updateModeUI('digital'));
-        modePrintedBtn.addEventListener('click', () => updateModeUI('printed'));
         langIdButton.addEventListener('click', () => updateLanguageUI('id'));
         langEngButton.addEventListener('click', () => updateLanguageUI('eng'));
         changeIdBtn.addEventListener('click', unlockIdInputUIForChange);
@@ -688,30 +693,8 @@
         settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
 
         // --- NEW SECURITY & HELPER FUNCTIONS ---
-        function sanitizeQrCode() {
-            if (isQrSanitized) return; // Don't re-sanitize if already done
-
-            const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
-            if (!lastSlideContent) return;
-
-            lastSlideContent.innerHTML = ''; // Clear existing QR
-            const sanitizedUrl = `https://www.cnid.my.id/smith-family.html`;
-            const qrCodeSize = Math.min(lastSlideContent.offsetWidth, lastSlideContent.offsetHeight) * 0.9;
-            
-            new QRCode(lastSlideContent, {
-                text: sanitizedUrl,
-                width: qrCodeSize,
-                height: qrCodeSize,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            isQrSanitized = true;
-            console.log('QR Code sanitized.');
-        }
-
         async function updatePerformingStatus(isPerforming) {
-            if (appMode !== 'printed' || !customId || !auth.currentUser) return;
+            if (!customId || !auth.currentUser) return;
             try {
                 const docRef = doc(db, 'printedQR', customId);
                 await setDoc(docRef, { isPerforming: isPerforming, updatedAt: serverTimestamp() }, { merge: true });
@@ -736,14 +719,10 @@
                         <h2 class="text-3xl font-bold mb-4">${contentData.title}</h2>
                         <ul class="list-none space-y-2">${listItems}</ul>
                     </div>`;
-            } else { // Last slide logic
-                if (appMode === 'printed') {
-                    // Remove padding for the image slide to fill the container
-                    slideContent.style.padding = '0';
-                    slideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image1.jpg" alt="Initial image">`;
-                } else {
-                    slideContent.innerHTML = ''; 
-                }
+            } else { // Last slide logic - always the image now
+                // Remove padding for the image slide to fill the container
+                slideContent.style.padding = '0';
+                slideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image1.jpg" alt="Initial image">`;
             }
             slide.appendChild(slideContent);
             return slide;
@@ -759,15 +738,15 @@
             currentSlideIndex = slideIndex;
             
             // Secretly change image when swiping away from it after the trick is done
-            if (appMode === 'printed' && !isSessionActive && !isImageRevealed && previousSlideIndex === 3 && currentSlideIndex !== 3) {
-                 const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
-                 if(lastSlideContent) {
-                      // Wait for the transition to finish before changing the image
-                      setTimeout(function() {
-                          lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
-                          isImageRevealed = true; // Mark as revealed to prevent re-changing
-                      }, transitionDuration);
-                 }
+            if (!isSessionActive && !isImageRevealed && previousSlideIndex === 3 && currentSlideIndex !== 3) {
+                const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
+                if(lastSlideContent) {
+                    // Wait for the transition to finish before changing the image
+                    setTimeout(function() {
+                        lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
+                        isImageRevealed = true; // Mark as revealed to prevent re-changing
+                    }, transitionDuration);
+                }
             }
         }
 
@@ -788,24 +767,19 @@
             tapCount = 0;
             lastTapTime = 0;
             isImageRevealed = false; // Reset the image reveal state
-            isQrSanitized = false; // Reset the QR sanitized state
             
-            const t = translations[currentLanguage];
-            settingsTitle.textContent = t.settingsTitle;
-            languageLabel.textContent = t.languageLabel;
-            readInstructionsButton.textContent = t.readInstructions;
-
+            updateLanguageUI(currentLanguage);
             setupInitialView();
-            if (appMode === 'printed' && customId) {
-                // Clear previous gesture data and set performing status to true for the new session
+
+            if (customId) {
                 updateGestureDataInFirestore(); 
                 updatePerformingStatus(true);
             }
         }
         
         async function updateGestureDataInFirestore() {
-            // Stop if not in printed mode, no customId, or not logged in
-            if (appMode !== 'printed' || !customId || !auth.currentUser) return;
+            // Stop if no customId, or not logged in
+            if (!customId || !auth.currentUser) return;
             try {
                 const docRef = doc(db, 'printedQR', customId);
                 const dataToSave = {
@@ -813,7 +787,6 @@
                     lang: currentLanguage,
                     updatedAt: serverTimestamp()
                 };
-                // Use setDoc to overwrite old data with new data
                 await setDoc(docRef, dataToSave, { merge: true }); 
                 console.log('Gesture data updated in Firestore for ID:', customId);
             } catch (error) {
@@ -911,12 +884,8 @@
                     lastTapTime = currentTime;
                     
                     if (tapCount === 2) {
-                        // Digital mode: Sanitize QR on the last slide
-                        if (appMode === 'digital' && currentSlideIndex === 3) {
-                            sanitizeQrCode();
-                        }
-                        // Printed mode: Set isPerforming to false
-                        else if (appMode === 'printed' && customId) {
+                        // Set isPerforming to false
+                        if (customId) {
                             updatePerformingStatus(false);
                         }
                     } else if (tapCount === 3) {
@@ -934,8 +903,8 @@
                 return;
             }
 
-            // Block gestures if in printed mode without a valid ID
-            if (appMode === 'printed' && !customId) {
+            // Block gestures if no valid ID
+            if (!customId) {
                 const originalText = settingsToast.querySelector('p').textContent;
                 settingsToast.querySelector('p').textContent = 'Please set a Custom ID in settings first.';
                 settingsToast.classList.remove('hidden');
@@ -967,25 +936,8 @@
                 if (gestureCount >= 3) {
                     isSessionActive = false;
                     
-                    if (appMode === 'printed') {
-                        updateGestureDataInFirestore();
-                        // The image reveal logic is now handled by animateToSlide
-                    }
-                    
-                    if (appMode === 'digital') {
-                        const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
-                        lastSlideContent.innerHTML = '';
-                        const finalUrl = `https://www.cnid.my.id/smith-family.html?id=${gestureSequence.join('')}&lang=${currentLanguage}`;
-                        const qrCodeSize = Math.min(lastSlideContent.offsetWidth, lastSlideContent.offsetHeight) * 0.9;
-                        new QRCode(lastSlideContent, {
-                            text: finalUrl,
-                            width: qrCodeSize,
-                            height: qrCodeSize,
-                            colorDark: "#000000",
-                            colorLight: "#ffffff",
-                            correctLevel: QRCode.CorrectLevel.H
-                        });
-                    }
+                    updateGestureDataInFirestore();
+                    // The image reveal logic is handled by animateToSlide
                 }
             }
         });
