@@ -371,9 +371,9 @@
                 } else {
                     // No user is signed in, sign in anonymously.
                     signInAnonymously(auth).catch((error) => {
-                         console.error("Anonymous auth failed:", error);
-                         showLicenseModal();
-                         licenseError.textContent = "Could not connect to authentication service.";
+                          console.error("Anonymous auth failed:", error);
+                          showLicenseModal();
+                          licenseError.textContent = "Could not connect to authentication service.";
                     });
                 }
             });
@@ -474,8 +474,8 @@
                             updateSaveButtonState(); // Re-check button state after reset
                         }
                     } catch (error) {
-                         console.error("Error verifying ID:", error);
-                         customIdError.textContent = 'Could not verify ID. Check connection.';
+                          console.error("Error verifying ID:", error);
+                          customIdError.textContent = 'Could not verify ID. Check connection.';
                     }
                 } else {
                     // No local ID, prepare for creation
@@ -543,9 +543,9 @@
 
             // 3. Check if a reset is needed by comparing initial state with final state
             const needsReset = finalMode !== appMode || 
-                               finalLang !== currentLanguage || 
-                               (finalMode === 'printed' && finalIdInput !== customId && finalIdInput) || // ID changed to something new
-                               (finalMode === 'digital' && appMode === 'printed');
+                                 finalLang !== currentLanguage || 
+                                 (finalMode === 'printed' && finalIdInput !== customId && finalIdInput) || // ID changed to something new
+                                 (finalMode === 'digital' && appMode === 'printed');
 
 
             // 4. Handle Printed QR Mode Firestore Logic
@@ -624,24 +624,8 @@
                 customIdError.textContent = 'Please set and save a 6-digit ID first.';
                 return;
             }
-            const url = `https://cnid.my.id/redirects.html?id=${customId}`;
-            const qrContainer = document.createElement('div');
-            new QRCode(qrContainer, {
-                text: url,
-                width: 512,
-                height: 512,
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            setTimeout(() => {
-                const qrCanvas = qrContainer.querySelector('canvas');
-                if (qrCanvas) {
-                    const link = document.createElement('a');
-                    link.download = `atma_qr_${customId}.png`;
-                    link.href = qrCanvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-                    link.click();
-                }
-                 qrContainer.remove();
-            }, 100);
+            // Opens generateqr.html in a new tab with the custom ID
+            window.open(`generateqr.html?id=${customId}`, '_blank');
         }
         
         async function deleteId() {
@@ -778,11 +762,11 @@
             if (appMode === 'printed' && !isSessionActive && !isImageRevealed && previousSlideIndex === 3 && currentSlideIndex !== 3) {
                  const lastSlideContent = slideContainer.children[3].querySelector('.slide-content');
                  if(lastSlideContent) {
-                     // Wait for the transition to finish before changing the image
-                     setTimeout(function() {
-                         lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
-                         isImageRevealed = true; // Mark as revealed to prevent re-changing
-                     }, transitionDuration);
+                      // Wait for the transition to finish before changing the image
+                      setTimeout(function() {
+                          lastSlideContent.innerHTML = `<img src="https://deyiksanjaya.github.io/atma/image2.jpg" alt="Revealed image">`;
+                          isImageRevealed = true; // Mark as revealed to prevent re-changing
+                      }, transitionDuration);
                  }
             }
         }
