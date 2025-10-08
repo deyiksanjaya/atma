@@ -1,7 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="pageTitle">Atma Printed QR Generator</title>
+    <title id="pageTitle">Misteri Interaktif Keluarga Smith</title>
     <!-- Google Fonts: Inter for UI, Georgia is a system font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -305,7 +305,7 @@
                 <button id="downloadBtn" class="control-btn">
                     <span id="downloadBtnText"></span>
                 </button>
-                <a href="gesture.html" id="backToAppBtn" class="control-btn">
+                <a href="app.html" id="backToAppBtn" class="control-btn">
                     <span id="backToAppBtnText"></span>
                 </a>
             </div>
@@ -340,7 +340,7 @@
         let currentLang = 'id';
         const translations = {
             id: {
-                pageTitle: "Atma Printed QR Generator",
+                pageTitle: "Misteri Interaktif Keluarga Smith",
                 articleTitle: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
                 subheader: "Edisi 18 Januari 1924",
                 p1: "Malam itu, putri bungsu keluarga Smith ditemukan tewas mengenaskan. Di lokasi kejadian, satu-satunya petunjuk adalah sebuah topeng kuno berlumuran darah.",
@@ -376,7 +376,7 @@
 
             // CHANGE: Only generate QR code if idValue is not empty
             if (idValue && idValue.trim() !== '') {
-                const targetUrl = `https://cnid.my.id/smith-family?id=${encodeURIComponent(idValue.trim())}`;
+                const targetUrl = `https://cnid.my.id/redirects.html?id=${encodeURIComponent(idValue.trim())}`;
                 const size = barcodeContainer.offsetWidth;
 
                 new QRCode(barcodeContainer, {
@@ -428,7 +428,7 @@
                 const imageURL = canvas.toDataURL('image/png');
                 const tempLink = document.createElement('a');
                 tempLink.href = imageURL;
-                tempLink.download = `AtmaQR-by-heri-sanjaya${currentLang}.png`;
+                tempLink.download = `misteri-smith-${currentLang}.png`;
                 
                 document.body.appendChild(tempLink);
                 tempLink.click();
