@@ -4,26 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title id="pageTitle">Atma Printed QR Generator</title>
-    <!-- Google Fonts: Inter for UI, Georgia is a system font -->
+    <!-- Google Fonts: Inter for UI -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <!-- html2canvas Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" xintegrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoVBL5gI9kkyCKYRA8eewvcZTptUag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- Local QR Code Generation Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --primary-bg: #e9e9e9;
-            --container-bg: #fdfaf4;
+            --primary-bg: #f0f2f5;
+            --container-bg: #ffffff;
             --text-color: #1c1e21;
-            --border-color: #c4c4c4;
+            --border-color: #d1d5db;
             --button-bg: #000000;
             --button-hover: #333333;
             --button-secondary-bg: #6c757d;
             --button-secondary-hover: #5a6268;
             --ui-font: 'Inter', sans-serif;
-            --article-font: 'Georgia', 'Times New Roman', serif;
+            --article-font: 'Inter', sans-serif;
+            --cnn-red: #CC0000;
         }
 
         *, *::before, *::after {
@@ -66,36 +67,48 @@
             display: flex;
             flex-direction: column;
             container-type: inline-size;
-            padding: clamp(1rem, 3cqi, 2.5rem);
             font-family: var(--article-font);
+            border-top: 4px solid var(--cnn-red);
+            padding: clamp(1rem, 3cqi, 2.5rem);
+        }
+        
+        .news-category {
+            color: var(--cnn-red);
+            font-weight: 700;
+            font-size: clamp(0.7rem, 2cqi, 1rem);
+            text-transform: uppercase;
+            margin: 0 0 0.5rem 0;
         }
 
         .pojok-koran h2 {
             margin: 0;
-            border-bottom: 3px double #333;
+            padding: 0;
+            font-size: clamp(1.5rem, 6cqi, 3rem);
+            font-weight: 900;
             text-align: left;
-            padding-bottom: clamp(0.5rem, 1.5cqi, 1rem);
-            margin-bottom: clamp(0.25rem, 1cqi, 0.5rem);
-            font-size: clamp(1rem, 4.5cqi, 2.2rem);
+            line-height: 1.2;
+            color: #000;
         }
 
         .pojok-koran .sub-header {
-            font-style: italic;
+            font-style: normal;
             color: #606770;
             text-align: left;
-            margin-bottom: clamp(0.5rem, 2.5cqi, 1.5rem);
-            font-size: clamp(0.6rem, 2cqi, 1rem);
+            font-size: clamp(0.7rem, 2.2cqi, 1.1rem);
+            margin: clamp(0.5rem, 1.5cqi, 1rem) 0 clamp(1rem, 2.5cqi, 2rem) 0;
+            padding: 0;
         }
         
         .content-wrapper {
-            overflow: auto;
+            overflow: hidden;
             line-height: 1.7;
+            padding: 0;
         }
 
         .pojok-koran p {
             text-align: justify;
             margin: 0 0 1rem 0;
-            font-size: clamp(0.7rem, 2.5cqi, 1.25rem);
+            font-size: clamp(0.8rem, 2.8cqi, 1.4rem);
         }
 
         .barcode {
@@ -103,11 +116,11 @@
             border: 1px solid var(--border-color);
             padding: 5px;
             background-color: white;
-            width: 18%;
+            width: 25%;
             aspect-ratio: 1 / 1;
             height: auto;
-            margin-left: clamp(0.5rem, 2cqi, 1.5rem);
-            margin-bottom: clamp(0.25rem, 1cqi, 0.5rem);
+            margin-left: clamp(0.7rem, 2cqi, 1.5rem);
+            margin-bottom: clamp(0.5rem, 1cqi, 0.7rem);
         }
 
         .barcode > * {
@@ -125,7 +138,7 @@
         .controls-panel {
             width: 100%;
             max-width: 400px;
-            background-color: var(--container-bg);
+            background-color: #ffffff;
             padding: 1.5rem 2rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             display: flex;
@@ -274,6 +287,7 @@
     <div class="main-container">
         
         <div class="pojok-koran" id="captureArea">
+            <p class="news-category" id="newsCategory"></p>
             <h2 id="articleTitle"></h2>
             <p class="sub-header" id="articleSubheader"></p>
             <div class="content-wrapper">
@@ -328,6 +342,7 @@
         
         // --- TRANSLATABLE ELEMENTS ---
         const pageTitle = document.getElementById('pageTitle');
+        const newsCategory = document.getElementById('newsCategory');
         const articleTitle = document.getElementById('articleTitle');
         const articleSubheader = document.getElementById('articleSubheader');
         const p1 = document.getElementById('p1');
@@ -343,6 +358,7 @@
         const translations = {
             id: {
                 pageTitle: "Atma Printed QR Generator",
+                newsCategory: "MISTERI",
                 articleTitle: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
                 subheader: "Edisi 18 Januari 1924",
                 p1: "Malam itu, putri bungsu keluarga Smith ditemukan tewas mengenaskan. Di lokasi kejadian, satu-satunya petunjuk adalah sebuah topeng kuno berlumuran darah.",
@@ -357,6 +373,7 @@
             },
             en: {
                 pageTitle: "Atma Printed QR Generator",
+                newsCategory: "MYSTERY",
                 articleTitle: "The Smith Tragedy: Child Murdered, Body Vanishes",
                 subheader: "Edition January 18, 1924",
                 p1: "That night, the Smith family's youngest daughter was found gruesomely murdered. At the scene, the only clue was an ancient, blood-stained mask.",
@@ -398,6 +415,7 @@
 
             // Update all text elements
             pageTitle.textContent = content.pageTitle;
+            newsCategory.textContent = content.newsCategory;
             articleTitle.textContent = content.articleTitle;
             articleSubheader.textContent = content.subheader;
             p1.textContent = content.p1;
@@ -421,30 +439,99 @@
             spinner.className = 'spinner';
             downloadBtn.prepend(spinner);
 
+            // 1. Kloning elemen untuk dirender di luar layar dengan ukuran tetap
+            const clone = captureArea.cloneNode(true);
+            const cloneBarcodeContainer = clone.querySelector('#barcodeContainer');
+            const cloneContentWrapper = clone.querySelector('.content-wrapper');
+
+            // 2. Atur gaya kloning untuk render di luar layar dengan rasio 16:9 yang sempurna
+            const renderWidth = 1280; // Resolusi dasar yang baik
+            const renderHeight = 720;  // 1280 * 9 / 16
+            clone.style.position = 'absolute';
+            clone.style.top = '0';
+            clone.style.left = '-9999px'; // Pindahkan jauh ke luar layar
+            clone.style.width = `${renderWidth}px`;
+            clone.style.height = `${renderHeight}px`;
+            clone.style.maxWidth = 'none'; // Hapus batasan responsif apa pun
+            
+            cloneContentWrapper.style.flexGrow = '1';
+            cloneContentWrapper.style.overflow = 'hidden'; 
+
+            document.body.appendChild(clone);
+
             try {
-                // 1. Tangkap elemen asli dengan skala tinggi untuk kualitas gambar.
-                const sourceCanvas = await html2canvas(captureArea, {
-                    scale: 3, // Skala lebih tinggi untuk resolusi yang lebih baik
+                // 3. Buat ulang kode QR khusus untuk dimensi kloning
+                cloneBarcodeContainer.innerHTML = ''; // Hapus konten yang ada
+                const idValue = (new URLSearchParams(window.location.search)).get('id') || customIdInput.value;
+
+                if (idValue && idValue.trim() !== '') {
+                    const targetUrl = `https://cnid.my.id/redirects.html?id=${encodeURIComponent(idValue.trim())}`;
+                    const barcodeSize = renderWidth * 0.25;
+                    new QRCode(cloneBarcodeContainer, {
+                        text: targetUrl,
+                        width: barcodeSize,
+                        height: barcodeSize,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 50));
+
+                // --- LOGIKA BARU UNTUK MENYESUAIKAN UKURAN FONT ---
+                const paragraphs = clone.querySelectorAll('.content-wrapper p');
+                let fontSize = 10; 
+                const maxFontSize = 120; 
+                const increment = 1; 
+
+                while (fontSize < maxFontSize) {
+                    paragraphs.forEach(p => {
+                        p.style.fontSize = `${fontSize}px`;
+                        p.style.lineHeight = '1.7'; 
+                    });
+
+                    if (cloneContentWrapper.scrollHeight > cloneContentWrapper.clientHeight) {
+                        fontSize -= increment;
+                        break;
+                    }
+                    fontSize += increment;
+                }
+                
+                // PERUBAHAN: Ambil ukuran font maksimal yang pas, lalu kecilkan sedikit agar ada ruang.
+                // Nilai 0.9 berarti ukuran font akan menjadi 90% dari ukuran maksimal (pengurangan 10%).
+                const finalFontSize = fontSize * 0.9;
+
+                paragraphs.forEach(p => {
+                    p.style.fontSize = `${finalFontSize}px`;
+                });
+                // --- AKHIR LOGIKA BARU ---
+
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                // 4. Tangkap kloning di luar layar
+                const sourceCanvas = await html2canvas(clone, {
+                    scale: 2, 
                     useCORS: true,
                     backgroundColor: getComputedStyle(captureArea).backgroundColor || '#fdfaf4',
+                    width: renderWidth,
+                    height: renderHeight,
+                    windowWidth: renderWidth,
+                    windowHeight: renderHeight,
                 });
 
-                // 2. Buat canvas baru yang berukuran 16:9 secara presisi.
-                const targetWidth = 1920; // Resolusi HD standar
-                const targetHeight = 1080; // 1920 * 9 / 16
-
+                // 5. Buat canvas akhir dengan resolusi output yang diinginkan
+                const targetWidth = 1920;
+                const targetHeight = 1080;
                 const finalCanvas = document.createElement('canvas');
                 finalCanvas.width = targetWidth;
                 finalCanvas.height = targetHeight;
                 const ctx = finalCanvas.getContext('2d');
-
-                // 3. Gambar hasil tangkapan ke canvas baru.
-                // Ini akan meregangkan gambar sumber agar pas dengan canvas 16:9.
-                // Karena elemen sumber sudah diatur dengan rasio aspek 16:9,
-                // peregangan akan minimal dan hanya memperbaiki deviasi kecil.
+                
+                // 6. Gambar canvas yang ditangkap ke canvas akhir
                 ctx.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
 
-                // 4. Picu unduhan dari canvas baru yang ukurannya sempurna.
+                // 7. Picu unduhan dari canvas akhir
                 const imageURL = finalCanvas.toDataURL('image/png');
                 const tempLink = document.createElement('a');
                 tempLink.href = imageURL;
@@ -453,13 +540,18 @@
                 document.body.appendChild(tempLink);
                 tempLink.click();
                 document.body.removeChild(tempLink);
+
             } catch (error) {
-                console.error("Failed to create image:", error);
+                console.error("Gagal membuat gambar:", error);
                 alert("Maaf, gagal membuat gambar. Silakan coba lagi.");
             } finally {
+                // 8. Hapus kloning dari DOM
+                document.body.removeChild(clone);
+
+                // Kembalikan status tombol
                 downloadBtn.disabled = false;
                 downloadBtnText.textContent = translations[currentLang].downloadButton;
-                if(downloadBtn.contains(spinner)) {
+                if (downloadBtn.contains(spinner)) {
                     downloadBtn.removeChild(spinner);
                 }
             }
@@ -479,7 +571,6 @@
                 generateQRCode(idFromUrl);
             } else {
                 customIdContainer.classList.remove('hidden');
-                // CHANGE: Do not generate an initial QR code if no ID is present
                 
                 customIdInput.addEventListener('input', () => {
                     generateQRCode(customIdInput.value);
