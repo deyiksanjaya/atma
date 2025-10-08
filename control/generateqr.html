@@ -1,7 +1,9 @@
+<!DOCTYPE html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title id="pageTitle">Misteri Interaktif Keluarga Smith</title>
+    <title id="pageTitle">Atma Printed QR Generator</title>
     <!-- Google Fonts: Inter for UI, Georgia is a system font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -283,7 +285,7 @@
         </div>
 
         <div class="controls-panel">
-            <h3 id="controlsTitle">
+            <h3>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2.73l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2.73l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 <span id="controlsTitleText"></span>
             </h3>
@@ -340,7 +342,7 @@
         let currentLang = 'id';
         const translations = {
             id: {
-                pageTitle: "Misteri Interaktif Keluarga Smith",
+                pageTitle: "Atma Printed QR Generator",
                 articleTitle: "Tragedi Keluarga Smith: Anak Dibunuh, Jasadnya Menghilang",
                 subheader: "Edisi 18 Januari 1924",
                 p1: "Malam itu, putri bungsu keluarga Smith ditemukan tewas mengenaskan. Di lokasi kejadian, satu-satunya petunjuk adalah sebuah topeng kuno berlumuran darah.",
@@ -354,7 +356,7 @@
                 backButton: "Kembali ke Aplikasi"
             },
             en: {
-                pageTitle: "Smith Family Interactive Mystery",
+                pageTitle: "Atma Printed QR Generator",
                 articleTitle: "The Smith Tragedy: Child Murdered, Body Vanishes",
                 subheader: "Edition January 18, 1924",
                 p1: "That night, the Smith family's youngest daughter was found gruesomely murdered. At the scene, the only clue was an ancient, blood-stained mask.",
@@ -420,22 +422,40 @@
             downloadBtn.prepend(spinner);
 
             try {
-                const canvas = await html2canvas(captureArea, {
-                    scale: 2.5,
+                // 1. Tangkap elemen asli dengan skala tinggi untuk kualitas gambar.
+                const sourceCanvas = await html2canvas(captureArea, {
+                    scale: 3, // Skala lebih tinggi untuk resolusi yang lebih baik
                     useCORS: true,
-                    backgroundColor: null,
+                    backgroundColor: getComputedStyle(captureArea).backgroundColor || '#fdfaf4',
                 });
-                const imageURL = canvas.toDataURL('image/png');
+
+                // 2. Buat canvas baru yang berukuran 16:9 secara presisi.
+                const targetWidth = 1920; // Resolusi HD standar
+                const targetHeight = 1080; // 1920 * 9 / 16
+
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = targetWidth;
+                finalCanvas.height = targetHeight;
+                const ctx = finalCanvas.getContext('2d');
+
+                // 3. Gambar hasil tangkapan ke canvas baru.
+                // Ini akan meregangkan gambar sumber agar pas dengan canvas 16:9.
+                // Karena elemen sumber sudah diatur dengan rasio aspek 16:9,
+                // peregangan akan minimal dan hanya memperbaiki deviasi kecil.
+                ctx.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
+
+                // 4. Picu unduhan dari canvas baru yang ukurannya sempurna.
+                const imageURL = finalCanvas.toDataURL('image/png');
                 const tempLink = document.createElement('a');
                 tempLink.href = imageURL;
-                tempLink.download = `misteri-smith-${currentLang}.png`;
+                tempLink.download = `Atma by heri sanjaya QR (${currentLang}).png`;
                 
                 document.body.appendChild(tempLink);
                 tempLink.click();
                 document.body.removeChild(tempLink);
             } catch (error) {
                 console.error("Failed to create image:", error);
-                alert("Sorry, failed to create the image. Please try again.");
+                alert("Maaf, gagal membuat gambar. Silakan coba lagi.");
             } finally {
                 downloadBtn.disabled = false;
                 downloadBtnText.textContent = translations[currentLang].downloadButton;
