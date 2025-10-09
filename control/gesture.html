@@ -512,12 +512,7 @@
             settingsModal.classList.remove('hidden');
         }
 
-        function closeSettingsModal(isCancelled = false) { 
-            // If the modal was cancelled (e.g., clicked outside), revert any language changes.
-            if (isCancelled && currentLanguage !== initialSettings.lang) {
-                updateLanguageUI(initialSettings.lang);
-            }
-
+        function closeSettingsModal() { 
             if (!customId) {
                 customIdError.textContent = translations[currentLanguage].mustSetId;
                 return;
@@ -698,7 +693,15 @@
         downloadQrBtn.addEventListener('click', downloadQrCode);
         deleteIdBtn.addEventListener('click', deleteId);
         customIdInput.addEventListener('input', updateSaveButtonState);
-        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(true); });
+        settingsModal.addEventListener('click', (e) => { 
+            if (e.target === settingsModal) { 
+                // Revert language state if it was changed but not saved
+                if (currentLanguage !== initialSettings.lang) {
+                    updateLanguageUI(initialSettings.lang);
+                }
+                closeSettingsModal(); 
+            }
+        });
 
         // --- NEW SECURITY & HELPER FUNCTIONS ---
         async function updatePerformingStatus(isPerforming) {
