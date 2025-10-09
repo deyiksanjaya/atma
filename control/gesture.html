@@ -474,6 +474,7 @@
                 idChanged = customIdInput.value !== customId;
             }
 
+            // BUG FIX: Compare with initialSettings.lang, not currentLanguage
             if (selectedLang !== initialSettings.lang || idChanged) {
                 saveSettingsBtn.textContent = t.saveAndCloseBtn;
             } else {
@@ -511,7 +512,12 @@
             settingsModal.classList.remove('hidden');
         }
 
-        function closeSettingsModal() { 
+        function closeSettingsModal(isCancelled = false) { 
+            // If the modal was cancelled (e.g., clicked outside), revert any language changes.
+            if (isCancelled && currentLanguage !== initialSettings.lang) {
+                updateLanguageUI(initialSettings.lang);
+            }
+
             if (!customId) {
                 customIdError.textContent = translations[currentLanguage].mustSetId;
                 return;
@@ -569,7 +575,8 @@
             const finalLang = langIdButton.classList.contains('bg-black') ? 'id' : 'eng';
             const finalIdInput = customIdInput.value;
 
-            const needsReset = finalLang !== currentLanguage || (finalIdInput !== customId && finalIdInput);
+            // BUG FIX: Compare with initialSettings.lang, not currentLanguage
+            const needsReset = finalLang !== initialSettings.lang || (finalIdInput !== customId && finalIdInput);
 
             const idChanged = finalIdInput !== customId;
             const isCreating = !customId && finalIdInput;
@@ -603,12 +610,13 @@
                     return;
                 }
             }
-            else if (finalLang !== currentLanguage && customId) {
+            // BUG FIX: Compare with initialSettings.lang, not currentLanguage
+            else if (finalLang !== initialSettings.lang && customId) {
                  try {
-                     const docRef = doc(db, 'printedQR', customId);
-                     await setDoc(docRef, { lang: finalLang }, { merge: true });
+                      const docRef = doc(db, 'printedQR', customId);
+                      await setDoc(docRef, { lang: finalLang }, { merge: true });
                  } catch (error) {
-                     console.error("Error updating language in Firestore:", error);
+                      console.error("Error updating language in Firestore:", error);
                  }
             }
 
@@ -690,7 +698,7 @@
         downloadQrBtn.addEventListener('click', downloadQrCode);
         deleteIdBtn.addEventListener('click', deleteId);
         customIdInput.addEventListener('input', updateSaveButtonState);
-        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
+        settingsModal.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(true); });
 
         // --- NEW SECURITY & HELPER FUNCTIONS ---
         async function updatePerformingStatus(isPerforming) {
@@ -930,7 +938,7 @@
                 const textToShow = gestureTexts[gestureCount][textKey];
                 if (textToShow) gestureTextHistory.push(textToShow);
                 gestureCount++;
-                                                
+                                                      
                 animateToSlide(gestureCount);
 
                 if (gestureCount >= 3) {
@@ -944,17 +952,17 @@
 
     </script>
         <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./service-worker.js')
-                    .then(registration => {
-                        console.log('Service Worker registered successfully with scope: ', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('Service Worker registration failed: ', error);
-                    });
-            });
-        }
-        </script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered successfully with scope: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed: ', error);
+                });
+        });
+    }
+    </script>
 </body>
 </html>
