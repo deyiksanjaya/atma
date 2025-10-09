@@ -412,6 +412,7 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContent = document.querySelector('main');
         const IMAGE_STATE_KEY = 'smithFamilyImageState';
+        const ARTICLE_DATA_KEY = 'smithFamilyArticleData'; // New key for persistent data
 
         // --- HELPER FUNCTIONS ---
         const getUrlParams = () => new URLSearchParams(window.location.search);
@@ -569,9 +570,11 @@
                     lastTap = currentTime;
                     if (tapCount === 3) {
                         localStorage.removeItem(IMAGE_STATE_KEY);
-                        // Instead of reloading, just update the state and UI
+                        localStorage.removeItem(ARTICLE_DATA_KEY); // Also remove article data
                         updateImageVisibility(false);
                         tapCount = 0;
+                        // Reload to apply default state if necessary
+                        window.location.reload();
                     }
                 });
             }
@@ -607,8 +610,6 @@
                         galleryImage1.style.opacity = '0';
                         localStorage.setItem(IMAGE_STATE_KEY, 'true');
                         isImage2Active = true;
-                        // Optional: remove listener after it has run once
-                        // window.removeEventListener('scroll', revealImageOnScroll);
                     }
                 }
             });
@@ -628,42 +629,66 @@
 
         // --- MAIN INITIALIZATION ---
         async function initializePage() {
+            setupCommonInteractivity();
+            const lang = getLanguage();
+
+            // 1. --- LOCAL STORAGE FIRST ---
+            const storedDataJSON = localStorage.getItem(ARTICLE_DATA_KEY);
+            if (storedDataJSON) {
+                try {
+                    console.log("Mode: Loaded from Local Storage (Locked)");
+                    const storedData = JSON.parse(storedDataJSON);
+                    setupLockedPage(storedData.secretCode, lang);
+                    showContent();
+                    return; // Stop execution here.
+                } catch (e) {
+                    console.error("Failed to parse stored data, clearing it.", e);
+                    localStorage.removeItem(ARTICLE_DATA_KEY);
+                }
+            }
+
+            // 2. --- URL CHECK & FIREBASE FETCH (if local storage is empty) ---
             const params = getUrlParams();
             const urlId = params.get('id');
-            const lang = getLanguage();
-            const isCustomId = /^\d{6}$/.test(urlId);
-            
-            setupCommonInteractivity();
 
-            if (!urlId) {
-                // Case 1: No parameter -> Locked Mode with default content
-                console.log("Mode: Locked (No ID)");
-                setupLockedPage(null, lang);
-            } else if (isCustomId) {
-                // Case 2: Custom ID -> Check Firestore
-                console.log(`Mode: Checking Custom ID ${urlId}`);
+            if (urlId && /^\d{6}$/.test(urlId)) {
+                console.log(`Mode: Checking Custom ID ${urlId} from URL`);
                 try {
                     const docRef = doc(db, "printedQR", urlId);
                     const docSnap = await getDoc(docRef);
-                    if (docSnap.exists() && docSnap.data().isPerforming === true) {
-                        // Case 2a: Performing -> Normal Mode
-                        console.log("Mode: Normal (Performing)");
-                        setupNormalPage(docSnap.data().id, lang);
+
+                    if (docSnap.exists()) {
+                        const firebaseData = docSnap.data();
+                        const secretCodeFromDB = firebaseData.id;
+                        const isPerforming = firebaseData.isPerforming === true;
+
+                        // Save data to local storage for next visit
+                        const dataToStore = {
+                            customId: urlId,
+                            secretCode: secretCodeFromDB
+                        };
+                        localStorage.setItem(ARTICLE_DATA_KEY, JSON.stringify(dataToStore));
+
+                        if (isPerforming) {
+                            console.log("Mode: Normal (Performing)");
+                            setupNormalPage(secretCodeFromDB, lang);
+                        } else {
+                            console.log("Mode: Locked (Not Performing)");
+                            setupLockedPage(secretCodeFromDB, lang);
+                        }
                     } else {
-                        // Case 2b: Not performing or not found -> Locked Mode
-                        console.log("Mode: Locked (Not Performing or Not Found)");
-                        const secretCodeFromDB = docSnap.exists() ? docSnap.data().id : null;
-                        setupLockedPage(secretCodeFromDB, lang);
+                        // Document not found in Firebase
+                        console.log("Mode: Locked (ID Not Found in DB)");
+                        setupLockedPage(null, lang); // Fallback to default content
                     }
                 } catch (error) {
                     console.error("Error fetching Firestore document:", error);
-                    // Fallback to locked mode on error
-                    setupLockedPage(null, lang);
+                    setupLockedPage(null, lang); // Fallback to default content on error
                 }
             } else {
-                // Case 3: Secret Code -> Normal Mode
-                console.log("Mode: Normal (Secret Code)");
-                setupNormalPage(urlId, lang);
+                // 3. --- FALLBACK (no local storage, no valid URL id) ---
+                console.log("Mode: Locked (No valid ID provided)");
+                setupLockedPage(null, lang); // Fallback to default content
             }
             
             showContent();
