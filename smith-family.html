@@ -412,11 +412,11 @@
         const loadingOverlay = document.getElementById('loadingOverlay');
         const mainContent = document.querySelector('main');
         const IMAGE_STATE_KEY = 'smithFamilyImageState';
-        const ARTICLE_DATA_KEY = 'smithFamilyArticleData'; // New key for persistent data
+        const ARTICLE_DATA_KEY = 'smithFamilyArticleData';
+        const LANGUAGE_KEY = 'userLanguage'; // New key for language
 
         // --- HELPER FUNCTIONS ---
         const getUrlParams = () => new URLSearchParams(window.location.search);
-        const getLanguage = () => (getUrlParams().get('lang') === 'eng' ? 'eng' : 'id');
         const capitalizeFirstLetter = (string) => string ? string.charAt(0).toUpperCase() + string.slice(1) : '';
 
         // --- TRANSLATION & CONTENT FUNCTIONS ---
@@ -570,11 +570,10 @@
                     lastTap = currentTime;
                     if (tapCount === 3) {
                         localStorage.removeItem(IMAGE_STATE_KEY);
-                        localStorage.removeItem(ARTICLE_DATA_KEY); // Also remove article data
-                        updateImageVisibility(false);
+                        localStorage.removeItem(ARTICLE_DATA_KEY);
+                        localStorage.removeItem(LANGUAGE_KEY); // Also remove language data
                         tapCount = 0;
-                        // Reload to apply default state if necessary
-                        window.location.reload();
+                        alert('Pengaturan lokal telah direset!'); // Provide feedback without reloading
                     }
                 });
             }
@@ -630,14 +629,17 @@
         // --- MAIN INITIALIZATION ---
         async function initializePage() {
             setupCommonInteractivity();
-            const lang = getLanguage();
+            let lang; // Declare lang variable
 
-            // 1. --- LOCAL STORAGE FIRST ---
+            // 1. --- LOCAL STORAGE FIRST (FOR ARTICLE & LANGUAGE) ---
             const storedDataJSON = localStorage.getItem(ARTICLE_DATA_KEY);
+            lang = localStorage.getItem(LANGUAGE_KEY); // Check for language in local storage
+
             if (storedDataJSON) {
                 try {
                     console.log("Mode: Loaded from Local Storage (Locked)");
                     const storedData = JSON.parse(storedDataJSON);
+                    if (!lang) lang = 'id'; // Default to 'id' if article data exists but lang doesn't
                     setupLockedPage(storedData.secretCode, lang);
                     showContent();
                     return; // Stop execution here.
@@ -647,7 +649,7 @@
                 }
             }
 
-            // 2. --- URL CHECK & FIREBASE FETCH (if local storage is empty) ---
+            // 2. --- URL CHECK & FIREBASE FETCH (if local storage for article is empty) ---
             const params = getUrlParams();
             const urlId = params.get('id');
 
@@ -662,12 +664,25 @@
                         const secretCodeFromDB = firebaseData.id;
                         const isPerforming = firebaseData.isPerforming === true;
 
-                        // Save data to local storage for next visit
+                        // Check for language in Firebase ONLY if not already set by local storage
+                        if (!lang) {
+                            const langFromDB = firebaseData.lang;
+                            if (langFromDB && ['id', 'eng'].includes(langFromDB)) {
+                                lang = langFromDB;
+                                localStorage.setItem(LANGUAGE_KEY, lang); // Save to local storage
+                                console.log(`Language set from Firebase: ${lang}`);
+                            }
+                        }
+                        
+                        // Save article data to local storage for next visit
                         const dataToStore = {
                             customId: urlId,
                             secretCode: secretCodeFromDB
                         };
                         localStorage.setItem(ARTICLE_DATA_KEY, JSON.stringify(dataToStore));
+
+                        // Final check for language before setting up the page
+                        if (!lang) lang = 'id'; 
 
                         if (isPerforming) {
                             console.log("Mode: Normal (Performing)");
@@ -679,16 +694,19 @@
                     } else {
                         // Document not found in Firebase
                         console.log("Mode: Locked (ID Not Found in DB)");
-                        setupLockedPage(null, lang); // Fallback to default content
+                        if (!lang) lang = 'id'; // Fallback language
+                        setupLockedPage(null, lang); 
                     }
                 } catch (error) {
                     console.error("Error fetching Firestore document:", error);
-                    setupLockedPage(null, lang); // Fallback to default content on error
+                    if (!lang) lang = 'id'; // Fallback language
+                    setupLockedPage(null, lang);
                 }
             } else {
                 // 3. --- FALLBACK (no local storage, no valid URL id) ---
                 console.log("Mode: Locked (No valid ID provided)");
-                setupLockedPage(null, lang); // Fallback to default content
+                if (!lang) lang = 'id'; // Fallback language
+                setupLockedPage(null, lang);
             }
             
             showContent();
